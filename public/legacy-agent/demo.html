@@ -3,45 +3,1379 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legacy Agent - Static Demo</title>
+    <title>Legacy-Agent | デジタル魂継承エージェント デモコックピット</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-color: #050505;
-            --text-primary: #f0f0f0;
-            --text-secondary: #a0a0a0;
-            --accent-color: #00e5ff;
-            --accent-glow: rgba(0, 229, 255, 0.4);
-            --warning-color: #ffaa00;
-            --danger-color: #ff3366;
-            --surface-bg: #111111;
-            --border-color: #222222;
-            --radius: 12px;
+            --bg-color: #030816;
+            --panel-bg: rgba(8, 17, 41, 0.7);
+            --border-color: rgba(217, 119, 6, 0.15);
+            --border-glow: rgba(217, 119, 6, 0.3);
+            
+            --accent-gold: #f39c12;
+            --accent-gold-rgb: 243, 156, 18;
+            --accent-cyan: #00e5ff;
+            --accent-red: #ff3b30;
+            --accent-green: #34c759;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --panel-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            --neon-glow: 0 0 15px rgba(243, 156, 18, 0.25);
+            --neon-alert: 0 0 15px rgba(255, 59, 48, 0.4);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(8, 20, 52, 0.8) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(40, 20, 8, 0.4) 0%, transparent 50%);
             color: var(--text-primary);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.5;
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 2rem;
         }
 
-        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
 
+        /* ヘッダーデザイン */
         .header {
-            text-align: center; margin-bottom: 3rem; padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border-color);
-            animation: fadeInDown 0.8s ease-out;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(8, 17, 41, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.25rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--panel-shadow);
+            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            color: var(--accent-gold);
+            filter: drop-shadow(0 0 8px rgba(243, 156, 18, 0.5));
+            animation: pulse-slow 3s infinite alternate;
+        }
+
+        .logo-title-group h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #ffffff 30%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .status-badge-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-badge {
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            color: var(--accent-gold);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.5s ease;
+            box-shadow: var(--neon-glow);
+        }
+
+        .status-badge.emergency {
+            background: rgba(255, 59, 48, 0.15);
+            border: 1px solid rgba(255, 59, 48, 0.4);
+            color: var(--accent-red);
+            box-shadow: var(--neon-alert);
+        }
+
+        .status-badge.success {
+            background: rgba(52, 199, 89, 0.15);
+            border: 1px solid rgba(52, 199, 89, 0.4);
+            color: var(--accent-green);
+            box-shadow: 0 0 15px rgba(52, 199, 89, 0.25);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-gold);
+            border-radius: 50%;
+            display: inline-block;
+            animation: blink 1.5s infinite;
+        }
+
+        .status-badge.emergency .status-dot {
+            background-color: var(--accent-red);
+        }
+
+        .status-badge.success .status-dot {
+            background-color: var(--accent-green);
+            animation: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #e67e22 0%, var(--accent-gold) 100%);
+            color: #000000;
+            border: none;
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            box-shadow: none;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+
+        /* メインコックピットグリッド */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 各種カード・パネル */
+        .panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--panel-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .panel.active-glow {
+            border-color: var(--accent-gold);
+            box-shadow: var(--panel-shadow), 0 0 15px rgba(243, 156, 18, 0.1);
+        }
+
+        .panel.alert-glow {
+            border-color: var(--accent-red);
+            box-shadow: var(--panel-shadow), var(--neon-alert);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.75rem;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+
+        .panel-title i {
+            color: var(--accent-gold);
+        }
+
+        .panel-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* --- 左カラム: 生存確認 & 死活監視 --- */
+        .user-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .user-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .user-label {
+            color: var(--text-muted);
+        }
+
+        .user-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .user-value.alert-value {
+            color: var(--accent-red);
+            font-weight: 700;
+        }
+
+        .calendar-signals {
+            background: rgba(243, 156, 18, 0.03);
+            border: 1px solid rgba(243, 156, 18, 0.1);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .calendar-title {
+            color: var(--accent-gold);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .calendar-event {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            padding: 0.15rem 0;
+        }
+
+        .monitoring-log-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 0.75rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            height: 230px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .log-entry {
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .log-entry.info { color: var(--text-secondary); }
+        .log-entry.warn { color: var(--accent-gold); }
+        .log-entry.danger { color: var(--accent-red); font-weight: bold; }
+        .log-entry.success { color: var(--accent-green); }
+
+        .emergency-banner {
+            background: rgba(255, 59, 48, 0.08);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            border-radius: 8px;
+            padding: 0.75rem;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            animation: pulse-border 2s infinite alternate;
+        }
+
+        .emergency-banner-text h4 {
+            font-size: 0.8rem;
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        .emergency-banner-text p {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* --- 中央カラム: 重要資産選別 --- */
+        .vault-scanner-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+            text-align: center;
+        }
+
+        .scanner-ring-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0.5rem 0;
+        }
+
+        .scanner-circle {
+            width: 100%;
+            height: 100%;
+            border: 3px dashed rgba(243, 156, 18, 0.2);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: all 0.5s ease;
+        }
+
+        .scanner-circle.active {
+            border-color: var(--accent-gold);
+            animation: spin 8s linear infinite;
+        }
+
+        .scanner-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-muted);
+            transition: color 0.5s ease;
+        }
+
+        .scanner-circle.active + .scanner-icon {
+            color: var(--accent-gold);
+            filter: drop-shadow(0 0 8px rgba(243, 156, 18, 0.4));
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.25rem;
+        }
+
+        .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #e67e22, var(--accent-gold));
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+
+        .docs-preview-container {
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 12px;
+            padding: 1.25rem;
+            flex-grow: 1;
+            min-height: 280px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1), var(--panel-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .docs-watermark {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 0.75rem;
+            font-size: 0.65rem;
+            color: rgba(30, 41, 59, 0.2);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .docs-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-bottom: 2px solid #cbd5e1;
+            padding-bottom: 0.5rem;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .docs-title-tag {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #64748b;
+            font-size: 0.6rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        .docs-content-area {
+            font-size: 0.75rem;
+            color: #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .docs-empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #94a3b8;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .docs-item {
+            background: #f8fafc;
+            border-left: 3px solid var(--accent-gold);
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .docs-item-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.15rem;
+        }
+
+        .docs-item-detail {
+            color: #64748b;
+            font-size: 0.7rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* --- 右カラム: 人格エミュレータ & 音声 & 配信 --- */
+        .persona-typing-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .persona-typing-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.35rem;
+        }
+
+        .persona-typing-content {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            height: 90px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .audio-player-card {
+            background: rgba(243, 156, 18, 0.03);
+            border: 1px solid rgba(243, 156, 18, 0.15);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            color: #000000;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+        }
+
+        .audio-info {
+            flex-grow: 1;
+            font-size: 0.7rem;
+        }
+
+        .audio-title {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .audio-subtitle {
+            color: var(--text-secondary);
+        }
+
+        .equalizer-wave {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 35px;
+            padding: 0 0.5rem;
+        }
+
+        .eq-bar {
+            width: 3px;
+            height: 4px;
+            background: var(--accent-gold);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+
+        .eq-bar.active {
+            animation: eq-bounce 0.8s ease-in-out infinite alternate;
+        }
+
+        .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+        .eq-bar:nth-child(2) { animation-delay: 0.3s; }
+        .eq-bar:nth-child(3) { animation-delay: 0.5s; }
+        .eq-bar:nth-child(4) { animation-delay: 0.2s; }
+        .eq-bar:nth-child(5) { animation-delay: 0.4s; }
+        .eq-bar:nth-child(6) { animation-delay: 0.6s; }
+        .eq-bar:nth-child(7) { animation-delay: 0.1s; }
+        .eq-bar:nth-child(8) { animation-delay: 0.3s; }
+        .eq-bar:nth-child(9) { animation-delay: 0.5s; }
+        .eq-bar:nth-child(10) { animation-delay: 0.2s; }
+
+        .dispatch-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .dispatch-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dispatch-label {
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .dispatch-value {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .dispatch-value.success-status {
+            color: var(--accent-green);
+        }
+
+        /* --- 下部: セキュリティ ＆ プライバシー保護パネル --- */
+        .footer-panel {
+            background: rgba(8, 17, 41, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-radius: 16px;
+            padding: 1.25rem 2rem;
+            box-shadow: var(--panel-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .footer-panel.secured {
+            border-color: rgba(52, 199, 89, 0.3);
+            box-shadow: var(--panel-shadow), 0 0 15px rgba(52, 199, 89, 0.1);
+        }
+
+        .security-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .security-icon {
+            color: var(--accent-cyan);
+            filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.4));
+        }
+
+        .footer-panel.secured .security-icon {
+            color: var(--accent-green);
+            filter: drop-shadow(0 0 8px rgba(52, 199, 89, 0.4));
+        }
+
+        .security-text-group h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .security-text-group p {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .privacy-badge {
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            color: var(--accent-cyan);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .footer-panel.secured .privacy-badge {
+            background: rgba(52, 199, 89, 0.05);
+            border: 1px solid rgba(52, 199, 89, 0.2);
+            color: var(--accent-green);
+        }
+
+        /* キーフレームアニメーション */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(2px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-slow {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(255, 59, 48, 0.2); box-shadow: none; }
+            100% { border-color: rgba(255, 59, 48, 0.5); box-shadow: 0 0 10px rgba(255, 59, 48, 0.2); }
+        }
+
+        @keyframes eq-bounce {
+            0% { height: 4px; }
+            100% { height: 32px; }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* スクロールバー装飾 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>Legacy Agent Dashboard</h1>
-        </header>
+
+<div class="container">
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="logo-area">
+            <i data-lucide="ghost" class="logo-icon" style="width: 32px; height: 32px;"></i>
+            <div class="logo-title-group">
+                <h1>Legacy-Agent</h1>
+                <div class="logo-subtitle">デジタル意思・人格継承 自律型エージェント</div>
+            </div>
+        </div>
+        
+        <div class="status-badge-area">
+            <div class="status-badge" id="agent-status-badge">
+                <span class="status-dot"></span>
+                <span id="agent-status-text">通常死活パトロール中</span>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn" id="start-simulation-btn" onclick="startEmergencySimulation()">
+                    <i data-lucide="shield-alert"></i>
+                    緊急意思代行をシミュレートする
+                </button>
+                <button class="btn btn-reset" onclick="resetDemo()">
+                    <i data-lucide="rotate-ccw"></i>
+                    リセット
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- コックピットグリッド -->
+    <div class="dashboard-grid">
+        
+        <!-- 左カラム: 死活監視 & 生存確認 -->
+        <section class="panel" id="panel-left">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i data-lucide="activity"></i>
+                    死活監視・生存確認パトロール
+                </h2>
+                <span class="panel-badge">Gmail & Calendar API</span>
+            </div>
+
+            <!-- ユーザープロフィール -->
+            <div class="user-card">
+                <div class="user-info-row">
+                    <span class="user-label">登録ユーザー</span>
+                    <span class="user-value">相馬 茂 氏 (72歳 / 終活登録者)</span>
+                </div>
+                <div class="user-info-row">
+                    <span class="user-label">活動監視対象</span>
+                    <span class="user-value">Gmail / Google カレンダー / ログイン履歴</span>
+                </div>
+                <div class="user-info-row">
+                    <span class="user-label">安否判定閾値</span>
+                    <span class="user-value">30日間活動なし</span>
+                </div>
+                <div class="user-info-row">
+                    <span class="user-label">現在のアクティビティ</span>
+                    <span class="user-value" id="current-activity-val">Active (活動あり)</span>
+                </div>
+            </div>
+
+            <!-- カレンダー予定連動 -->
+            <div class="calendar-signals">
+                <div class="calendar-title">
+                    <i data-lucide="calendar"></i>
+                    カレンダー予定重要シグナル
+                </div>
+                <div class="calendar-event">
+                    <span>5月14日: 精密検査・入院手続き</span>
+                    <span class="user-value">【体調不良懸念フラグ】</span>
+                </div>
+                <div class="calendar-event">
+                    <span>5月16日: 定期通院（呼吸器内科）</span>
+                    <span>登録済</span>
+                </div>
+            </div>
+
+            <!-- パトロール監視ログ -->
+            <div class="monitoring-log-box" id="patrol-log">
+                <!-- 初期ログ -->
+            </div>
+
+            <!-- 緊急意思代行バナー -->
+            <div class="emergency-banner" id="emergency-banner">
+                <i data-lucide="alert-octagon" style="color: var(--accent-red); width: 28px; height: 28px; animation: blink 1s infinite;"></i>
+                <div class="emergency-banner-text">
+                    <h4>緊急データ開示フェーズへ移行</h4>
+                    <p>一定期間無応答のため意思代行を執行します</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 中央カラム: 重要資産自律選別 -->
+        <section class="panel" id="panel-center">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i data-lucide="folder-search"></i>
+                    個人Vault重要資産選別
+                </h2>
+                <span class="panel-badge">Vertex AI Search</span>
+            </div>
+
+            <!-- スキャナーステータス -->
+            <div class="vault-scanner-card">
+                <div class="scanner-ring-container">
+                    <div class="scanner-circle" id="scanner-ring"></div>
+                    <i data-lucide="key-round" class="scanner-icon" style="width: 32px; height: 32px;"></i>
+                </div>
+                <div class="user-info-row" style="width: 100%;">
+                    <span class="user-label">スキャン対象ドライブ</span>
+                    <span class="user-value">Google Drive / 相馬茂_PrivateVault/</span>
+                </div>
+                <div class="user-info-row" style="width: 100%;">
+                    <span class="user-label">総ファイル数</span>
+                    <span class="user-value">1,542件 (日記・手紙・重要書類含む)</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="scanner-progress-bar"></div>
+                </div>
+                <div class="user-info-row" style="width: 100%; font-size: 0.7rem; color: var(--text-muted);">
+                    <span id="scan-progress-text">待機中 (0%)</span>
+                    <span id="scan-speed-text">0 files/sec</span>
+                </div>
+            </div>
+
+            <!-- Docsプレビュー画面 (重要選別結果) -->
+            <div class="docs-preview-container">
+                <div class="docs-title">
+                    <span>📄 Legacy_Assets_Summary.docx</span>
+                    <span class="docs-title-tag" id="docs-status-tag">待機中</span>
+                </div>
+                
+                <div class="docs-content-area" id="docs-content">
+                    <div class="docs-empty-state" id="docs-empty">
+                        <i data-lucide="file-text" style="width: 36px; height: 36px; stroke-width: 1.5;"></i>
+                        <p>意思代行起動後、Vertex AI Searchが<br>重要ドキュメントのみを抽出・整理します</p>
+                    </div>
+                    <!-- 抽出されたドキュメントがここに差し込まれる -->
+                </div>
+
+                <div class="docs-watermark">
+                    <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i>
+                    Vertex AI CryptVault Secured
+                </div>
+            </div>
+        </section>
+
+        <!-- 右カラム: 人格エミュレータ & 音声 & 配信 -->
+        <section class="panel" id="panel-right">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i data-lucide="message-square-text"></i>
+                    魂の継承・人格エミュレーション
+                </h2>
+                <span class="panel-badge">Gemini 1.5 Pro & TTS</span>
+            </div>
+
+            <!-- 人格学習・タイピングプレビュー -->
+            <div class="persona-typing-box">
+                <div class="persona-typing-header">
+                    <span>Gemini 200万トークン長尺学習文脈</span>
+                    <span id="learning-status">待機中</span>
+                </div>
+                <div class="persona-typing-content" id="letter-content">
+<!-- タイプライター出力される手紙 -->
+                </div>
+            </div>
+
+            <!-- カスタムボイス音声プレイヤー -->
+            <div class="audio-player-card">
+                <div class="audio-controls">
+                    <button class="play-btn" id="audio-play-btn" disabled onclick="toggleAudioPlay()">
+                        <i data-lucide="play" id="play-icon" style="width: 16px; height: 16px; fill: #000;"></i>
+                    </button>
+                    <div class="audio-info">
+                        <div class="audio-title">相馬茂_感情再現ボイス.wav</div>
+                        <div class="audio-subtitle" id="audio-sub">Text-to-Speech Custom Voice (未生成)</div>
+                    </div>
+                    <div class="equalizer-wave">
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 配信・配信記録ログ -->
+            <div class="dispatch-card">
+                <div class="dispatch-row">
+                    <span class="dispatch-label"><i data-lucide="mail"></i> 配信対象 (家族連絡先)</span>
+                    <span class="dispatch-value">直美 (妻) / 優花 (娘)</span>
+                </div>
+                <div class="dispatch-row">
+                    <span class="dispatch-label"><i data-lucide="send"></i> 配信チャネル</span>
+                    <span class="dispatch-value">Gmail / LINE通知</span>
+                </div>
+                <div class="dispatch-row">
+                    <span class="dispatch-label"><i data-lucide="check-circle-2"></i> 配信状態</span>
+                    <span class="dispatch-value" id="dispatch-status">待機中</span>
+                </div>
+            </div>
+        </section>
+
     </div>
+
+    <!-- セキュリティ ＆ プライバシー保護パネル -->
+    <footer class="footer-panel" id="footer-security">
+        <div class="security-info">
+            <i data-lucide="shield-check" class="security-icon" id="security-icon-sec" style="width: 32px; height: 32px;"></i>
+            <div class="security-text-group">
+                <h3>Vertex AI 厳格データプライバシープロテクション</h3>
+                <p id="security-desc">本デモで取り込んだライフログ（日記、メール、声の音響特徴）は、外部のモデルトレーニングに一切利用されず、配信完了後に安全にシステムから抹消されます。</p>
+            </div>
+        </div>
+        <div class="privacy-badge" id="privacy-badge-color">
+            <i data-lucide="lock" style="width: 14px; height: 14px;"></i>
+            <span>Learning-Free Security Mode</span>
+        </div>
+    </footer>
+</div>
+
+<script>
+    // アイコンの初期化
+    lucide.createIcons();
+
+    // デモ用状態変数
+    let patrolTimer = null;
+    let scanInterval = null;
+    let typingTimer = null;
+    let isSimulationRunning = false;
+    let isAudioPlaying = false;
+    let audioTimer = null;
+
+    // 初期ログの挿入
+    const initialLogs = [
+        { type: 'info', text: '【パトロール常時監視中】 サーバーレス Cloud Scheduler により死活パトロールを開始。' },
+        { type: 'info', text: '【パトロール】 ユーザー「相馬 茂」のアクティビティ確認：Google Calendar API 正常更新を検出。' },
+        { type: 'info', text: '【パトロール】 ユーザー「相馬 茂」のアクティビティ確認：Gmail API メール送信実績（5月14日）あり。' }
+    ];
+
+    function renderInitialLogs() {
+        const logBox = document.getElementById('patrol-log');
+        logBox.innerHTML = '';
+        initialLogs.forEach(log => {
+            appendLog(log.type, log.text);
+        });
+    }
+
+    renderInitialLogs();
+
+    function appendLog(type, text) {
+        const logBox = document.getElementById('patrol-log');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        
+        const timestamp = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        entry.innerHTML = `[${timestamp}] ${text}`;
+        
+        logBox.appendChild(entry);
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    // デモ開始
+    function startEmergencySimulation() {
+        if (isSimulationRunning) return;
+        isSimulationRunning = true;
+        
+        // ボタン状態無効化
+        document.getElementById('start-simulation-btn').disabled = true;
+        document.getElementById('start-simulation-btn').style.opacity = '0.5';
+        
+        // ステータス更新: 死活パトロール異常検出
+        document.getElementById('agent-status-badge').classList.add('emergency');
+        document.getElementById('agent-status-text').innerText = '死活無応答アラート検知';
+        document.getElementById('current-activity-val').className = 'user-value alert-value';
+        document.getElementById('current-activity-val').innerText = '活動なし（30日間超過）';
+        
+        appendLog('warn', '【パトロール警告】 相馬様のGoogleアクティビティが途絶えて30日が経過しました。');
+        
+        // 1秒後: 安否確認プッシュ通知の実行
+        setTimeout(() => {
+            appendLog('warn', '【生存確認プッシュ】 本人宛てに安否確認通知を送信しました。「体調は大丈夫ですか？」');
+            
+            setTimeout(() => {
+                appendLog('danger', '【応答なし】 生存確認プッシュへの応答がありません。緊急安否プロトコルを開始します。');
+                document.getElementById('emergency-banner').style.display = 'flex';
+                document.getElementById('panel-left').classList.add('alert-glow');
+                
+                // 次フェーズ: Vault重要資産自律選別 (5秒後)
+                setTimeout(startVaultScanning, 2000);
+            }, 2500);
+        }, 1500);
+    }
+
+    // 中央カラム: Vaultスキャン
+    function startVaultScanning() {
+        appendLog('info', '【意思代行】 緊急データ開示フェーズへ移行。Google Drive Vaultの自律スキャンを起動します。');
+        document.getElementById('panel-left').classList.remove('alert-glow');
+        document.getElementById('panel-center').classList.add('active-glow');
+        
+        document.getElementById('agent-status-text').innerText = '個人Vaultスキャン実行中';
+        document.getElementById('scanner-ring').classList.add('active');
+        document.getElementById('docs-status-tag').innerText = 'スキャン中...';
+        document.getElementById('docs-status-tag').style.background = 'rgba(243, 156, 18, 0.1)';
+        document.getElementById('docs-status-tag').style.color = 'var(--accent-gold)';
+        document.getElementById('docs-status-tag').style.border = '1px solid var(--accent-gold)';
+        
+        let progress = 0;
+        const progressBar = document.getElementById('scanner-progress-bar');
+        const progressText = document.getElementById('scan-progress-text');
+        const speedText = document.getElementById('scan-speed-text');
+        
+        scanInterval = setInterval(() => {
+            progress += 2.5;
+            if (progress > 100) progress = 100;
+            
+            progressBar.style.width = `${progress}%`;
+            progressText.innerText = `スキャン中 (${progress.toFixed(0)}%)`;
+            speedText.innerText = `${(Math.random() * 80 + 120).toFixed(0)} files/sec`;
+            
+            if (progress === 100) {
+                clearInterval(scanInterval);
+                speedText.innerText = '0 files/sec';
+                progressText.innerText = 'スキャン完了 (100%)';
+                document.getElementById('scanner-ring').classList.remove('active');
+                appendLog('success', '【スキャン完了】 総数1,542ファイルを巡回。Vertex AI Searchが重要書類を抽出中。');
+                
+                // ドキュメント抽出結果の差し込み
+                setTimeout(insertExtractedDocuments, 1500);
+            }
+        }, 100);
+    }
+
+    // 重要書類のDocsへの書き込み・表示
+    function insertExtractedDocuments() {
+        const docsContent = document.getElementById('docs-content');
+        docsContent.innerHTML = ''; // 空にする
+        document.getElementById('docs-status-tag').innerText = '重要選別完了';
+        document.getElementById('docs-status-tag').style.background = 'rgba(52, 199, 89, 0.1)';
+        document.getElementById('docs-status-tag').style.color = 'var(--accent-green)';
+        document.getElementById('docs-status-tag').style.border = '1px solid var(--accent-green)';
+
+        const documents = [
+            { title: '三菱UFJ銀行 終活・預金口座情報.xlsx', detail: '資産開示 / 相続手続き関係 / 口座番号・暗証番号貸金庫記載情報' },
+            { title: 'ライフネット生命 保険契約証書・遺族給付金請求書.pdf', detail: '遺族補償 / 給付手続き関係 / 保険証券番号: LN-883921' },
+            { title: '終活弁護士オフィス_相続委託手続き書類.docx', detail: '法的処理 / 遺言執行 / 担当: 加藤弁護士 連絡先記載' }
+        ];
+
+        documents.forEach((doc, idx) => {
+            setTimeout(() => {
+                const item = document.createElement('div');
+                item.className = 'docs-item';
+                item.innerHTML = `
+                    <div class="docs-item-header">
+                        <span>${doc.title}</span>
+                        <i data-lucide="file-check-2" style="width: 14px; height: 14px; color: var(--accent-green);"></i>
+                    </div>
+                    <div class="docs-item-detail">
+                        <span>${doc.detail}</span>
+                    </div>
+                `;
+                docsContent.appendChild(item);
+                lucide.createIcons();
+                appendLog('success', `【重要資産選別】 「${doc.title}」を自律検出して構造化Docsに追加しました。`);
+                
+                if (idx === documents.length - 1) {
+                    // 次フェーズ: 人格エミュレーション (3秒後)
+                    setTimeout(startPersonaEmulation, 2000);
+                }
+            }, idx * 1200);
+        });
+    }
+
+    // 右カラム: 人格・感情エミュレータ
+    const legacyLetter = `直美、優花へ。
+この手紙を読んでいるということは、僕の旅立ちの時が来てしまったということだね。
+これまで、不器用な僕と一緒にいてくれて本当にありがとう。本当に幸せな人生だったよ。
+二人に遺すべき重要なお金のことや、保険の手続き書類は、僕の代わりにこのAIエージェントがドライブから完璧に選別して、この手紙と一緒に送信してくれているはずだよ。
+直美、どうか優花と寄り添って、これからも笑顔で暮らしてね。
+優花、お母さんを支えてあげてね。ずっと天国から見守っているよ。
+
+愛しているよ。
+茂より`;
+
+    function startPersonaEmulation() {
+        document.getElementById('panel-center').classList.remove('active-glow');
+        document.getElementById('panel-right').classList.add('active-glow');
+        document.getElementById('agent-status-text').innerText = '人格エミュレーション中';
+        
+        appendLog('info', '【人格憑依】 Gemini 1.5 Pro が過去の膨大な日記・日記テキストから人格・言動トーンを分析中。');
+        document.getElementById('learning-status').innerText = 'ライフログ文脈解析中...';
+        document.getElementById('learning-status').style.color = 'var(--accent-gold)';
+
+        setTimeout(() => {
+            appendLog('success', '【学習完了】 言葉の癖「〜だよ」「ありがとう」および家族への感情トーンの再現を完了。別れのメッセージを生成中。');
+            document.getElementById('learning-status').innerText = '遺言メッセージ生成完了';
+            document.getElementById('learning-status').style.color = 'var(--accent-green)';
+            
+            // タイピング効果の実行
+            let idx = 0;
+            const letterBox = document.getElementById('letter-content');
+            letterBox.innerHTML = '';
+            
+            typingTimer = setInterval(() => {
+                letterBox.innerHTML += legacyLetter[idx];
+                letterBox.scrollTop = letterBox.scrollHeight;
+                idx++;
+                
+                if (idx === legacyLetter.length) {
+                    clearInterval(typingTimer);
+                    appendLog('success', '【メッセージ完成】 相馬茂様本人の語りかけメッセージを構築しました。');
+                    
+                    // 次フェーズ: 音声合成 (TTS)
+                    setTimeout(generateCustomVoice, 1500);
+                }
+            }, 45); // 早めのタイピング
+        }, 2000);
+    }
+
+    // 音声合成のシミュレーション
+    function generateCustomVoice() {
+        appendLog('info', '【音声合成】 Text-to-Speech API にて本人の声の音響特徴に基づいた「感情再現カスタムボイス」を生成中。');
+        document.getElementById('audio-sub').innerText = 'Custom Voice 生成中...';
+        document.getElementById('audio-sub').style.color = 'var(--accent-gold)';
+
+        setTimeout(() => {
+            appendLog('success', '【音声合成完了】 相馬茂様の音響特徴クローンwavファイルを構築しました。');
+            document.getElementById('audio-sub').innerText = '再生可能 (相馬茂 カスタムボイス)';
+            document.getElementById('audio-sub').style.color = 'var(--accent-green)';
+            
+            // 再生ボタンのアクティブ化
+            const playBtn = document.getElementById('audio-play-btn');
+            playBtn.removeAttribute('disabled');
+            
+            // 自動再生
+            toggleAudioPlay();
+            
+            // 6秒後にGmail自律配信
+            setTimeout(dispatchLegacyData, 6000);
+        }, 2500);
+    }
+
+    // 音声疑似プレイヤーの再生制御
+    function toggleAudioPlay() {
+        const playBtn = document.getElementById('audio-play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const eqBars = document.querySelectorAll('.eq-bar');
+        
+        if (isAudioPlaying) {
+            // 一時停止
+            isAudioPlaying = false;
+            playIcon.setAttribute('data-lucide', 'play');
+            lucide.createIcons();
+            eqBars.forEach(bar => bar.classList.remove('active'));
+            clearInterval(audioTimer);
+        } else {
+            // 再生開始
+            isAudioPlaying = true;
+            playIcon.setAttribute('data-lucide', 'pause');
+            lucide.createIcons();
+            eqBars.forEach(bar => bar.classList.add('active'));
+            
+            appendLog('info', '🔊 カスタムボイスのテスト再生中：「直美、優花へ。この手紙を読んでいるということは…」');
+            
+            // 再生時間経過で自動停止
+            audioTimer = setTimeout(() => {
+                isAudioPlaying = false;
+                playIcon.setAttribute('data-lucide', 'play');
+                lucide.createIcons();
+                eqBars.forEach(bar => bar.classList.remove('active'));
+            }, 6000);
+        }
+    }
+
+    // Gmail自律配信
+    function dispatchLegacyData() {
+        appendLog('info', '【自律送信準備】 遺族（直美様、優花様）宛てに、選別Docsおよびカスタムボイス音声を含む暗号化メールパッケージを構築。');
+        document.getElementById('dispatch-status').innerText = '送信中...';
+        document.getElementById('dispatch-status').style.color = 'var(--accent-gold)';
+
+        setTimeout(() => {
+            document.getElementById('dispatch-status').innerText = '送信完了 (Gmail配信済)';
+            document.getElementById('dispatch-status').className = 'dispatch-value success-status';
+            appendLog('success', '📧 【配信完了】 遺族宛てのGmail（選別書類・カスタムボイス添付）の自律配信を正常に執行しました。');
+            
+            // 次フェーズ: データプライバシー消去 (3秒後)
+            setTimeout(executeSecureDataErasure, 2000);
+        }, 2500);
+    }
+
+    // データプライバシーセキュア抹消
+    function executeSecureDataErasure() {
+        document.getElementById('agent-status-badge').className = 'status-badge success';
+        document.getElementById('agent-status-text').innerText = '意思継承・プライバシー確保';
+        
+        appendLog('info', '🔒 【セキュリティ】 配信プロトコル完了に伴い、データプライバシー保護プロトコルを起動します。');
+        document.getElementById('security-desc').innerText = '【完全抹消保証】 相馬茂様のライフログ（日記、メール）および音声クローンデータは、モデルの再学習に利用されることなく、システム・メモリ上から安全に完全消去されました。';
+        document.getElementById('security-desc').style.color = 'var(--accent-green)';
+        document.getElementById('footer-security').classList.add('secured');
+        
+        setTimeout(() => {
+            appendLog('success', '🔒 【セキュリティ完了】 取り込んだ日記、メール等すべての個人パーソナルデータをシステム上から完全消去し、プライバシー安全性を担保しました。');
+            appendLog('success', '✨ 【Legacy-Agent】 故人の尊厳を守り、すべてのデジタル魂継承ワークフローが美しく完了しました。');
+            document.getElementById('panel-right').classList.remove('active-glow');
+        }, 1500);
+    }
+
+    // リセット
+    function resetDemo() {
+        // タイマー・インラインクリア
+        clearInterval(patrolTimer);
+        clearInterval(scanInterval);
+        clearInterval(typingTimer);
+        clearTimeout(audioTimer);
+        
+        isSimulationRunning = false;
+        isAudioPlaying = false;
+        
+        // UI初期状態に戻す
+        document.getElementById('start-simulation-btn').removeAttribute('disabled');
+        document.getElementById('start-simulation-btn').style.opacity = '1';
+        
+        document.getElementById('agent-status-badge').className = 'status-badge';
+        document.getElementById('agent-status-text').innerText = '通常死活パトロール中';
+        
+        document.getElementById('current-activity-val').className = 'user-value';
+        document.getElementById('current-activity-val').innerText = 'Active (活動あり)';
+        
+        document.getElementById('emergency-banner').style.display = 'none';
+        
+        document.getElementById('panel-left').classList.remove('alert-glow');
+        document.getElementById('panel-center').classList.remove('active-glow');
+        document.getElementById('panel-right').classList.remove('active-glow');
+        
+        // 中央カラム初期化
+        document.getElementById('scanner-progress-bar').style.width = '0%';
+        document.getElementById('scan-progress-text').innerText = '待機中 (0%)';
+        document.getElementById('scan-speed-text').innerText = '0 files/sec';
+        document.getElementById('docs-status-tag').innerText = '待機中';
+        document.getElementById('docs-status-tag').removeAttribute('style');
+        document.getElementById('docs-content').innerHTML = `
+            <div class="docs-empty-state" id="docs-empty">
+                <i data-lucide="file-text" style="width: 36px; height: 36px; stroke-width: 1.5;"></i>
+                <p>意思代行起動後、Vertex AI Searchが<br>重要ドキュメントのみを抽出・整理します</p>
+            </div>
+        `;
+        
+        // 右カラム初期化
+        document.getElementById('learning-status').innerText = '待機中';
+        document.getElementById('learning-status').removeAttribute('style');
+        document.getElementById('letter-content').innerHTML = '';
+        
+        document.getElementById('audio-sub').innerText = 'Text-to-Speech Custom Voice (未生成)';
+        document.getElementById('audio-sub').removeAttribute('style');
+        document.getElementById('audio-play-btn').setAttribute('disabled', 'true');
+        const playIcon = document.getElementById('play-icon');
+        playIcon.setAttribute('data-lucide', 'play');
+        const eqBars = document.querySelectorAll('.eq-bar');
+        eqBars.forEach(bar => bar.classList.remove('active'));
+        
+        document.getElementById('dispatch-status').innerText = '待機中';
+        document.getElementById('dispatch-status').className = 'dispatch-value';
+        
+        // セキュリティ初期化
+        document.getElementById('security-desc').innerText = '本デモで取り込んだライフログ（日記、メール、声の音響特徴）は、外部のモデルトレーニングに一切利用されず、配信完了後に安全にシステムから抹消されます。';
+        document.getElementById('security-desc').removeAttribute('style');
+        document.getElementById('footer-security').className = 'footer-panel';
+        
+        lucide.createIcons();
+        renderInitialLogs();
+    }
+</script>
 </body>
 </html>
