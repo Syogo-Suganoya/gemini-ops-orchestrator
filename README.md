@@ -7,7 +7,7 @@ https://findy.notion.site/devops-ai-agent-hackathon-2026
 ## 🚀 プロジェクト・アイデア一覧 (全9製品)
 
 ### 1. [Meet-Auditor（ミート・オーディター）](./Meet-Auditor/README.md)
-<img src="./Meet-Auditor/image.png" width="350" alt="Meet-Auditor" style="border-radius: 8px; border: 1px solid #ddd; margin: 10px 0;">
+![Meet-Auditor](./Meet-Auditor/image.png)
 
 *   **概要:** 会議中の口頭での重要な意思決定（機材購入や発注など）をGeminiが自律的に検知し、Salesforceや会計スプレッドシートへ即時仕訳起票。経理担当者へChrome拡張でプッシュ通知し、確認するだけのHuman-in-the-Loop構成。
 *   **技術スタック:** `Speech-to-Text`, `Gemini 1.5 Pro (Vertex AI)`, `GKE`, `Meet API`, `Chrome Extension`
@@ -34,7 +34,7 @@ https://findy.notion.site/devops-ai-agent-hackathon-2026
 ---
 
 ### 4. [Legacy-Ghost（レガシー・ゴースト）](./Legacy-Ghost/README.md)
-<img src="./Legacy-Ghost/image.png" width="350" alt="Legacy-Ghost" style="border-radius: 8px; border: 1px solid #ddd; margin: 10px 0;">
+![Legacy-Ghost](./Legacy-Ghost/image.png)
 
 *   **概要:** Salesforce上の「退職・休職」ステータスをトリガーに自律起動。前任者が遺したメールやMeet録画などから「仕事の魂（暗黙知・顧客の傾向）」を抽出し、完璧な引き継ぎ書（Google Docs）を自動生成。さらに後任のカレンダーに引き継ぎMTGを自動ねじ込み。
 *   **技術スタック:** `GKE`, `Cloud Run`, `Gemini 1.5 Pro (Vertex AI)`, `Gmail/Drive/Docs/Calendar API`
@@ -45,14 +45,14 @@ https://findy.notion.site/devops-ai-agent-hackathon-2026
 ### 5. [Mental-Sparring-Partner（メンタル・スパーラー）](./empathy-partner/README.md)
 *(※サムネイル画像なし)*
 
-*   **概要:** 愚痴のループを検知すると、自律的に会話の主導権を握り、客観的メタ認知を促す鋭いスパーリング形式の問いを提示。ストレス危険域を検知するとアプリを強制終了させるセーフティ介入を実行。
+*   **概要:** 愚痴のループを検知すると、自律的に会話の主動権を握り、客観的メタ認知を促す鋭いスパーリング形式の問いを提示。ストレス危険域を検知するとアプリを強制終了させるセーフティ介入を実行。
 *   **技術スタック:** `GKE`, `Gemini 1.5 Flash`, `Natural Language AI`, `Vertex AI Vector Search`, `Flutter`
 *   **デモURL:** https://gemini-ops-orchestrator.web.app/empathy-partner/demo.html
 
 ---
 
 ### 6. [Auto-Pilot（オート・パイロット）](./Auto-Pilot/README.md)
-<img src="./Auto-Pilot/image-1.png" width="350" alt="Auto-Pilot" style="border-radius: 8px; border: 1px solid #ddd; margin: 10px 0;">
+![Auto-Pilot](./Auto-Pilot/image-1.png)
 
 *   **概要:** Webサイト（GA）での特定顧客の頻繁なアクセス等から「購買予兆」を自律検知。Salesforceから過去履歴を引き出し多角分析の上、100%パーソナライズされた提案メールを自動生成. さらにGoogle Meetの日程調整リンクを含めカレンダー連携で自動送信。
 *   **技術スタック:** `Cloud Run`, `Gemini API`, `Vertex AI Vector Search`, `Gmail/Calendar/GA API`
@@ -61,16 +61,16 @@ https://findy.notion.site/devops-ai-agent-hackathon-2026
 ---
 
 ### 7. [Trend-Launcher（トレンド・ランチャー）](./Trend-Launcher/README.md)
-<img src="./Trend-Launcher/image-1.png" width="350" alt="Trend-Launcher" style="border-radius: 8px; border: 1px solid #ddd; margin: 10px 0;">
+![Trend-Launcher](./Trend-Launcher/image-1.png)
 
-*   **概要:** Google Analyticsから「急上昇しているが自社にないキーワード（顧客の飢餓感）」を自律検知。新商品の企画・仕様定義・会計ルール策定・Salesforceマスター登録・見込み顧客の自動アサインと営業チームへのプッシュ通知までを1時間サイクルで勝手に執行。
+*   **概要:** Google Analyticsから「急上昇しているが自社にないキーワード（顧客の飢餓感）」を自律検知. 新商品の企画・仕様定義・会計ルール策定・Salesforceマスター登録・見込み顧客の自動アサインと営業チームへのプッシュ通知までを1時間サイクルで勝手に執行。
 *   **技術スタック:** `Cloud Run`, `Cloud Scheduler`, `Gemini 1.5 Pro`, `Salesforce API`, `Google Sheets API`, `FCM`, `Flutter`
 *   **デモURL:** https://gemini-ops-orchestrator.web.app/Trend-Launcher/demo.html
 
 ---
 
 ### 8. [Ad-Gazer（アド・ゲイザー）](./Ad-Gazer/README.md)
-<img src="./Ad-Gazer/image.png" width="350" alt="Ad-Gazer" style="border-radius: 8px; border: 1px solid #ddd; margin: 10px 0;">
+![Ad-Gazer](./Ad-Gazer/image.png)
 
 *   **概要:** 自社・競合のYouTube再生急上昇やコメント感情を24時間自律監視。市場の潜在ニーズを推論し、Google広告のキーワードや入札を自動最適化。さらに対象顧客へ動画付き提案メールをGmailで一斉送信。
 *   **技術スタック:** `Cloud Run`, `Cloud Scheduler`, `Gemini Enterprise Agent Platform`, `YouTube API`, `Google Ads API`, `Gmail API`
@@ -79,7 +79,7 @@ https://findy.notion.site/devops-ai-agent-hackathon-2026
 ---
 
 ### 9. [Claim-Converter（クレーム・コンバーター）](./Claim-Converter/README.md)
-<img src="./Claim-Converter/image.png" width="350" alt="Claim-Converter" style="border-radius: 8px; border: 1px solid #ddd; margin: 10px 0;">
+![Claim-Converter](./Claim-Converter/image.png)
 
 *   **概要:** クレームメールを感情分析で超高速に自律検知。Salesforceで顧客重要度を検索し、最適なYouTube解説動画を自動選定。動画が無い場合は、Geminiが即座に解決台本を執筆し、Imagen/TTSを連携して「専用解説動画」をその場で自律生成・アップロードして誠実返信。
 *   **技術スタック:** `Cloud Functions`, `Gemini 1.5 Pro`, `Imagen API`, `Text-to-Speech API`, `YouTube Data API`, `Gmail API`
