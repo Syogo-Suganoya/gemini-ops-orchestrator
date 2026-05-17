@@ -21,3 +21,5 @@ Google連携: Gmail API, Calendar API, Google Analytics Data API
 
 
 ![alt text](image-1.png)
+
+https://gemini-ops-orchestrator.web.app/Auto-Pilot/demo.html

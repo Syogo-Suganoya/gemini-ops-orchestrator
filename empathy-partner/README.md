@@ -22,3 +22,5 @@ UI: Flutter（心の温度感を表すアニメーションや、ダークモー
 審査員へのアピール:
 
 「AIが共感するのは当たり前。このエージェントは『気づき』を与えるために自律的に思考をぶつけてくる」という、従来のチャットボットとの決定的な違いを強調。
+
+https://gemini-ops-orchestrator.web.app/empathy-partner/demo.html

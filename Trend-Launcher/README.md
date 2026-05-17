@@ -25,3 +25,5 @@ Firebase Cloud Messaging (FCM) を使い、営業チームのスマホやSlack�
 
 
 ![alt text](image-1.png)
+
+https://gemini-ops-orchestrator.web.app/Trend-Launcher/demo.html
