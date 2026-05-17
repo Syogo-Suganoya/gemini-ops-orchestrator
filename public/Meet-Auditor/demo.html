@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meet-Auditor - AI会計監査・経営参謀 デモ</title>
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* --- CSS DESIGN SYSTEM --- */
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(17, 25, 40, 0.7);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --font-primary: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Outfit', sans-serif;
+      
+      /* Neon Accents */
+      --accent-gemini-start: #3b82f6;
+      --accent-gemini-end: #8b5cf6;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-danger: #ef4444;
+      --accent-meet: #ea4335;
+      
+      /* Glows */
+      --shadow-gemini: 0 0 25px rgba(139, 92, 246, 0.25);
+      --shadow-success: 0 0 25px rgba(16, 185, 129, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: radial-gradient(circle at 50% 120%, #1e1b4b 0%, var(--bg-dark) 80%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* --- TYPOGRAPHY & SCROLLBAR --- */
+    h1, h2, h3, .font-display {
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* --- GLASSMORPHISM CARDS --- */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* --- LAYOUT HEADER --- */
+    header {
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-card);
+      background: rgba(9, 13, 22, 0.5);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--accent-gemini-start), var(--accent-gemini-end));
+      padding: 0.5rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-gemini);
+    }
+
+    .logo-title {
+      font-size: 1.5rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-subtitle {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-left: 0.5rem;
+      padding: 0.2rem 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .demo-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      font-family: var(--font-primary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-gemini-start), var(--accent-gemini-end));
+      color: white;
+      box-shadow: var(--shadow-gemini);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .agent-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #94a3b8;
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.4);
+    }
+    .status-dot.active {
+      background-color: var(--accent-meet);
+      box-shadow: 0 0 10px var(--accent-meet);
+      animation: pulse 1.5s infinite;
+    }
+    .status-dot.processing {
+      background-color: var(--accent-gemini-start);
+      box-shadow: 0 0 10px var(--accent-gemini-start);
+      animation: pulse 1s infinite;
+    }
+
+    /* --- DASHBOARD LAYOUT --- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr 1.3fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      height: calc(100vh - 86px);
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+      }
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: 100%;
+      min-height: 0; /* Important for scroll nested */
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .column-title {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .column-subtitle {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    /* --- COLUMN 1: GOOGLE MEET LIVE --- */
+    .meet-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .meet-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      height: 100%;
+    }
+
+    /* Meet Status Bar */
+    .meet-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .meet-room-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .meet-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--accent-meet);
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Participants Visual Grid */
+    .meet-participants {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .participant-tile {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .participant-tile.active-talker {
+      border-color: rgba(234, 67, 53, 0.4);
+      background: rgba(234, 67, 53, 0.05);
+    }
+
+    .participant-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #475569, #334155);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .participant-avatar.tanaka { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .participant-avatar.sato { background: linear-gradient(135deg, #10b981, #047857); }
+    .participant-avatar.suzuki { background: linear-gradient(135deg, #f59e0b, #b45309); }
+    .participant-avatar.takahashi { background: linear-gradient(135deg, #ec4899, #be185d); }
+
+    .participant-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .participant-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .participant-role {
+      font-size: 0.65rem;
+      color: #94a3b8;
+    }
+
+    .talking-waves {
+      position: absolute;
+      right: 10px;
+      display: none;
+      align-items: center;
+      gap: 2px;
+      height: 12px;
+    }
+
+    .talking-waves span {
+      width: 2px;
+      height: 100%;
+      background-color: var(--accent-meet);
+      animation: bounce-wave 0.8s ease-in-out infinite alternate;
+    }
+    .talking-waves span:nth-child(2) { animation-delay: 0.15s; }
+    .talking-waves span:nth-child(3) { animation-delay: 0.3s; }
+
+    .participant-tile.active-talker .talking-waves {
+      display: flex;
+    }
+
+    /* Equalizer wave at the bottom */
+    .audio-visualizer {
+      height: 48px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 0 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      position: relative;
+    }
+
+    .visualizer-text {
+      position: absolute;
+      font-size: 0.7rem;
+      color: #64748b;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .eq-bar {
+      width: 4px;
+      height: 8px;
+      background-color: rgba(99, 102, 241, 0.2);
+      border-radius: 2px;
+      transition: height 0.1s ease, background-color 0.3s ease;
+    }
+
+    .audio-visualizer.active .eq-bar {
+      background-color: var(--accent-meet);
+      animation: eq-pulse 1.2s ease-in-out infinite alternate;
+    }
+
+    .audio-visualizer.active .eq-bar:nth-child(1) { animation-delay: 0.1s; height: 16px; }
+    .audio-visualizer.active .eq-bar:nth-child(2) { animation-delay: 0.3s; height: 28px; }
+    .audio-visualizer.active .eq-bar:nth-child(3) { animation-delay: 0.5s; height: 12px; }
+    .audio-visualizer.active .eq-bar:nth-child(4) { animation-delay: 0.2s; height: 35px; }
+    .audio-visualizer.active .eq-bar:nth-child(5) { animation-delay: 0.4s; height: 20px; }
+    .audio-visualizer.active .eq-bar:nth-child(6) { animation-delay: 0.7s; height: 14px; }
+    .audio-visualizer.active .eq-bar:nth-child(7) { animation-delay: 0.1s; height: 32px; }
+    .audio-visualizer.active .eq-bar:nth-child(8) { animation-delay: 0.6s; height: 24px; }
+    .audio-visualizer.active .eq-bar:nth-child(9) { animation-delay: 0.3s; height: 40px; }
+    .audio-visualizer.active .eq-bar:nth-child(10) { animation-delay: 0.8s; height: 18px; }
+    .audio-visualizer.active .eq-bar:nth-child(11) { animation-delay: 0.2s; height: 26px; }
+    .audio-visualizer.active .eq-bar:nth-child(12) { animation-delay: 0.5s; height: 12px; }
+
+    /* Live Transcript Area */
+    .transcript-box {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      padding: 1rem;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .transcript-bubble {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .bubble-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .bubble-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .bubble-time {
+      font-size: 0.65rem;
+      color: #475569;
+    }
+
+    .bubble-text {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.6rem 0.8rem;
+      border-radius: 0px 12px 12px 12px;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      width: fit-content;
+      max-width: 90%;
+    }
+
+    .transcript-bubble.self .bubble-text {
+      background: rgba(234, 67, 53, 0.08);
+      border-color: rgba(234, 67, 53, 0.15);
+      color: #fca5a5;
+    }
+
+    .system-log {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      color: #64748b;
+      justify-content: center;
+      margin: 0.5rem 0;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.3rem;
+      border-radius: 6px;
+    }
+
+    /* --- COLUMN 2: GEMINI AUDITOR --- */
+    .gemini-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Scanning line effect */
+    .gemini-card.scanning::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--accent-gemini-start), var(--accent-gemini-end), transparent);
+      animation: scan 3s linear infinite;
+      z-index: 10;
+      opacity: 0.7;
+    }
+
+    .gemini-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* AI Stats Header */
+    .ai-model-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+      border-radius: 12px;
+      border: 1px solid rgba(139, 92, 246, 0.15);
+    }
+
+    .model-name {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 0.8rem;
+      background: linear-gradient(to right, #60a5fa, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ai-confidence-meter {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .meter-bar {
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(to right, var(--accent-gemini-start), var(--accent-gemini-end));
+      transition: width 0.5s ease;
+    }
+
+    /* Event Detection Feed */
+    .detection-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      flex: 1.2;
+      overflow-y: auto;
+    }
+
+    .no-detections {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #475569;
+      text-align: center;
+      gap: 0.75rem;
+      padding: 2rem;
+      border: 1px dashed rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+    }
+
+    .no-detections p {
+      font-size: 0.8rem;
+      max-width: 200px;
+    }
+
+    /* Detection Card */
+    .detection-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 0.85rem;
+      animation: scale-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .detection-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--accent-gemini-start), var(--accent-gemini-end));
+    }
+
+    .detection-card.success-type::before {
+      background: var(--accent-success);
+    }
+
+    .detection-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    .detection-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .badge-purchase {
+      background: rgba(139, 92, 246, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    
+    .badge-revenue {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .detection-time {
+      font-size: 0.65rem;
+      color: #64748b;
+    }
+
+    .detection-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 0.25rem;
+    }
+
+    .detection-quote {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      border-left: 2px solid rgba(255, 255, 255, 0.1);
+      margin: 0.4rem 0;
+      font-style: italic;
+    }
+
+    .detection-financials {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .financial-amount {
+      font-weight: 700;
+      color: white;
+    }
+
+    /* Strategy Insight Area */
+    .strategy-insights {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 0.8;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 1rem;
+    }
+
+    .insight-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(30, 41, 59, 0.2) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      gap: 0.75rem;
+      animation: fade-in-up 0.4s ease forwards;
+    }
+
+    .insight-icon {
+      color: #60a5fa;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .insight-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .insight-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #93c5fd;
+    }
+
+    .insight-desc {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+    }
+
+    /* --- COLUMN 3: ACCOUNTING & INTEGRATIONS --- */
+    .accounting-card {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .integration-status-bar {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      padding: 1.25rem 1.25rem 0 1.25rem;
+    }
+
+    .sync-badge {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      padding: 0.6rem 0.8rem;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sync-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sync-label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .sync-state {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .state-unsynced {
+      background: rgba(245, 158, 11, 0.1);
+      color: #fbbf24;
+    }
+
+    .state-syncing {
+      background: rgba(59, 130, 246, 0.1);
+      color: #60a5fa;
+      animation: pulse 1s infinite;
+    }
+
+    .state-completed {
+      background: rgba(16, 185, 129, 0.1);
+      color: #34d399;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+    }
+
+    /* Ledger Table Container */
+    .ledger-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .table-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .ledger-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    table.ledger-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      text-align: left;
+    }
+
+    table.ledger-table th {
+      background: rgba(255, 255, 255, 0.02);
+      color: #94a3b8;
+      font-weight: 600;
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    table.ledger-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      color: #cbd5e1;
+      vertical-align: middle;
+    }
+
+    table.ledger-table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    table.ledger-table tbody tr.new-row {
+      animation: highlight-row 2s ease-in-out;
+    }
+
+    table.ledger-table tbody tr.synced-success {
+      background: rgba(16, 185, 129, 0.04);
+    }
+
+    .subject-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .subject-sub {
+      color: #64748b;
+      font-size: 0.65rem;
+    }
+
+    .amount-val {
+      font-weight: 700;
+      font-family: var(--font-display);
+    }
+
+    .row-status-badge {
+      display: inline-block;
+      padding: 0.15rem 0.4rem;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+    }
+
+    .badge-draft {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-confirmed {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.1);
+    }
+
+    /* --- CHROME EXTENSION POPUP SIMULATOR --- */
+    .chrome-ext-popup {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 380px;
+      background: #0f172a;
+      border: 1.5px solid #3b82f6;
+      box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.3), 0 0 25px rgba(59, 130, 246, 0.15);
+      border-radius: 16px;
+      z-index: 100;
+      transform: translateY(150%) scale(0.9);
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .chrome-ext-popup.show {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .popup-header {
+      background: linear-gradient(to right, #1e293b, rgba(59, 130, 246, 0.1));
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .popup-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+
+    .chrome-badge {
+      font-size: 0.6rem;
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .popup-body {
+      padding: 1.25rem;
+    }
+
+    .popup-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .popup-desc {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    .popup-summary-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 0.75rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+    }
+    .summary-row:last-child {
+      border: none;
+      padding-bottom: 0;
+    }
+
+    .summary-label {
+      color: #cbd5e1;
+    }
+
+    .summary-val {
+      font-weight: 700;
+      color: white;
+    }
+
+    .popup-actions {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 0.75rem;
+    }
+
+    .btn-approve {
+      background: linear-gradient(135deg, var(--accent-success), #059669);
+      color: white;
+      box-shadow: var(--shadow-success);
+    }
+    .btn-approve:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+    }
+
+    /* --- ANIMATION KEYFRAMES --- */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.95); }
+    }
+
+    @keyframes bounce-wave {
+      0% { transform: scaleY(0.2); }
+      100% { transform: scaleY(1); }
+    }
+
+    @keyframes eq-pulse {
+      0% { transform: scaleY(0.2); }
+      100% { transform: scaleY(1.3); }
+    }
+
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scale-up {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes scan {
+      0% { top: 0%; }
+      50% { top: 100%; }
+      100% { top: 0%; }
+    }
+
+    @keyframes highlight-row {
+      0% { background-color: rgba(139, 92, 246, 0.3); }
+      100% { background-color: transparent; }
+    }
+
+    /* Helper styles */
+    .flex-1 { flex: 1; }
+    .flex-column { display: flex; flex-direction: column; }
+    .scroll-y { overflow-y: auto; }
+    .text-center { text-align: center; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge">
+        <i data-lucide="eye" style="color: white; width: 22px; height: 22px;"></i>
+      </div>
+      <div>
+        <h1 class="logo-title font-display">Meet-Auditor</h1>
+      </div>
+      <span class="logo-subtitle">AI会計監査 & 経営参謀</span>
+    </div>
+
+    <!-- Agent Status and Controls -->
+    <div class="demo-controls">
+      <div class="agent-status-badge">
+        <span class="status-dot" id="agent-status-dot"></span>
+        <span id="agent-status-text" style="font-weight: 600; color: #94a3b8;">AI Agent: アイドル状態</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-reset" onclick="resetDemo()">
+        <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i> リセット
+      </button>
+      <button class="btn btn-primary" id="btn-start" onclick="startDemo()">
+        <i data-lucide="play" style="width: 16px; height: 16px;"></i> デモ監査を開始する
+      </button>
+    </div>
+  </header>
+
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid">
+    
+    <!-- COLUMN 1: GOOGLE MEET LIVE -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="video" style="color: var(--accent-meet);"></i>
+          <span>Google Meet 同期フィード</span>
+        </div>
+        <span class="column-subtitle">会議音声解析</span>
+      </div>
+
+      <div class="meet-card glass-card">
+        <div class="meet-view-container">
+          
+          <!-- Meet Status -->
+          <div class="meet-meta">
+            <span class="meet-room-name">
+              <i data-lucide="users" style="width: 14px; height: 14px; color: #64748b;"></i>
+              役員・開発合同 定例MTG
+            </span>
+            <div class="meet-indicator">
+              <span style="display:inline-block; width:6px; height:6px; background-color:var(--accent-meet); border-radius:50%;"></span>
+              LIVE STREAM
+            </div>
+          </div>
+
+          <!-- Participants Grid -->
+          <div class="meet-participants">
+            <!-- Tanaka -->
+            <div class="participant-tile" id="tile-tanaka">
+              <div class="participant-avatar tanaka">田</div>
+              <div class="participant-info">
+                <span class="participant-name">田中</span>
+                <span class="participant-role">司会</span>
+              </div>
+              <div class="talking-waves"><span></span><span></span><span></span></div>
+            </div>
+            <!-- Sato -->
+            <div class="participant-tile" id="tile-sato">
+              <div class="participant-avatar sato">佐</div>
+              <div class="participant-info">
+                <span class="participant-name">佐藤</span>
+                <span class="participant-role">開発</span>
+              </div>
+              <div class="talking-waves"><span></span><span></span><span></span></div>
+            </div>
+            <!-- Suzuki -->
+            <div class="participant-tile" id="tile-suzuki">
+              <div class="participant-avatar suzuki">鈴</div>
+              <div class="participant-info">
+                <span class="participant-name">鈴木</span>
+                <span class="participant-role">経営</span>
+              </div>
+              <div class="talking-waves"><span></span><span></span><span></span></div>
+            </div>
+            <!-- Takahashi -->
+            <div class="participant-tile" id="tile-takahashi">
+              <div class="participant-avatar takahashi">高</div>
+              <div class="participant-info">
+                <span class="participant-name">高橋</span>
+                <span class="participant-role">営業</span>
+              </div>
+              <div class="talking-waves"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+
+          <!-- Audio Equalizer -->
+          <div class="audio-visualizer" id="audio-vis">
+            <div class="visualizer-text">Voice Streaming Stream...</div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+          </div>
+
+          <!-- Transcript Area -->
+          <div class="transcript-box" id="transcript-container">
+            <div class="no-detections" id="transcript-placeholder" style="border:none;">
+              <i data-lucide="mic" style="width: 32px; height: 32px; color: #334155;"></i>
+              <p>「デモ監査を開始する」を押すと、会議の会話がリアルタイムに書き起こされます。</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: GEMINI AUDITOR -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="sparkles" style="color: #a855f7;"></i>
+          <span>Gemini 会計監査プロセッサー</span>
+        </div>
+        <span class="column-subtitle">会計イベント自動抽出</span>
+      </div>
+
+      <div class="gemini-card glass-card" id="gemini-processing-card">
+        <div class="gemini-view-container">
+          
+          <!-- AI Stats -->
+          <div class="ai-model-info">
+            <div class="model-name">
+              <i data-lucide="cpu" style="width: 14px; height: 14px;"></i>
+              Gemini 1.5 Pro Context
+            </div>
+            <div class="ai-confidence-meter">
+              <span>監査解析信頼度</span>
+              <div class="meter-bar">
+                <div class="meter-fill" id="confidence-fill"></div>
+              </div>
+              <span id="confidence-value" style="font-weight:700;">0%</span>
+            </div>
+          </div>
+
+          <!-- Detections List -->
+          <div class="detection-feed" id="detections-container">
+            <div class="no-detections" id="detections-placeholder">
+              <i data-lucide="search" style="width: 32px; height: 32px; color: #334155;"></i>
+              <p>会議の発言から「購入合意」「売上合意」などの会計監査イベントを自動検知します。</p>
+            </div>
+          </div>
+
+          <!-- Strategy Insights -->
+          <div class="strategy-insights" id="insights-container">
+            <div class="table-title">
+              <i data-lucide="trending-up" style="width: 14px; height: 14px; color: #60a5fa;"></i>
+              <span>経営参謀・最適化アドバイス</span>
+            </div>
+            <div id="insights-content-area" style="display:flex; flex-direction:column; gap:0.75rem; height:100%; justify-content:center;">
+              <div class="text-center" style="font-size:0.75rem; color:#475569;" id="insights-placeholder">
+                会計イベントが検出されると、コスト最適化や経営リスクの分析データがここに表示されます。
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: ACCOUNTING & SYSTEMS -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="database" style="color: #60a5fa;"></i>
+          <span>会計事務 & スプレッドシート連携</span>
+        </div>
+        <span class="column-subtitle">ERP・Salesforce完全同期</span>
+      </div>
+
+      <div class="accounting-card glass-card">
+        <!-- Integration Badges -->
+        <div class="integration-status-bar">
+          <div class="sync-badge">
+            <div class="sync-info">
+              <i data-lucide="file-spreadsheet" style="width: 16px; height: 16px; color:#10b981;"></i>
+              <span class="sync-label">Google Sheets</span>
+            </div>
+            <span class="sync-state state-unsynced" id="sheet-sync-status">UNSYNCED</span>
+          </div>
+          <div class="sync-badge">
+            <div class="sync-info">
+              <i data-lucide="cloud-lightning" style="width: 16px; height: 16px; color:#3b82f6;"></i>
+              <span class="sync-label">Salesforce API</span>
+            </div>
+            <span class="sync-state state-unsynced" id="salesforce-sync-status">UNSYNCED</span>
+          </div>
+        </div>
+
+        <!-- Ledger Table -->
+        <div class="ledger-container">
+          <div class="table-title">
+            <i data-lucide="list-collapse" style="width: 14px; height: 14px; color: #64748b;"></i>
+            <span>仕訳帳ドラフト自動起票 (リアルタイム)</span>
+          </div>
+
+          <div class="ledger-wrapper">
+            <table class="ledger-table" id="ledger-table">
+              <thead>
+                <tr>
+                  <th>起票日時</th>
+                  <th>借方科目 / 金額</th>
+                  <th>貸方科目 / 金額</th>
+                  <th>摘要</th>
+                  <th>状態</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-body">
+                <!-- Data populated dynamically -->
+                <tr id="empty-ledger-row">
+                  <td colspan="5" style="text-align: center; color: #475569; padding: 3rem;">
+                    起票データなし。会議から自動起票されます。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CHROME EXTENSION POPUP SIMULATOR -->
+  <div class="chrome-ext-popup" id="ext-popup">
+    <div class="popup-header">
+      <div class="popup-logo">
+        <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
+        <span>Meet-Auditor Extension</span>
+      </div>
+      <span class="chrome-badge">CHROME POPUP</span>
+    </div>
+    <div class="popup-body">
+      <div class="popup-title">
+        <i data-lucide="check-square" style="color: #60a5fa; width: 18px; height: 18px;"></i>
+        <span>仕訳ドラフト確定の確認</span>
+      </div>
+      <p class="popup-desc">Meet会議の音声分析に基づき、以下の会計取引が自動作成されました。経理システムに反映（同期）しますか？</p>
+      
+      <div class="popup-summary-card">
+        <div class="summary-row">
+          <span class="summary-label">資産購入（開発用PC）</span>
+          <span class="summary-val">¥450,000</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">売上計上（A社受託開発）</span>
+          <span class="summary-val">¥800,000</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Salesforce商談ステータス</span>
+          <span class="summary-val" style="color:#60a5fa;">「受注完了」に更新</span>
+        </div>
+      </div>
+
+      <div class="popup-actions">
+        <button class="btn btn-secondary" onclick="closePopup()">キャンセル</button>
+        <button class="btn btn-approve" onclick="approveTransactions()">承認して同期を実行</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- --- JAVASCRIPT LOGIC & SCENARIO --- -->
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // Elements
+    const btnStart = document.getElementById('btn-start');
+    const agentStatusDot = document.getElementById('agent-status-dot');
+    const agentStatusText = document.getElementById('agent-status-text');
+    const audioVis = document.getElementById('audio-vis');
+    const transcriptContainer = document.getElementById('transcript-container');
+    const transcriptPlaceholder = document.getElementById('transcript-placeholder');
+    const detectionsContainer = document.getElementById('detections-container');
+    const detectionsPlaceholder = document.getElementById('detections-placeholder');
+    const confidenceFill = document.getElementById('confidence-fill');
+    const confidenceValue = document.getElementById('confidence-value');
+    const insightsPlaceholder = document.getElementById('insights-placeholder');
+    const insightsContentArea = document.getElementById('insights-content-area');
+    const ledgerBody = document.getElementById('ledger-body');
+    const emptyLedgerRow = document.getElementById('empty-ledger-row');
+    const sheetSyncStatus = document.getElementById('sheet-sync-status');
+    const salesforceSyncStatus = document.getElementById('salesforce-sync-status');
+    const extPopup = document.getElementById('ext-popup');
+    const geminiProcessingCard = document.getElementById('gemini-processing-card');
+
+    let demoInterval = null;
+    let stepIndex = 0;
+    const timeouts = [];
+
+    // Conversation Scenario data
+    const conversationScenario = [
+      {
+        speaker: 'tanaka',
+        role: '司会',
+        text: 'それでは本日のMeet-Auditorの導入および開発会議を始めます。まず、今期の開発環境強化の件ですが、PCのスペック不足が上がっていましたね。',
+        time: '13:00',
+        duration: 4000
+      },
+      {
+        speaker: 'sato',
+        role: '開発',
+        text: 'はい、ローカル環境でのAIテストやコンパイルが重く、作業効率に影響しています。ハイスペック開発用PCが3台ほど欲しいです。',
+        time: '13:01',
+        duration: 4000
+      },
+      {
+        speaker: 'suzuki',
+        role: '経営',
+        text: '開発の生産性は重要ですね。分かりました、そこはしっかり投資しましょう。1台15万円、合計45万円の予算で購入を進めてください。',
+        time: '13:01',
+        duration: 4000,
+        accountingDetection: {
+          title: '開発用PC 3台購入合意 (資産取得)',
+          quote: '1台15万円、合計45万円の予算で購入を進めてください。',
+          type: 'purchase',
+          amount: '¥450,000',
+          subjects: {
+            debit: { account: '工具器具備品', sub: '開発用PC 3台', amount: 450000 },
+            credit: { account: '未払金', sub: '株式会社アスクル', amount: 450000 }
+          },
+          insight: {
+            title: '【コスト削減案】PC調達の一括割引適用',
+            desc: '今期の開発用PC購入数は累計6台（計90万円）となります。法人向け一括調達プログラムに切り替えることで、次回以降最大15%（約30万円）のコスト削減が可能です。'
+          }
+        }
+      },
+      {
+        speaker: 'takahashi',
+        role: '営業',
+        text: 'ありがとうございます。営業側からも良いニュースがあります。先日合意していたA社様との「新規受託開発案件」ですが、見積もり80万円で本日正式に受注合意となりました。',
+        time: '13:02',
+        duration: 5000
+      },
+      {
+        speaker: 'suzuki',
+        role: '経営',
+        text: '素晴らしい成果ですね！正式受注で進めましょう。これで営業目標の早期達成が見えてきましたね。',
+        time: '13:02',
+        duration: 3000,
+        accountingDetection: {
+          title: 'A社新規受託開発案件 受注合意 (売上確定)',
+          quote: '見積もり80万円で本日正式に受注合意となりました。',
+          type: 'revenue',
+          amount: '¥800,000',
+          subjects: {
+            debit: { account: '売掛金', sub: 'A社受託開発', amount: 800000 },
+            credit: { account: '売上', sub: '受託サービス売上', amount: 800000 }
+          },
+          insight: {
+            title: '【経営示唆】今期開発投資のROI予測',
+            desc: '今回の新規売上（80万円）により、開発用PCへの投資（45万円）をカバーしつつ、今期の事業純利益は目標値を5%上回る推移です。追加の開発人材投資の余力があります。'
+          }
+        }
+      },
+      {
+        speaker: 'tanaka',
+        role: '司会',
+        text: 'ありがとうございます。本日の主要決議事項（PC購入予算確定、A社案件の受注確定）は以上で合意完了とします。皆様、お疲れ様でした。',
+        time: '13:03',
+        duration: 3000
+      }
+    ];
+
+    function updateSpeakerHighlight(activeSpeaker) {
+      document.querySelectorAll('.participant-tile').forEach(tile => {
+        tile.classList.remove('active-talker');
+      });
+      if (activeSpeaker) {
+        const activeTile = document.getElementById(`tile-${activeSpeaker}`);
+        if (activeTile) {
+          activeTile.classList.add('active-talker');
+        }
+      }
+    }
+
+    function addTranscriptBubble(speaker, name, text, self) {
+      if (transcriptPlaceholder) {
+        transcriptPlaceholder.style.display = 'none';
+      }
+      
+      const time = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const bubble = document.createElement('div');
+      bubble.className = `transcript-bubble ${self ? 'self' : ''}`;
+      
+      bubble.innerHTML = `
+        <div class="bubble-header">
+          <span class="bubble-name" style="color: ${getSpeakerColor(speaker)};">${name} (${speaker === 'suzuki' || speaker === 'tanaka' ? '役員' : 'メンバー'})</span>
+          <span class="bubble-time">${time}</span>
+        </div>
+        <div class="bubble-text">${text}</div>
+      `;
+      
+      transcriptContainer.appendChild(bubble);
+      transcriptContainer.scrollTop = transcriptContainer.scrollHeight;
+    }
+
+    function getSpeakerColor(speaker) {
+      switch(speaker) {
+        case 'tanaka': return '#60a5fa';
+        case 'sato': return '#34d399';
+        case 'suzuki': return '#f59e0b';
+        case 'takahashi': return '#f472b6';
+        default: return '#94a3b8';
+      }
+    }
+
+    function addDetectionCard(detection) {
+      if (detectionsPlaceholder) {
+        detectionsPlaceholder.style.display = 'none';
+      }
+
+      const card = document.createElement('div');
+      card.className = `detection-card ${detection.type === 'revenue' ? 'success-type' : ''}`;
+      const time = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      
+      card.innerHTML = `
+        <div class="detection-header">
+          <span class="detection-badge ${detection.type === 'revenue' ? 'badge-revenue' : 'badge-purchase'}">
+            <i data-lucide="${detection.type === 'revenue' ? 'trending-up' : 'credit-card'}" style="width:10px; height:10px;"></i>
+            ${detection.type === 'revenue' ? '売上合意' : '支出購入合意'}
+          </span>
+          <span class="detection-time">${time}</span>
+        </div>
+        <div class="detection-title">${detection.title}</div>
+        <div class="detection-quote">「 ${detection.quote} 」</div>
+        <div class="detection-financials">
+          <span style="color:#64748b;">自動判定金額:</span>
+          <span class="financial-amount" style="color: ${detection.type === 'revenue' ? '#34d399' : '#c084fc'}">${detection.amount}</span>
+        </div>
+      `;
+
+      detectionsContainer.appendChild(card);
+      detectionsContainer.scrollTop = detectionsContainer.scrollHeight;
+      lucide.createIcons();
+
+      // Pulse processing card
+      geminiProcessingCard.classList.add('scanning');
+      setTimeout(() => {
+        geminiProcessingCard.classList.remove('scanning');
+      }, 3000);
+    }
+
+    function addInsightCard(insight) {
+      if (insightsPlaceholder) {
+        insightsPlaceholder.style.display = 'none';
+      }
+
+      const card = document.createElement('div');
+      card.className = 'insight-card';
+      card.innerHTML = `
+        <div class="insight-icon">
+          <i data-lucide="lightbulb" style="width: 18px; height: 18px;"></i>
+        </div>
+        <div class="insight-content">
+          <span class="insight-title">${insight.title}</span>
+          <span class="insight-desc">${insight.desc}</span>
+        </div>
+      `;
+
+      insightsContentArea.appendChild(card);
+      lucide.createIcons();
+    }
+
+    function addLedgerRow(detection) {
+      if (emptyLedgerRow) {
+        emptyLedgerRow.style.display = 'none';
+      }
+
+      const tbody = document.getElementById('ledger-body');
+      const tr = document.createElement('tr');
+      tr.className = 'new-row';
+      tr.id = `ledger-row-${detection.type}`;
+      
+      const time = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+      
+      tr.innerHTML = `
+        <td style="color:#64748b; font-weight:600;">本日 ${time}</td>
+        <td>
+          <div class="subject-cell">
+            <span style="font-weight:600;">${detection.subjects.debit.account}</span>
+            <span class="subject-sub">${detection.subjects.debit.sub}</span>
+            <span class="amount-val" style="color:#f1f5f9;">¥${Number(detection.subjects.debit.amount).toLocaleString()}</span>
+          </div>
+        </td>
+        <td>
+          <div class="subject-cell">
+            <span style="font-weight:600;">${detection.subjects.credit.account}</span>
+            <span class="subject-sub">${detection.subjects.credit.sub}</span>
+            <span class="amount-val" style="color:#94a3b8;">¥${Number(detection.subjects.credit.amount).toLocaleString()}</span>
+          </div>
+        </td>
+        <td>
+          <div style="font-weight:500;">${detection.title}</div>
+          <div style="font-size:0.65rem; color:#64748b; margin-top:0.2rem;">Gemini 会議文脈判定</div>
+        </td>
+        <td>
+          <span class="row-status-badge badge-draft" id="badge-status-${detection.type}">仕訳ドラフト</span>
+        </td>
+      `;
+
+      tbody.insertBefore(tr, tbody.firstChild);
+      
+      // Update integration badges to SHOWING DRAFT
+      sheetSyncStatus.className = 'sync-state state-syncing';
+      sheetSyncStatus.textContent = 'DRAFTS CREATED';
+    }
+
+    function startDemo() {
+      // Clean up previous run
+      resetDemo();
+
+      // UI status updates
+      btnStart.disabled = true;
+      btnStart.innerHTML = `<i data-lucide="loader" class="animate-spin" style="width:16px; height:16px;"></i> 監査監視中...`;
+      agentStatusDot.className = 'status-dot active';
+      agentStatusText.textContent = 'AI Agent: 会議リアルタイム監視中';
+      agentStatusText.style.color = '#ea4335';
+      audioVis.classList.add('active');
+      lucide.createIcons();
+
+      // Start sequential scenario timeline
+      let delaySum = 0;
+
+      conversationScenario.forEach((step, index) => {
+        const timeoutId = setTimeout(() => {
+          // Highlight current active speaker
+          updateSpeakerHighlight(step.speaker);
+          
+          // Add transcript text
+          addTranscriptBubble(step.speaker, step.role, step.text, step.speaker === 'suzuki' || step.speaker === 'tanaka');
+
+          // If there is an accounting detection in this step
+          if (step.accountingDetection) {
+            // Processing status on Gemini
+            agentStatusDot.className = 'status-dot processing';
+            agentStatusText.textContent = 'AI Agent: 会計インベント解析中...';
+            agentStatusText.style.color = '#3b82f6';
+            
+            // Simulating confidence increase
+            let confValue = 0;
+            const confInterval = setInterval(() => {
+              confValue += 10;
+              confidenceFill.style.width = `${confValue}%`;
+              confidenceValue.textContent = `${confValue}%`;
+              if (confValue >= 98) {
+                clearInterval(confInterval);
+                confidenceValue.textContent = '98.4%';
+              }
+            }, 100);
+
+            setTimeout(() => {
+              // Create AI Detections
+              addDetectionCard(step.accountingDetection);
+              // Create accounting ledger draft
+              addLedgerRow(step.accountingDetection);
+              // Add business optimization recommendation
+              addInsightCard(step.accountingDetection.insight);
+              
+              // Reset status back to listening
+              agentStatusDot.className = 'status-dot active';
+              agentStatusText.textContent = 'AI Agent: 会議リアルタイム監視中';
+              agentStatusText.style.color = '#ea4335';
+            }, 1500);
+          }
+
+          // If last step, trigger meeting end and show Extension Notification Popup
+          if (index === conversationScenario.length - 1) {
+            setTimeout(() => {
+              finishMeeting();
+            }, step.duration);
+          }
+
+        }, delaySum);
+
+        timeouts.push(timeoutId);
+        delaySum += step.duration + 1000; // adding gap between speakers
+      });
+    }
+
+    function finishMeeting() {
+      updateSpeakerHighlight(null);
+      audioVis.classList.remove('active');
+      
+      agentStatusDot.className = 'status-dot';
+      agentStatusDot.style.backgroundColor = '#10b981';
+      agentStatusDot.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
+      agentStatusText.textContent = 'AI Agent: 会議終了 / 監査ドラフト待機中';
+      agentStatusText.style.color = '#10b981';
+
+      // Log system status
+      const log = document.createElement('div');
+      log.className = 'system-log';
+      log.innerHTML = `<i data-lucide="info" style="width:12px; height:12px;"></i> Meet会議終了 (合意事項: 2件, 監査完了)`;
+      transcriptContainer.appendChild(log);
+      transcriptContainer.scrollTop = transcriptContainer.scrollHeight;
+      lucide.createIcons();
+
+      // Slide in Chrome Extension Popup Simulator
+      setTimeout(() => {
+        extPopup.classList.add('show');
+      }, 1000);
+    }
+
+    function approveTransactions() {
+      // Simulating system sync APIs
+      extPopup.classList.remove('show');
+      
+      sheetSyncStatus.textContent = 'SYNCING...';
+      sheetSyncStatus.className = 'sync-state state-syncing';
+      salesforceSyncStatus.textContent = 'SYNCING...';
+      salesforceSyncStatus.className = 'sync-state state-syncing';
+
+      setTimeout(() => {
+        // Sync complete transitions
+        sheetSyncStatus.textContent = 'SYNCED & SECURED';
+        sheetSyncStatus.className = 'sync-state state-completed';
+        
+        salesforceSyncStatus.textContent = 'OPPORTUNITY CLOSED WON';
+        salesforceSyncStatus.className = 'sync-state state-completed';
+
+        // Update ledger row statuses
+        document.querySelectorAll('.row-status-badge').forEach(badge => {
+          badge.className = 'row-status-badge badge-confirmed';
+          badge.textContent = '確定済み';
+        });
+
+        document.querySelectorAll('#ledger-body tr').forEach(row => {
+          if (row.id !== 'empty-ledger-row') {
+            row.classList.add('synced-success');
+          }
+        });
+
+        // Final notification log
+        const log = document.createElement('div');
+        log.className = 'system-log';
+        log.style.color = '#10b981';
+        log.innerHTML = `<i data-lucide="check-circle" style="width:12px; height:12px; color:#10b981;"></i> Google Sheets及びSalesforceとの自動同期が完了しました。`;
+        transcriptContainer.appendChild(log);
+        transcriptContainer.scrollTop = transcriptContainer.scrollHeight;
+        lucide.createIcons();
+
+        // Update button
+        btnStart.disabled = false;
+        btnStart.innerHTML = `<i data-lucide="check" style="width: 16px; height: 16px;"></i> デモ監査完了`;
+
+      }, 2000);
+    }
+
+    function closePopup() {
+      extPopup.classList.remove('show');
+    }
+
+    function resetDemo() {
+      // Clear timeouts
+      timeouts.forEach(id => clearTimeout(id));
+      timeouts.length = 0;
+
+      // Clear UI
+      transcriptContainer.innerHTML = '';
+      transcriptContainer.appendChild(transcriptPlaceholder);
+      transcriptPlaceholder.style.display = 'flex';
+
+      detectionsContainer.innerHTML = '';
+      detectionsContainer.appendChild(detectionsPlaceholder);
+      detectionsPlaceholder.style.display = 'flex';
+
+      insightsContentArea.innerHTML = '';
+      insightsContentArea.appendChild(insightsPlaceholder);
+      insightsPlaceholder.style.display = 'block';
+
+      // Clear Ledger table
+      ledgerBody.innerHTML = '';
+      ledgerBody.appendChild(emptyLedgerRow);
+      emptyLedgerRow.style.display = 'table-row';
+
+      // Reset states
+      confidenceFill.style.width = '0%';
+      confidenceValue.textContent = '0%';
+      sheetSyncStatus.textContent = 'UNSYNCED';
+      sheetSyncStatus.className = 'sync-state state-unsynced';
+      salesforceSyncStatus.textContent = 'UNSYNCED';
+      salesforceSyncStatus.className = 'sync-state state-unsynced';
+
+      extPopup.classList.remove('show');
+      updateSpeakerHighlight(null);
+      audioVis.classList.remove('active');
+
+      agentStatusDot.className = 'status-dot';
+      agentStatusDot.style.backgroundColor = '#94a3b8';
+      agentStatusDot.style.boxShadow = '0 0 8px rgba(148, 163, 184, 0.4)';
+      agentStatusText.textContent = 'AI Agent: アイドル状態';
+      agentStatusText.style.color = '#94a3b8';
+
+      btnStart.disabled = false;
+      btnStart.innerHTML = `<i data-lucide="play" style="width: 16px; height: 16px;"></i> デモ監査を開始する`;
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto-Pilot - 自律型インサイドセールス・エージェント デモ</title>
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* --- CSS DESIGN SYSTEM --- */
+    :root {
+      --bg-dark: #070a0e;
+      --bg-card: rgba(12, 19, 29, 0.65);
+      --border-card: rgba(255, 255, 255, 0.05);
+      --font-primary: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Outfit', sans-serif;
+      
+      /* Colors */
+      --accent-ga4: #f2994a;
+      --accent-ga4-yellow: #f2c94c;
+      --accent-salesforce: #00a1e0;
+      --accent-calendar: #1a73e8;
+      --accent-gemini: #8b5cf6;
+      --accent-success: #10b981;
+      --accent-danger: #ef4444;
+      
+      /* Glows */
+      --shadow-ga4: 0 0 25px rgba(242, 153, 74, 0.25);
+      --shadow-salesforce: 0 0 25px rgba(0, 161, 224, 0.25);
+      --shadow-calendar: 0 0 25px rgba(26, 115, 232, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: radial-gradient(circle at 50% 120%, #0d2035 0%, var(--bg-dark) 80%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* --- TYPOGRAPHY & SCROLLBAR --- */
+    h1, h2, h3, .font-display {
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* --- GLASSMORPHISM CARDS --- */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+    }
+
+    /* --- LAYOUT HEADER --- */
+    header {
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-card);
+      background: rgba(7, 10, 14, 0.5);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--accent-ga4), var(--accent-salesforce));
+      padding: 0.5rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-ga4);
+    }
+
+    .logo-title {
+      font-size: 1.5rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #ffffff, #e2e8f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-subtitle {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-left: 0.5rem;
+      padding: 0.2rem 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .demo-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      font-family: var(--font-primary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-ga4), var(--accent-salesforce));
+      color: white;
+      box-shadow: var(--shadow-ga4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.15);
+      box-shadow: 0 0 30px rgba(242, 153, 74, 0.4);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
+
+    .agent-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(12, 19, 29, 0.8);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #94a3b8;
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.4);
+    }
+    
+    .status-dot.active {
+      background-color: var(--accent-ga4);
+      box-shadow: 0 0 10px var(--accent-ga4);
+      animation: pulse 1.2s infinite;
+    }
+
+    .status-dot.analyzing {
+      background-color: var(--accent-salesforce);
+      box-shadow: 0 0 10px var(--accent-salesforce);
+      animation: pulse 0.9s infinite;
+    }
+
+    .status-dot.scheduling {
+      background-color: var(--accent-calendar);
+      box-shadow: 0 0 10px var(--accent-calendar);
+      animation: pulse 0.8s infinite;
+    }
+
+    /* --- DASHBOARD GRID --- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1.2fr 1.25fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      height: calc(100vh - 86px);
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+      }
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .column-title {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .column-subtitle {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    /* --- COLUMN 1: GOOGLE ANALYTICS --- */
+    .ga-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .ga-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Realtime Traffic Widget */
+    .ga-traffic-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(242, 153, 74, 0.15);
+    }
+
+    .ga-site-url {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 500;
+    }
+
+    .ga-live-count {
+      color: var(--accent-ga4);
+      font-weight: 800;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Web Traffic SVG graph */
+    .ga-chart-box {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .chart-svg-container {
+      width: 100%;
+      height: 95px;
+    }
+
+    .svg-line {
+      fill: none;
+      stroke: var(--accent-ga4);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .svg-area {
+      fill: url(#ga-chart-grad);
+    }
+
+    .svg-point {
+      fill: var(--accent-ga4);
+      stroke: white;
+      stroke-width: 1.5;
+    }
+
+    /* Hot Lead Score Circular Meter */
+    .ga-hot-meter-box {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .meter-circle-container {
+      width: 60px;
+      height: 60px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.05);
+      stroke-width: 6;
+    }
+
+    .circle-fill {
+      fill: none;
+      stroke: url(#circle-grad);
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 170;
+      stroke-dashoffset: 170;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .circle-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .meter-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .meter-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .meter-desc {
+      font-size: 0.68rem;
+      color: #94a3b8;
+      line-height: 1.3;
+    }
+
+    /* Threat/Access Logs stream */
+    .ga-logs-stream {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      padding: 1rem;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 180px;
+    }
+
+    .ga-log-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      padding: 0.6rem;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: translateY(10px);
+      border-left: 2.5px solid var(--accent-ga4);
+    }
+
+    .ga-log-time {
+      font-size: 0.65rem;
+      color: #64748b;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .ga-log-text {
+      color: #cbd5e1;
+    }
+
+    /* --- COLUMN 2: GEMINI & CALENDAR --- */
+    .gemini-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .gemini-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* AI inference terminal */
+    .ai-logs-terminal {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 1rem;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.72rem;
+      color: #a7f3d0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-height: 180px;
+    }
+
+    .ai-log-line {
+      line-height: 1.5;
+      word-break: break-all;
+      animation: fade-in 0.3s ease-out forwards;
+    }
+
+    .prefix-vertex { color: #00a1e0; font-weight: 700; }
+    .prefix-gemini { color: #c084fc; font-weight: 700; }
+    .prefix-autopilot { color: #fbbf24; font-weight: 700; }
+
+    /* Google Calendar Widget */
+    .calendar-widget {
+      flex: 1.3;
+      background: rgba(26, 115, 232, 0.02);
+      border: 1px solid rgba(26, 115, 232, 0.12);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-height: 250px;
+      position: relative;
+    }
+
+    .calendar-widget.scanning::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--accent-calendar), transparent);
+      animation: scan 2s linear infinite;
+      z-index: 10;
+      opacity: 0.7;
+    }
+
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+    }
+
+    .cal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(26, 115, 232, 0.12);
+      color: #93c5fd;
+      border: 1px solid rgba(26, 115, 232, 0.15);
+    }
+
+    .cal-grid-wrapper {
+      flex: 1;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.15);
+      overflow-y: auto;
+    }
+
+    /* Mini Calendar Grid */
+    .cal-grid {
+      display: grid;
+      grid-template-columns: 50px repeat(3, 1fr);
+      font-size: 0.65rem;
+      text-align: center;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .cal-cell {
+      border: 1px solid rgba(255,255,255,0.02);
+      padding: 0.4rem 0.2rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+    }
+
+    .cal-header-cell {
+      background: rgba(255, 255, 255, 0.02);
+      font-weight: 600;
+      color: #cbd5e1;
+      padding: 0.5rem 0.2rem;
+    }
+
+    .cal-time-cell {
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.01);
+      color: #64748b;
+    }
+
+    .cal-event-filled {
+      background: rgba(255, 255, 255, 0.04);
+      color: #475569;
+      font-weight: 500;
+      text-decoration: line-through;
+    }
+
+    /* Auto Highlight Free Slot */
+    .cal-slot-highlight {
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.05);
+      transition: all 0.3s ease;
+      animation: glow-pulse 1.5s infinite alternate;
+    }
+
+    /* --- COLUMN 3: SALESFORCE & GMAIL --- */
+    .outreach-card {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .outreach-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Salesforce mini profile card */
+    .sf-profile-panel {
+      background: rgba(0, 161, 224, 0.02);
+      border: 1px solid rgba(0, 161, 224, 0.15);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      position: relative;
+    }
+
+    .sf-profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sf-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(0, 161, 224, 0.12);
+      color: #93e2fd;
+      border: 1px solid rgba(0, 161, 224, 0.15);
+    }
+
+    .sf-status-pill {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .sf-pill-dormant {
+      background: rgba(148, 163, 184, 0.1);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .sf-pill-active {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+      animation: pulse 1s infinite alternate;
+    }
+
+    .sf-profile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+      font-size: 0.72rem;
+    }
+
+    .profile-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .profile-label {
+      color: #64748b;
+    }
+
+    .profile-value {
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    /* Salesforce Activity Timeline */
+    .sf-timeline-wrapper {
+      background: rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.02);
+      border-radius: 8px;
+      padding: 0.6rem;
+    }
+
+    .sf-timeline-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sf-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .timeline-node {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.68rem;
+      position: relative;
+    }
+
+    .timeline-icon-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.45rem;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .timeline-node.success-node .timeline-icon-dot {
+      background: var(--accent-success);
+    }
+
+    .timeline-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .timeline-head {
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .timeline-time {
+      color: #64748b;
+      font-size: 0.6rem;
+    }
+
+    /* Gmail email preview draft */
+    .gmail-draft-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 1rem;
+      flex: 1;
+    }
+
+    .gmail-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      animation: scale-up 0.4s ease forwards;
+    }
+
+    .gmail-meta-row {
+      display: flex;
+      font-size: 0.72rem;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 0.4rem;
+    }
+
+    .gmail-meta-label {
+      width: 55px;
+      font-weight: 600;
+    }
+
+    .gmail-meta-value {
+      color: #e2e8f0;
+    }
+
+    .gmail-body-preview {
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.5rem;
+      border-radius: 6px;
+      max-height: 105px;
+      overflow-y: auto;
+      line-height: 1.45;
+    }
+
+    .gmail-meet-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(26, 115, 232, 0.08);
+      border: 1px solid rgba(26, 115, 232, 0.2);
+      color: #93c5fd;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
+      width: fit-content;
+    }
+
+    .gmail-send-status {
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--accent-warning);
+    }
+    
+    .gmail-send-status.sent {
+      color: var(--accent-success);
+    }
+
+    /* --- ANIMATION KEYFRAMES --- */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.96); }
+    }
+
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes scale-up {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes scan {
+      0% { top: 0%; }
+      50% { top: 100%; }
+      100% { top: 0%; }
+    }
+
+    @keyframes glow-pulse {
+      0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); }
+      100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); border-color: rgba(16, 185, 129, 0.7); }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge">
+        <i data-lucide="navigation" style="color: white; width: 22px; height: 22px; transform: rotate(45deg);"></i>
+      </div>
+      <div>
+        <h1 class="logo-title font-display">Auto-Pilot</h1>
+      </div>
+      <span class="logo-subtitle">自律型インサイドセールス</span>
+    </div>
+
+    <!-- Agent Status and Controls -->
+    <div class="demo-controls">
+      <div class="agent-status-badge">
+        <span class="status-dot" id="agent-status-dot"></span>
+        <span id="agent-status-text" style="font-weight: 600; color: #94a3b8;">AI Agent: アイドル監視中</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-reset" onclick="resetDemo()">
+        <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i> リセット
+      </button>
+      <button class="btn btn-primary" id="btn-start" onclick="startDemo()">
+        <i data-lucide="play" style="width: 16px; height: 16px;"></i> 自動営業を開始する
+      </button>
+    </div>
+  </header>
+
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid">
+    
+    <!-- COLUMN 1: GOOGLE ANALYTICS -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="bar-chart-3" style="color: var(--accent-ga4);"></i>
+          <span>GA4 リアルタイム予兆検知</span>
+        </div>
+        <span class="column-subtitle">特定顧客Web行動解析</span>
+      </div>
+
+      <div class="ga-card glass-card">
+        <div class="ga-view-container">
+          
+          <!-- Site Url & Live visitors info -->
+          <div class="ga-traffic-header">
+            <span class="ga-site-url">
+              <i data-lucide="globe" style="width: 12px; height: 12px; color: #64748b;"></i>
+              自社サイト /pricing
+            </span>
+            <div class="ga-live-count">
+              <span style="display:inline-block; width:6px; height:6px; background-color:var(--accent-ga4); border-radius:50%; animation:pulse 0.8s infinite;"></span>
+              HOT SCORE: <span id="hot-score-val">12</span>/100
+            </div>
+          </div>
+
+          <!-- Web Traffic SVG graph -->
+          <div class="ga-chart-box">
+            <div class="chart-header">
+              <span>企業IP別アクセスアクティビティ (過去30分)</span>
+              <div style="font-size: 0.7rem; color:#64748b; font-weight:700;" id="ga-trend-label">NORMAL</div>
+            </div>
+            <div class="chart-svg-container">
+              <svg viewBox="0 0 350 95" width="100%" height="100%">
+                <defs>
+                  <linearGradient id="ga-chart-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#f2994a" stop-opacity="0.3"></stop>
+                    <stop offset="100%" stop-color="#f2994a" stop-opacity="0"></stop>
+                  </linearGradient>
+                  <linearGradient id="circle-grad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#f2994a"></stop>
+                    <stop offset="100%" stop-color="#10b981"></stop>
+                  </linearGradient>
+                </defs>
+                <!-- Grid lines -->
+                <line x1="0" y1="15" x2="350" y2="15" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
+                <line x1="0" y1="48" x2="350" y2="48" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
+                <line x1="0" y1="80" x2="350" y2="80" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
+                
+                <!-- Normal Line Path -->
+                <path d="M0,80 L50,75 L100,80 L150,78 L200,80 L250,76 L300,78 L350,75" class="svg-line" id="ga-normal-path" stroke="rgba(255,255,255,0.2)"></path>
+                
+                <!-- Spike Line Path -->
+                <path d="M0,80 L50,75 L100,80 L150,78 L200,80 L250,65 L280,35 L300,12 L320,10 L350,8" class="svg-line hidden" id="ga-spike-path"></path>
+                <path d="M0,80 L50,75 L100,80 L150,78 L200,80 L250,65 L280,35 L300,12 L320,10 L350,8 L350,95 L0,95 Z" class="svg-area hidden" id="ga-spike-area"></path>
+                
+                <!-- Point -->
+                <circle cx="350" cy="75" r="4" class="svg-point" id="ga-pointer"></circle>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Lead Hot Meter -->
+          <div class="ga-hot-meter-box">
+            <div class="meter-circle-container">
+              <svg width="60" height="60" viewBox="0 0 60 60">
+                <circle cx="30" cy="30" r="27" class="circle-bg"></circle>
+                <circle cx="30" cy="30" r="27" class="circle-fill" id="meter-fill-circle"></circle>
+              </svg>
+              <div class="circle-text" id="hot-score-circle">12%</div>
+            </div>
+            <div class="meter-info">
+              <span class="meter-title" id="hot-meter-title">トラフィック監視中</span>
+              <span class="meter-desc" id="hot-meter-desc">重要顧客IPからの特定Webアクションおよび連続遷移の頻度を検出して評価します。</span>
+            </div>
+          </div>
+
+          <!-- Access Activity Logs -->
+          <div class="ga-logs-stream" id="ga-logs-container">
+            <div class="no-detections" id="ga-placeholder" style="border:none; padding:1.5rem 0;">
+              <i data-lucide="activity" style="width: 24px; height: 24px; color: #334155;"></i>
+              <p style="font-size:0.75rem;">「自動営業を開始」すると、GA4のWebアクセス予兆ログの監視がリアルタイムに始まります。</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: GEMINI & CALENDAR -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="sparkles" style="color: var(--accent-gemini);"></i>
+          <span>Gemini AI意思決定 & カレンダー</span>
+        </div>
+        <span class="column-subtitle">Vertex AI商談分析・日程抽出</span>
+      </div>
+
+      <div class="gemini-card glass-card">
+        <div class="gemini-view-container">
+          
+          <!-- Thinking Terminal -->
+          <div class="ai-logs-terminal" id="ai-terminal">
+            <div class="ai-log-line" style="color:#64748b;">
+              &gt; Auto-Pilot core AI standby. Awaiting telemetry...
+            </div>
+          </div>
+
+          <!-- Google Calendar Widget -->
+          <div class="calendar-widget" id="cal-widget">
+            <div class="cal-header">
+              <span class="cal-badge">
+                <i data-lucide="calendar" style="width:11px; height:11px;"></i>
+                担当営業 山田 の空き枠
+              </span>
+              <span style="font-size:0.65rem; color:#64748b; font-weight:700;">Google カレンダー同期中</span>
+            </div>
+
+            <div class="cal-grid-wrapper">
+              <div class="cal-grid">
+                <!-- Header days -->
+                <div class="cal-header-cell cal-time-cell">時間</div>
+                <div class="cal-header-cell">5/18(月)</div>
+                <div class="cal-header-cell">5/19(火)</div>
+                <div class="cal-header-cell">5/20(水)</div>
+
+                <!-- 10:00 -->
+                <div class="cal-cell cal-time-cell">10:00</div>
+                <div class="cal-cell"></div>
+                <div class="cal-cell" id="slot-tue-10"></div>
+                <div class="cal-cell cal-event-filled">定例</div>
+
+                <!-- 11:00 -->
+                <div class="cal-cell cal-time-cell">11:00</div>
+                <div class="cal-cell cal-event-filled">打合せ</div>
+                <div class="cal-cell"></div>
+                <div class="cal-cell"></div>
+
+                <!-- 12:00 -->
+                <div class="cal-cell cal-time-cell">12:00</div>
+                <div class="cal-cell"></div>
+                <div class="cal-cell cal-event-filled">Lunch</div>
+                <div class="cal-cell"></div>
+
+                <!-- 14:00 -->
+                <div class="cal-cell cal-time-cell">14:00</div>
+                <div class="cal-cell" id="slot-mon-14"></div>
+                <div class="cal-cell"></div>
+                <div class="cal-cell cal-event-filled">移動</div>
+
+                <!-- 15:00 -->
+                <div class="cal-cell cal-time-cell">15:00</div>
+                <div class="cal-cell cal-event-filled">面接</div>
+                <div class="cal-cell"></div>
+                <div class="cal-cell"></div>
+
+                <!-- 16:00 -->
+                <div class="cal-cell cal-time-cell">16:00</div>
+                <div class="cal-cell"></div>
+                <div class="cal-cell cal-event-filled">商談</div>
+                <div class="cal-cell" id="slot-wed-16"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: SALESFORCE & GMAIL -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="cloud" style="color: var(--accent-salesforce);"></i>
+          <span>Salesforce & Gmail 連携</span>
+        </div>
+        <span class="column-subtitle">自律アプローチ ➔ 履歴記録</span>
+      </div>
+
+      <div class="outreach-card glass-card">
+        <div class="outreach-container">
+          
+          <!-- Salesforce mini profile -->
+          <div class="sf-profile-panel">
+            <div class="sf-profile-header">
+              <span class="sf-badge">
+                <i data-lucide="database" style="width:11px; height:11px;"></i>
+                Salesforce Account
+              </span>
+              <span class="sf-status-pill sf-pill-dormant" id="sf-lead-status">休眠顧客 (失注クローズ)</span>
+            </div>
+
+            <div class="sf-profile-grid">
+              <div class="profile-item">
+                <span class="profile-label">企業名</span>
+                <span class="profile-value">ソリューションテック株式会社</span>
+              </div>
+              <div class="profile-item">
+                <span class="profile-label">担当者</span>
+                <span class="profile-value">開発本部 部長 山本 誠 様</span>
+              </div>
+              <div class="profile-item">
+                <span class="profile-label">過去案件名</span>
+                <span class="profile-value">AI開発支援パッケージ導入</span>
+              </div>
+              <div class="profile-item">
+                <span class="profile-label">案件規模</span>
+                <span class="profile-value" id="sf-opp-value">¥1,200,000</span>
+              </div>
+            </div>
+
+            <!-- Salesforce Activity Timeline -->
+            <div class="sf-timeline-wrapper">
+              <div class="sf-timeline-title">活動タイムライン (直近)</div>
+              <div class="sf-timeline" id="sf-timeline-container">
+                <!-- Timeline nodes -->
+                <div class="timeline-node">
+                  <div class="timeline-icon-dot"><i data-lucide="x" style="width:8px; height:8px;"></i></div>
+                  <div class="timeline-info">
+                    <span class="timeline-head">商談保留（ロスト）- 予算期合わず</span>
+                    <span class="timeline-time">2026/01/15 • 担当: 山田</span>
+                  </div>
+                </div>
+                <div class="timeline-node">
+                  <div class="timeline-icon-dot"><i data-lucide="phone" style="width:8px; height:8px;"></i></div>
+                  <div class="timeline-info">
+                    <span class="timeline-head">ヒアリング架電（予算感確認）</span>
+                    <span class="timeline-time">2026/01/10 • 担当: 山田</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gmail automatically drafted email -->
+          <div class="gmail-draft-panel">
+            <div class="table-title">
+              <i data-lucide="mail" style="width: 14px; height: 14px; color: #f2994a;"></i>
+              <span>Gmail 自律営業メール自動起票 (API)</span>
+            </div>
+
+            <div class="gmail-card" id="gmail-card" style="opacity:0.3;">
+              <div class="gmail-meta-row">
+                <span class="gmail-meta-label">件名:</span>
+                <span class="gmail-meta-value" id="gmail-subject">---</span>
+              </div>
+              <div class="gmail-meta-row">
+                <span class="gmail-meta-label">宛先:</span>
+                <span class="gmail-meta-value" id="gmail-to">---</span>
+              </div>
+              <div class="gmail-body-preview" id="gmail-body">
+                自動営業フローが作動すると、カレンダー空き枠スケジュール候補および自動生成されたGoogle Meetリンクをパーソナライズして自動下書き起票・自動送信します。
+              </div>
+              <div class="gmail-meet-badge hidden" id="gmail-meet">
+                <i data-lucide="video" style="width:12px; height:12px;"></i>
+                <span>Google Meet 接続リンク生成完了</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.25rem;">
+                <span class="gmail-send-status" id="gmail-status">
+                  <i data-lucide="clock" style="width:12px; height:12px;"></i>
+                  <span>送信待機中</span>
+                </span>
+                <span style="font-size:0.6rem; color:#64748b;" id="gmail-time">---</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- --- JAVASCRIPT LOGIC & SCENARIO --- -->
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // DOM elements
+    const btnStart = document.getElementById('btn-start');
+    const agentStatusDot = document.getElementById('agent-status-dot');
+    const agentStatusText = document.getElementById('agent-status-text');
+
+    // GA4 Elements
+    const hotScoreVal = document.getElementById('hot-score-val');
+    const hotScoreCircle = document.getElementById('hot-score-circle');
+    const meterFillCircle = document.getElementById('meter-fill-circle');
+    const gaTrendLabel = document.getElementById('ga-trend-label');
+    const gaNormalPath = document.getElementById('ga-normal-path');
+    const gaSpikePath = document.getElementById('ga-spike-path');
+    const gaSpikeArea = document.getElementById('ga-spike-area');
+    const gaPointer = document.getElementById('ga-pointer');
+    const hotMeterTitle = document.getElementById('hot-meter-title');
+    const hotMeterDesc = document.getElementById('hot-meter-desc');
+    const gaLogsContainer = document.getElementById('ga-logs-container');
+    const gaPlaceholder = document.getElementById('ga-placeholder');
+
+    // Gemini & Calendar
+    const aiTerminal = document.getElementById('ai-terminal');
+    const calWidget = document.getElementById('cal-widget');
+    const slotMon = document.getElementById('slot-mon-14');
+    const slotTue = document.getElementById('slot-tue-10');
+    const slotWed = document.getElementById('slot-wed-16');
+
+    // Salesforce & Gmail
+    const sfLeadStatus = document.getElementById('sf-lead-status');
+    const sfTimelineContainer = document.getElementById('sf-timeline-container');
+    const gmailCard = document.getElementById('gmail-card');
+    const gmailSubject = document.getElementById('gmail-subject');
+    const gmailTo = document.getElementById('gmail-to');
+    const gmailBody = document.getElementById('gmail-body');
+    const gmailMeet = document.getElementById('gmail-meet');
+    const gmailStatus = document.getElementById('gmail-status');
+    const gmailTime = document.getElementById('gmail-time');
+
+    let timeouts = [];
+
+    // GA4 Telemetry logs
+    const gaTelemetryLogs = [
+      { text: '[料金ページ遷移] 同一企業IPから /pricing への連続アクセスを検知。' },
+      { text: '[IPリバース逆引き] 企業特定: ソリューションテック株式会社 (従業員: 550名, 業界: IT・製造開発)' },
+      { text: '[Webアクセス頻度] 同一ユーザーが料金プラン一覧および導入見積もりシミュレーターを3分以内に連続閲覧。' },
+      { text: '[予兆検知] リード確度: 高 (再検討フェーズ移行を検知。AI判定: 即時コンタクト推奨)' }
+    ];
+
+    // AI Thinking Logs
+    const aiThinkingLogs = [
+      { type: 'vertex', text: 'Connecting to Salesforce database secure API...' },
+      { type: 'vertex', text: 'QUERYING: "ソリューションテック株式会社" leads & historical opportunities...' },
+      { type: 'vertex', text: 'FOUND HISTORICAL: 2026/01 "AI開発支援パッケージ導入" 案件規模: 120万円。結果: 失注・保留(予算期ズレ)。担当営業: 山田' },
+      { type: 'gemini', text: 'SEMANTIC INFERENCE: 5月の新年度開始およびGA4の連続料金ページ閲覧を総合分析。保留されていたAI開発ツールの予算確保が完了し、再検討している可能性が98.4%と算出。' },
+      { type: 'gemini', text: 'DECISION: 山田がアプローチを再開すべきと自律判定。山田宛のGoogle Meet自動生成をトリガーします。' },
+      { type: 'autopilot', text: 'AUTOPILOT: Google Calendar APIにアクセスし、山田の来週のスケジュールを取得します...' },
+      { type: 'autopilot', text: 'CALENDAR: 5/18(月), 5/19(火), 5/20(水) で顧客に提示可能な空き枠（3候補）の自律抽出に成功。' },
+      { type: 'autopilot', text: 'MEET API: 新しいGoogle Meet接続リンクを自律生成 [https://meet.google.com/aut-opilot-dem]' },
+      { type: 'gemini', text: 'GMAIL DRAFT: 過去の保留商談の文脈、新機能V2の紹介、カレンダー空き枠、MeetリンクをマージしたパーソナライズドメールをGmailで自律起票中...' }
+    ];
+
+    function appendTerminalLog(type, text) {
+      const line = document.createElement('div');
+      line.className = 'ai-log-line';
+      let prefix = '';
+      
+      if (type === 'vertex') prefix = `<span class="prefix-vertex">[Vertex AI]</span> `;
+      if (type === 'gemini') prefix = `<span class="prefix-gemini">[Gemini Inference]</span> `;
+      if (type === 'autopilot') prefix = `<span class="prefix-autopilot">[Auto-Pilot]</span> `;
+
+      line.innerHTML = `&gt; ${prefix}${text}`;
+      aiTerminal.appendChild(line);
+      aiTerminal.scrollTop = aiTerminal.scrollHeight;
+    }
+
+    function addGaLog(text) {
+      if (gaPlaceholder) {
+        gaPlaceholder.style.display = 'none';
+      }
+
+      const log = document.createElement('div');
+      log.className = 'ga-log-item';
+      
+      const time = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      
+      log.innerHTML = `
+        <span class="ga-log-time">${time} • GA4 API 予兆シグナル</span>
+        <span class="ga-log-text">${text}</span>
+      `;
+
+      gaLogsContainer.appendChild(log);
+      gaLogsContainer.scrollTop = gaLogsContainer.scrollHeight;
+    }
+
+    function highlightCalendarSlots() {
+      calWidget.classList.add('scanning');
+
+      setTimeout(() => {
+        calWidget.classList.remove('scanning');
+        
+        slotMon.className = 'cal-cell cal-slot-highlight';
+        slotMon.textContent = '提案枠①';
+
+        slotTue.className = 'cal-cell cal-slot-highlight';
+        slotTue.textContent = '提案枠②';
+
+        slotWed.className = 'cal-cell cal-slot-highlight';
+        slotWed.textContent = '提案枠③';
+      }, 2000);
+    }
+
+    function generateSalesEmail() {
+      gmailCard.style.opacity = '1';
+      gmailSubject.textContent = '【ソリューションテック様】最新AI開発パッケージのご案内と情報交換のお願い';
+      gmailTo.textContent = '山本 誠 様 (m.yamamoto@solution-tech.co.jp)';
+      
+      gmailBody.innerHTML = `
+        ソリューションテック株式会社<br>
+        開発本部 部長 山本 誠 様<br><br>
+        いつもお世話になっております。株式会社〇〇の営業 山田です。<br><br>
+        本日は、1月にお話しさせていただいておりました「AI開発支援パッケージ」について、皆様からご要望の多かった新機能（データ連携・自動ファインチューニング）を大幅に強化した<b>最新バージョンV2</b>がリリースされましたので、ご案内を兼ねてご連絡させていただきました。<br><br>
+        もしよろしければ、新年度に入られたタイミングかと存じますので、最近のトレンド等の情報交換を兼ねて、来週に15分ほどGoogle Meetにてお打ち合わせの機会をいただけませんでしょうか。<br><br>
+        山田のカレンダーから、以下の空き日程を候補として提示させていただきます。<br>
+        <b>候補①：5/18(月) 14:00-15:00</b><br>
+        <b>候補②：5/19(火) 10:00-11:00</b><br>
+        <b>候補③：5/20(水) 16:00-17:00</b><br><br>
+        以下のGoogle Meetリンクより直接お入りいただくことも可能です。<br>
+        Meet接続リンク： https://meet.google.com/aut-opilot-dem<br><br>
+        ご都合の良い日程がございましたら、本メールへのご返信、または上記リンクよりお気軽にお知らせくださいませ。何卒よろしくお願い申し上げます。
+      `;
+      
+      gmailMeet.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function triggerGmailSendAndSfSync() {
+      gmailStatus.innerHTML = `<i data-lucide="loader" class="animate-spin" style="width:12px; height:12px;"></i> <span>送信中 (Gmail API)...</span>`;
+      lucide.createIcons();
+
+      setTimeout(() => {
+        // Sent state
+        gmailStatus.className = 'gmail-send-status sent';
+        gmailStatus.innerHTML = `<i data-lucide="check-circle-2" style="width:12px; height:12px; color:#10b981;"></i> <span>送信完了 (Gmail経由)</span>`;
+        const timeStr = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+        gmailTime.textContent = `本日 ${timeStr}`;
+
+        // Update Salesforce status pill
+        sfLeadStatus.className = 'sf-status-pill sf-pill-active';
+        sfLeadStatus.textContent = '自律営業アプローチ中';
+
+        // Add Salesforce Activity Timeline entry
+        const timeline = document.getElementById('sf-timeline-container');
+        const node = document.createElement('div');
+        node.className = 'timeline-node success-node';
+        node.style.animation = 'fade-in-up 0.5s ease forwards';
+        
+        node.innerHTML = `
+          <div class="timeline-icon-dot"><i data-lucide="mail" style="width:8px; height:8px;"></i></div>
+          <div class="timeline-info">
+            <span class="timeline-head" style="color:#10b981;">自律営業メール送信完了 - Meet打合せ打診</span>
+            <span class="timeline-time">本日 ${timeStr} • 送信元: Auto-Pilot Agent</span>
+          </div>
+        `;
+
+        timeline.insertBefore(node, timeline.firstChild);
+        lucide.createIcons();
+
+      }, 2500);
+    }
+
+    function startDemo() {
+      resetDemo();
+
+      btnStart.disabled = true;
+      btnStart.innerHTML = `<i data-lucide="loader" class="animate-spin" style="width:16px; height:16px;"></i> 自律営業実行中...`;
+      
+      agentStatusDot.className = 'status-dot active';
+      agentStatusText.textContent = 'AI Agent: GA4 顧客行動リアルタイム監視中';
+      agentStatusText.style.color = '#f2994a';
+      lucide.createIcons();
+
+      // --- STEP 1 (0s): GA4 visitor surge and logs ---
+      let startScore = 12;
+      const gaScoreInterval = setInterval(() => {
+        startScore += Math.floor(Math.random() * 8) + 4;
+        if (startScore >= 98) {
+          clearInterval(gaScoreInterval);
+          hotScoreVal.textContent = '98';
+          hotScoreCircle.textContent = '98%';
+          meterFillCircle.style.strokeDashoffset = '3'; // 170 * 0.02
+        } else {
+          hotScoreVal.textContent = startScore.toString();
+          hotScoreCircle.textContent = `${startScore}%`;
+          
+          // strokeDashoffset logic: 170 (total circumference) -> 170 * (1 - score/100)
+          const offset = 170 - (170 * (startScore / 100));
+          meterFillCircle.style.strokeDashoffset = offset.toString();
+        }
+      }, 150);
+
+      // Trigger GA4 graph spike
+      setTimeout(() => {
+        gaNormalPath.classList.add('hidden');
+        gaSpikePath.classList.remove('hidden');
+        gaSpikeArea.classList.remove('hidden');
+        gaPointer.setAttribute('cx', '350');
+        gaPointer.setAttribute('cy', '8');
+        
+        gaTrendLabel.textContent = 'HOT INTENT SPIKE DETECTED';
+        gaTrendLabel.style.color = 'var(--accent-ga4)';
+        
+        hotMeterTitle.textContent = '【警告】超ホットリード検知！';
+        hotMeterTitle.style.color = 'var(--accent-ga4-yellow)';
+        hotMeterDesc.textContent = '特定重要顧客「ソリューションテック社」から料金・見積もりページへの連続閲覧が急増しました。即座に自律アプローチを開始します。';
+      }, 1000);
+
+      // Add GA4 Telemetry logs sequentially
+      gaTelemetryLogs.forEach((log, index) => {
+        const t = setTimeout(() => {
+          addGaLog(log.text);
+        }, index * 2000);
+        timeouts.push(t);
+      });
+
+      // --- STEP 2 (3s): Gemini / Vertex AI history scan ---
+      const aiStartTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot analyzing';
+        agentStatusText.textContent = 'AI Agent: Salesforce商談履歴分析中';
+        agentStatusText.style.color = '#00a1e0';
+
+        // Display Vertex / Gemini Thinking logs
+        aiThinkingLogs.slice(0, 5).forEach((line, index) => {
+          const t = setTimeout(() => {
+            appendTerminalLog(line.type, line.text);
+          }, index * 1200);
+          timeouts.push(t);
+        });
+      }, 3500);
+      timeouts.push(aiStartTimeout);
+
+      // --- STEP 3 (9s): Google Calendar free slots scan ---
+      const calStartTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot scheduling';
+        agentStatusText.textContent = 'AI Agent: 担当カレンダー空き日程探索中';
+        agentStatusText.style.color = '#1a73e8';
+
+        appendTerminalLog(aiThinkingLogs[5].type, aiThinkingLogs[5].text);
+        appendTerminalLog(aiThinkingLogs[6].type, aiThinkingLogs[6].text);
+        appendTerminalLog(aiThinkingLogs[7].type, aiThinkingLogs[7].text);
+
+        highlightCalendarSlots();
+      }, 9500);
+      timeouts.push(calStartTimeout);
+
+      // --- STEP 4 (13s): Gmail auto-draft creation ---
+      const gmailStartTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot analyzing';
+        agentStatusText.textContent = 'AI Agent: インサイドセールス提案メール起票中';
+        agentStatusText.style.color = '#8b5cf6';
+
+        appendTerminalLog(aiThinkingLogs[8].type, aiThinkingLogs[8].text);
+        generateSalesEmail();
+      }, 13500);
+      timeouts.push(gmailStartTimeout);
+
+      // --- STEP 5 (16s): One-click Gmail API dispatch and Salesforce Activity logging ---
+      const sendTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot';
+        agentStatusDot.style.backgroundColor = '#10b981';
+        agentStatusDot.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
+        agentStatusText.textContent = 'AI Agent: アプローチ完了 / Salesforce記録完了';
+        agentStatusText.style.color = '#10b981';
+
+        appendTerminalLog('autopilot', 'GMAIL API: Sending personalized offer mail to m.yamamoto@solution-tech.co.jp...');
+        appendTerminalLog('vertex', 'SALESFORCE API: Recording Gmail outreach log to "ソリューションテック株式会社" activity history...');
+        appendTerminalLog('gemini', 'SYSTEM SYNC: Opportunity state successfully reactivated to "CONTACTED (自律アプローチ)"');
+
+        triggerGmailSendAndSfSync();
+      }, 16500);
+      timeouts.push(sendTimeout);
+
+      // Finish state
+      const finishTimeout = setTimeout(() => {
+        btnStart.disabled = false;
+        btnStart.innerHTML = `<i data-lucide="check" style="width: 16px; height: 16px;"></i> 自律営業サイクル完了`;
+        
+        agentStatusText.textContent = 'AI Agent: サイクル完了 / 24h 監視復帰';
+        agentStatusText.style.color = '#10b981';
+        
+        appendTerminalLog('autopilot', 'AUTOPILOT SEAMLESS PIPELINE COMPLETED. Waiting for Yamamoto-sama to join the Meet.');
+        
+        lucide.createIcons();
+      }, 20000);
+      timeouts.push(finishTimeout);
+    }
+
+    function resetDemo() {
+      // Clear timeouts
+      timeouts.forEach(id => clearTimeout(id));
+      timeouts.length = 0;
+
+      // Reset GA4
+      hotScoreVal.textContent = '12';
+      hotScoreCircle.textContent = '12%';
+      meterFillCircle.style.strokeDashoffset = '150'; // 170 * (1 - 0.12)
+      
+      gaNormalPath.classList.remove('hidden');
+      gaSpikePath.classList.add('hidden');
+      gaSpikeArea.classList.add('hidden');
+      gaPointer.setAttribute('cx', '350');
+      gaPointer.setAttribute('cy', '75');
+
+      gaTrendLabel.textContent = 'NORMAL';
+      gaTrendLabel.style.color = '#64748b';
+
+      hotMeterTitle.textContent = 'トラフィック監視中';
+      hotMeterTitle.style.color = '#e2e8f0';
+      hotMeterDesc.textContent = '重要顧客IPからの特定Webアクションおよび連続遷移の頻度を検出して評価します。';
+
+      gaLogsContainer.innerHTML = '';
+      gaLogsContainer.appendChild(gaPlaceholder);
+      gaPlaceholder.style.display = 'flex';
+
+      // Reset AI Terminal
+      aiTerminal.innerHTML = `
+        <div class="ai-log-line" style="color:#64748b;">
+          &gt; Auto-Pilot core AI standby. Awaiting telemetry...
+        </div>
+      `;
+
+      // Reset Calendar slots
+      slotMon.className = 'cal-cell';
+      slotMon.textContent = '';
+      slotTue.className = 'cal-cell';
+      slotTue.textContent = '';
+      slotWed.className = 'cal-cell';
+      slotWed.textContent = '';
+      calWidget.classList.remove('scanning');
+
+      // Reset Salesforce profile
+      sfLeadStatus.className = 'sf-status-pill sf-pill-dormant';
+      sfLeadStatus.textContent = '休眠顧客 (失注クローズ)';
+      
+      // Clear timeline dynamic entries (keep only the original two)
+      sfTimelineContainer.innerHTML = `
+        <div class="timeline-node">
+          <div class="timeline-icon-dot"><i data-lucide="x" style="width:8px; height:8px;"></i></div>
+          <div class="timeline-info">
+            <span class="timeline-head">商談保留（ロスト）- 予算期合わず</span>
+            <span class="timeline-time">2026/01/15 • 担当: 山田</span>
+          </div>
+        </div>
+        <div class="timeline-node">
+          <div class="timeline-icon-dot"><i data-lucide="phone" style="width:8px; height:8px;"></i></div>
+          <div class="timeline-info">
+            <span class="timeline-head">ヒアリング架電（予算感確認）</span>
+            <span class="timeline-time">2026/01/10 • 担当: 山田</span>
+          </div>
+        </div>
+      `;
+
+      // Reset Gmail card
+      gmailCard.style.opacity = '0.3';
+      gmailSubject.textContent = '---';
+      gmailTo.textContent = '---';
+      gmailBody.innerHTML = `自動営業フローが作動すると、カレンダー空き枠スケジュール候補および自動生成されたGoogle Meetリンクをパーソナライズして自動下書き起票・自動送信します。`;
+      gmailMeet.classList.add('hidden');
+      gmailStatus.className = 'gmail-send-status';
+      gmailStatus.innerHTML = `<i data-lucide="clock" style="width:12px; height:12px;"></i> <span>送信待機中</span>`;
+      gmailTime.textContent = '---';
+
+      // Reset Controls
+      btnStart.disabled = false;
+      btnStart.innerHTML = `<i data-lucide="play" style="width: 16px; height: 16px;"></i> 自動営業を開始する`;
+
+      agentStatusDot.className = 'status-dot';
+      agentStatusDot.style.backgroundColor = '#94a3b8';
+      agentStatusDot.style.boxShadow = '0 0 8px rgba(148, 163, 184, 0.4)';
+      agentStatusText.textContent = 'AI Agent: アイドル監視中';
+      agentStatusText.style.color = '#94a3b8';
+
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ad-Gazer - 自律マーケティング最適化エージェント デモ</title>
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* --- CSS DESIGN SYSTEM --- */
+    :root {
+      --bg-dark: #07090e;
+      --bg-card: rgba(13, 17, 28, 0.65);
+      --border-card: rgba(255, 255, 255, 0.05);
+      --font-primary: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Outfit', sans-serif;
+      
+      /* Brand Accent Colors */
+      --accent-youtube: #ff0000;
+      --accent-google-ads: #1a73e8;
+      --accent-salesforce: #00a1e0;
+      --accent-gemini-purple: #8b5cf6;
+      --accent-gemini-pink: #ec4899;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      
+      /* Glows */
+      --shadow-youtube: 0 0 25px rgba(255, 0, 0, 0.25);
+      --shadow-ads: 0 0 25px rgba(26, 115, 232, 0.25);
+      --shadow-gemini: 0 0 25px rgba(139, 92, 246, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: radial-gradient(circle at 50% 120%, #15102a 0%, var(--bg-dark) 80%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* --- TYPOGRAPHY & SCROLLBAR --- */
+    h1, h2, h3, .font-display {
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* --- GLASSMORPHISM CARDS --- */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+    }
+
+    /* --- LAYOUT HEADER --- */
+    header {
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-card);
+      background: rgba(7, 9, 14, 0.5);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--accent-gemini-purple), var(--accent-gemini-pink));
+      padding: 0.5rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-gemini);
+    }
+
+    .logo-title {
+      font-size: 1.5rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #ffffff, #e2e8f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-subtitle {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-left: 0.5rem;
+      padding: 0.2rem 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .demo-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      font-family: var(--font-primary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-gemini-purple), var(--accent-gemini-pink));
+      color: white;
+      box-shadow: var(--shadow-gemini);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.15);
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
+
+    .agent-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(13, 17, 28, 0.8);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #94a3b8;
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.4);
+    }
+    
+    .status-dot.listening {
+      background-color: var(--accent-success);
+      box-shadow: 0 0 10px var(--accent-success);
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-dot.reasoning {
+      background-color: var(--accent-gemini-purple);
+      box-shadow: 0 0 10px var(--accent-gemini-purple);
+      animation: pulse 1s infinite;
+    }
+
+    .status-dot.optimizing {
+      background-color: var(--accent-google-ads);
+      box-shadow: 0 0 10px var(--accent-google-ads);
+      animation: pulse 0.8s infinite;
+    }
+
+    /* --- DASHBOARD GRID --- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.05fr 1.35fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      height: calc(100vh - 86px);
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+      }
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .column-title {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .column-subtitle {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    /* --- COLUMN 1: YOUTUBE MONITOR --- */
+    .youtube-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .yt-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Target Video Details Card */
+    .yt-video-profile {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      gap: 0.75rem;
+      border: 1px solid rgba(255, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .yt-video-profile::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background-color: var(--accent-youtube);
+    }
+
+    .yt-thumbnail {
+      width: 100px;
+      height: 60px;
+      background: linear-gradient(135deg, #1e1b4b, #ff000055);
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .yt-thumbnail i {
+      color: white;
+      width: 24px;
+      height: 24px;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+    }
+
+    .yt-video-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.25rem;
+    }
+
+    .yt-video-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      line-height: 1.3;
+    }
+
+    .yt-video-metrics {
+      display: flex;
+      gap: 0.85rem;
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    .metric-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .metric-value-dynamic {
+      font-weight: 700;
+      color: white;
+      transition: color 0.3s ease;
+    }
+
+    .metric-value-dynamic.spiking {
+      color: var(--accent-youtube);
+      animation: text-pulse 1s infinite alternate;
+    }
+
+    /* Trend Chart */
+    .yt-chart-box {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .chart-svg-container {
+      width: 100%;
+      height: 90px;
+    }
+
+    .svg-line {
+      fill: none;
+      stroke: var(--accent-youtube);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .svg-area {
+      fill: url(#yt-chart-grad);
+    }
+
+    .svg-point {
+      fill: var(--accent-youtube);
+      stroke: white;
+      stroke-width: 1.5;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+
+    .trend-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: var(--accent-youtube);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* Keyword Tags */
+    .keyword-hub {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .keyword-tags-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .keyword-tag {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      transition: all 0.3s ease;
+    }
+
+    .keyword-tag.spike {
+      border-color: rgba(255, 0, 0, 0.3);
+      background: rgba(255, 0, 0, 0.05);
+      color: #fca5a5;
+    }
+
+    .keyword-tag.spike.glow {
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+      transform: scale(1.05);
+    }
+
+    .tag-percent {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--accent-youtube);
+    }
+
+    /* Comment Feed */
+    .comment-stream-box {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      padding: 1rem;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 180px;
+    }
+
+    .yt-comment-bubble {
+      display: flex;
+      gap: 0.6rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      padding: 0.6rem;
+      border-radius: 10px;
+      animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #475569;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+
+    .comment-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .comment-author {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .comment-text {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    /* --- COLUMN 2: GEMINI INFERENCE --- */
+    .gemini-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gemini-card.reasoning::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--accent-gemini-purple), var(--accent-gemini-pink), transparent);
+      animation: scan 2.5s linear infinite;
+      z-index: 10;
+      opacity: 0.7;
+    }
+
+    .gemini-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .ai-engine-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: linear-gradient(to right, rgba(139, 92, 246, 0.06), rgba(236, 72, 153, 0.06));
+      border-radius: 12px;
+      border: 1px solid rgba(139, 92, 246, 0.15);
+    }
+
+    .engine-name {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 0.8rem;
+      background: linear-gradient(to right, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Thinking Logs (Typewriter Style) */
+    .thinking-logs-box {
+      flex: 1.3;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 1rem;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.72rem;
+      color: #a7f3d0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-height: 220px;
+    }
+
+    .thinking-log-line {
+      line-height: 1.5;
+      word-break: break-all;
+      animation: fade-in 0.3s ease-out forwards;
+    }
+
+    .log-prefix-analysis { color: #60a5fa; font-weight: 700; }
+    .log-prefix-reasoning { color: #c084fc; font-weight: 700; }
+    .log-prefix-decision { color: #fbbf24; font-weight: 700; }
+    .log-prefix-action { color: #f43f5e; font-weight: 700; }
+
+    /* Marketing Email Draft Preview */
+    .email-preview-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 1rem;
+    }
+
+    .email-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      animation: scale-up 0.4s ease forwards;
+    }
+
+    .email-meta-row {
+      display: flex;
+      font-size: 0.7rem;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 0.4rem;
+    }
+
+    .email-meta-label {
+      width: 55px;
+      font-weight: 600;
+    }
+
+    .email-meta-value {
+      color: #e2e8f0;
+    }
+
+    .email-body-preview {
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.5rem;
+      border-radius: 6px;
+      max-height: 90px;
+      overflow-y: auto;
+      line-height: 1.4;
+    }
+
+    .email-video-embed {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 0, 0, 0.05);
+      border: 1px solid rgba(255, 0, 0, 0.15);
+      border-radius: 6px;
+      padding: 0.4rem;
+      margin-top: 0.25rem;
+    }
+
+    .embed-play-btn {
+      width: 24px;
+      height: 24px;
+      background: var(--accent-youtube);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    /* --- COLUMN 3: ADS & SALESFORCE --- */
+    .integrations-card {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .systems-split {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 1.25rem;
+      gap: 1.25rem;
+      overflow-y: auto;
+    }
+
+    /* Google Ads section */
+    .ads-integration-panel {
+      background: rgba(26, 115, 232, 0.03);
+      border: 1px solid rgba(26, 115, 232, 0.15);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+    }
+
+    .ads-integration-panel.tuning {
+      box-shadow: 0 0 15px rgba(26, 115, 232, 0.1);
+      border-color: rgba(26, 115, 232, 0.4);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .panel-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(26, 115, 232, 0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(26, 115, 232, 0.2);
+    }
+
+    .panel-status {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .panel-status.active-tuned {
+      color: var(--accent-success);
+      animation: pulse 1s infinite alternate;
+    }
+
+    /* Google Ads Keyword table */
+    .ads-keywords-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.72rem;
+      text-align: left;
+    }
+
+    .ads-keywords-table th {
+      color: #64748b;
+      padding: 0.4rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-weight: 600;
+    }
+
+    .ads-keywords-table td {
+      padding: 0.45rem 0.4rem;
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+    }
+
+    .keyword-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 600;
+    }
+
+    .bid-arrow {
+      color: var(--accent-success);
+      margin-left: 0.25rem;
+      display: none;
+      animation: fade-in 0.3s ease;
+    }
+
+    .row-highlight-ads {
+      animation: highlight-row-ads 2.5s ease-in-out forwards;
+    }
+
+    /* Salesforce Integration */
+    .sf-integration-panel {
+      background: rgba(0, 161, 224, 0.02);
+      border: 1px solid rgba(0, 161, 224, 0.12);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      min-height: 200px;
+    }
+
+    .panel-badge-sf {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(0, 161, 224, 0.12);
+      color: #93e2fd;
+      border: 1px solid rgba(0, 161, 224, 0.15);
+    }
+
+    .sf-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.15);
+      max-height: 180px;
+    }
+
+    .sf-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.7rem;
+    }
+
+    .sf-table th {
+      background: rgba(255, 255, 255, 0.02);
+      color: #94a3b8;
+      font-weight: 600;
+      padding: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      position: sticky;
+      top: 0;
+    }
+
+    .sf-table td {
+      padding: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      color: #cbd5e1;
+    }
+
+    .lead-status-tag {
+      display: inline-block;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.6rem;
+      font-weight: 700;
+    }
+
+    .status-unreached {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.15);
+    }
+
+    .status-dispatched {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      animation: glow-pulse 1.5s infinite alternate;
+    }
+
+    /* Gmail dispatch progress bar */
+    .dispatch-progress-box {
+      background: rgba(0,0,0,0.2);
+      padding: 0.75rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .dispatch-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(to right, var(--accent-gemini-purple), var(--accent-success));
+      transition: width 0.3s ease;
+    }
+
+    /* --- ANIMATIONS --- */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.96); }
+    }
+
+    @keyframes text-pulse {
+      0% { color: #f87171; }
+      100% { color: #ef4444; }
+    }
+
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes scale-up {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes scan {
+      0% { top: 0%; }
+      50% { top: 100%; }
+      100% { top: 0%; }
+    }
+
+    @keyframes highlight-row-ads {
+      0% { background-color: rgba(26, 115, 232, 0.25); }
+      100% { background-color: transparent; }
+    }
+
+    @keyframes glow-pulse {
+      0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.1); }
+      100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+    }
+
+    /* Utility classes */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge">
+        <i data-lucide="sparkles" style="color: white; width: 22px; height: 22px;"></i>
+      </div>
+      <div>
+        <h1 class="logo-title font-display">Ad-Gazer</h1>
+      </div>
+      <span class="logo-subtitle">自律マーケティング最適化</span>
+    </div>
+
+    <!-- Agent Status and Controls -->
+    <div class="demo-controls">
+      <div class="agent-status-badge">
+        <span class="status-dot" id="agent-status-dot"></span>
+        <span id="agent-status-text" style="font-weight: 600; color: #94a3b8;">AI Agent: アイドル監視中</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-reset" onclick="resetDemo()">
+        <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i> リセット
+      </button>
+      <button class="btn btn-primary" id="btn-start" onclick="startDemo()">
+        <i data-lucide="play" style="width: 16px; height: 16px;"></i> 自動最適化を開始する
+      </button>
+    </div>
+  </header>
+
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid">
+    
+    <!-- COLUMN 1: YOUTUBE MONITOR -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="youtube" style="color: var(--accent-youtube);"></i>
+          <span>YouTube トレンド監視フィード</span>
+        </div>
+        <span class="column-subtitle">再生・エンゲージメント検知</span>
+      </div>
+
+      <div class="youtube-card glass-card">
+        <div class="yt-view-container">
+          
+          <!-- YouTube Profile Card -->
+          <div class="yt-video-profile">
+            <div class="yt-thumbnail">
+              <i data-lucide="play-circle"></i>
+            </div>
+            <div class="yt-video-info">
+              <span class="yt-video-title">【製造業DX】5分でわかるスマート工場化への第一歩</span>
+              <div class="yt-video-metrics">
+                <div class="metric-item">
+                  <i data-lucide="eye" style="width:12px; height:12px;"></i>
+                  <span>再生数:</span>
+                  <span class="metric-value-dynamic" id="metric-views">12,450</span>
+                </div>
+                <div class="metric-item">
+                  <i data-lucide="message-square" style="width:12px; height:12px;"></i>
+                  <span>コメント数:</span>
+                  <span class="metric-value-dynamic" id="metric-comments">48</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- YouTube View Spike Chart -->
+          <div class="yt-chart-box">
+            <div class="chart-header">
+              <span>リアルタイム動画再生トレンド (24h)</span>
+              <div class="trend-indicator" id="trend-indicator-label">
+                <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i>
+                <span id="trend-val">NORMAL</span>
+              </div>
+            </div>
+            <div class="chart-svg-container">
+              <svg viewBox="0 0 350 90" width="100%" height="100%">
+                <defs>
+                  <linearGradient id="yt-chart-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#ff0000" stop-opacity="0.3"></stop>
+                    <stop offset="100%" stop-color="#ff0000" stop-opacity="0"></stop>
+                  </linearGradient>
+                </defs>
+                <!-- Grid lines -->
+                <line x1="0" y1="15" x2="350" y2="15" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
+                <line x1="0" y1="45" x2="350" y2="45" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
+                <line x1="0" y1="75" x2="350" y2="75" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
+                
+                <!-- Normal Line Path (initial) -->
+                <path d="M0,75 L50,70 L100,75 L150,72 L200,68 L250,70 L300,72 L350,70" class="svg-line" id="chart-normal-path" stroke="rgba(255,255,255,0.2)"></path>
+                
+                <!-- Spike Line Path (dynamic) -->
+                <path d="M0,75 L50,70 L100,75 L150,72 L200,68 L250,60 L280,30 L300,10 L320,8 L350,5" class="svg-line hidden" id="chart-spike-path"></path>
+                <path d="M0,75 L50,70 L100,75 L150,72 L200,68 L250,60 L280,30 L300,10 L320,8 L350,5 L350,90 L0,90 Z" class="svg-area hidden" id="chart-spike-area"></path>
+                
+                <!-- Dynamic Pointer Point -->
+                <circle cx="350" cy="70" r="4" class="svg-point" id="chart-pointer"></circle>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Keyword tags -->
+          <div class="keyword-hub">
+            <span style="font-size:0.75rem; font-weight:700; color:#64748b; margin-bottom:0.2rem; display:block;">急上昇トレンドワード</span>
+            <div class="keyword-tags-wrapper">
+              <div class="keyword-tag spike" id="tag-dx">
+                <span>製造業DX</span>
+                <span class="tag-percent" id="pct-dx">+12%</span>
+              </div>
+              <div class="keyword-tag" id="tag-smart">
+                <span>スマートファクトリー</span>
+                <span class="tag-percent" id="pct-smart">+5%</span>
+              </div>
+              <div class="keyword-tag" id="tag-iot">
+                <span>IoT工場</span>
+                <span class="tag-percent" id="pct-iot">+2%</span>
+              </div>
+              <div class="keyword-tag">
+                <span>自動化設備</span>
+                <span class="tag-percent">+1%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comments Streaming Area -->
+          <div class="comment-stream-box" id="comment-container">
+            <!-- Initial placeholder or comments -->
+            <div class="no-detections" id="comments-placeholder" style="border:none; padding:1.5rem 0;">
+              <i data-lucide="message-square" style="width: 24px; height: 24px; color: #334155;"></i>
+              <p style="font-size:0.75rem;">「自動最適化を開始」すると、リアルタイムの視聴者コメントが流れ始めます。</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: GEMINI INFERENCE -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="sparkles" style="color: #a855f7;"></i>
+          <span>Gemini 推論・マーケティング判断</span>
+        </div>
+        <span class="column-subtitle">自律推論意思決定ログ</span>
+      </div>
+
+      <div class="gemini-card glass-card" id="gemini-processing-card">
+        <div class="gemini-view-container">
+          
+          <!-- AI Engine Identity -->
+          <div class="ai-engine-info">
+            <div class="engine-name">
+              <i data-lucide="brain-circuit" style="width: 14px; height: 14px;"></i>
+              Gemini Enterprise Marketer
+            </div>
+            <div style="font-size: 0.7rem; color: #a78bfa; font-weight:700; letter-spacing:0.05em;">
+              DECISION ENGINE
+            </div>
+          </div>
+
+          <!-- Thinking Logs Terminal -->
+          <div class="thinking-logs-box" id="thinking-logs-box">
+            <div class="thinking-log-line" style="color:#64748b;">
+              &gt; Ad-Gazer marketing inference standby. Ready to optimize...
+            </div>
+          </div>
+
+          <!-- Email Preview Area -->
+          <div class="email-preview-box" id="email-preview-box">
+            <div class="table-title">
+              <i data-lucide="mail-open" style="width: 14px; height: 14px; color: #ec4899;"></i>
+              <span>Gmail インサイドセールス自動生成プレビュー</span>
+            </div>
+            
+            <div class="email-card" id="email-card" style="opacity:0.3;">
+              <div class="email-meta-row">
+                <span class="email-meta-label">件名:</span>
+                <span class="email-meta-value" id="email-subject">---</span>
+              </div>
+              <div class="email-meta-row">
+                <span class="email-meta-label">宛先セグ:</span>
+                <span class="email-meta-value" style="color:#00a1e0; font-weight:700;" id="email-target">---</span>
+              </div>
+              <div class="email-body-preview" id="email-body">
+                自動最適化フローの実行後、Geminiが抽出リードセグメントに最適な動画埋め込みパーソナライズドメール文面を自動作成します。
+              </div>
+              
+              <div class="email-video-embed hidden" id="email-video">
+                <div class="embed-play-btn"><i data-lucide="play" style="width:10px; height:10px; fill:white;"></i></div>
+                <div style="display:flex; flex-direction:column; gap:0.1rem;">
+                  <span style="font-size:0.65rem; font-weight:700;">【動画】5分でわかるスマート工場化への第一歩</span>
+                  <span style="font-size:0.55rem; color:#fca5a5;">YouTube埋め込みサムネイル付きリンク</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: ADS & SALESFORCE -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="settings-2" style="color: #1a73e8;"></i>
+          <span>Google Ads & Salesforce 連携</span>
+        </div>
+        <span class="column-subtitle">自律アクション実行</span>
+      </div>
+
+      <div class="integrations-card glass-card">
+        <div class="systems-split">
+          
+          <!-- Google Ads Section -->
+          <div class="ads-integration-panel" id="ads-panel">
+            <div class="panel-header">
+              <span class="panel-badge">
+                <i data-lucide="layout-grid" style="width:11px; height:11px;"></i>
+                Google Ads
+              </span>
+              <span class="panel-status" id="ads-panel-status">MONITORING</span>
+            </div>
+            
+            <table class="ads-keywords-table">
+              <thead>
+                <tr>
+                  <th>入札キーワード</th>
+                  <th>マッチタイプ</th>
+                  <th>推奨単価</th>
+                  <th>推奨スコア</th>
+                </tr>
+              </thead>
+              <tbody id="ads-keywords-body">
+                <tr>
+                  <td class="keyword-name-cell"><i data-lucide="key" style="width:10px; height:10px; color:#64748b;"></i>製造業 生産管理</td>
+                  <td>フレーズ一致</td>
+                  <td>¥120</td>
+                  <td style="color:#64748b;">82%</td>
+                </tr>
+                <tr>
+                  <td class="keyword-name-cell"><i data-lucide="key" style="width:10px; height:10px; color:#64748b;"></i>工場 IoT化 基礎</td>
+                  <td>フレーズ一致</td>
+                  <td>¥150</td>
+                  <td style="color:#64748b;">78%</td>
+                </tr>
+                <!-- Dynamic Keywords will append here -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Salesforce Section -->
+          <div class="sf-integration-panel">
+            <div class="panel-header">
+              <span class="panel-badge-sf">
+                <i data-lucide="cloud" style="width:11px; height:11px;"></i>
+                Salesforce Lead
+              </span>
+              <span class="column-subtitle" id="sf-target-count" style="font-weight:700;">製造業リード: 未抽出</span>
+            </div>
+
+            <div class="sf-wrapper">
+              <table class="sf-table">
+                <thead>
+                  <tr>
+                    <th>企業名</th>
+                    <th>担当部署 / 氏名</th>
+                    <th>リードセグメント</th>
+                    <th>アプローチ状態</th>
+                  </tr>
+                </thead>
+                <tbody id="sf-body">
+                  <tr id="empty-sf-row">
+                    <td colspan="4" style="text-align: center; color: #475569; padding: 2rem;">
+                      最適化の実行後、製造業セグメントの顧客リードが自動抽出されます。
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Gmail Progress Panel -->
+            <div class="dispatch-progress-box">
+              <div class="dispatch-header">
+                <span style="font-weight:600;"><i data-lucide="send" style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:0.25rem;"></i>Gmail一斉インサイド配信</span>
+                <span id="dispatch-count">0 / 0通</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="dispatch-progress-fill"></div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- --- JAVASCRIPT LOGIC & SCENARIO --- -->
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // DOM Elements
+    const btnStart = document.getElementById('btn-start');
+    const agentStatusDot = document.getElementById('agent-status-dot');
+    const agentStatusText = document.getElementById('agent-status-text');
+    
+    // YouTube Columns elements
+    const metricViews = document.getElementById('metric-views');
+    const metricComments = document.getElementById('metric-comments');
+    const trendIndicatorLabel = document.getElementById('trend-indicator-label');
+    const trendValText = document.getElementById('trend-val');
+    const chartNormalPath = document.getElementById('chart-normal-path');
+    const chartSpikePath = document.getElementById('chart-spike-path');
+    const chartSpikeArea = document.getElementById('chart-spike-area');
+    const chartPointer = document.getElementById('chart-pointer');
+    const commentContainer = document.getElementById('comment-container');
+    const commentsPlaceholder = document.getElementById('comments-placeholder');
+    const tagDx = document.getElementById('tag-dx');
+    const tagSmart = document.getElementById('tag-smart');
+    const tagIot = document.getElementById('tag-iot');
+    const pctDx = document.getElementById('pct-dx');
+    const pctSmart = document.getElementById('pct-smart');
+    const pctIot = document.getElementById('pct-iot');
+
+    // Gemini Elements
+    const thinkingLogsBox = document.getElementById('thinking-logs-box');
+    const geminiProcessingCard = document.getElementById('gemini-processing-card');
+    const emailCard = document.getElementById('email-card');
+    const emailSubject = document.getElementById('email-subject');
+    const emailTarget = document.getElementById('email-target');
+    const emailBody = document.getElementById('email-body');
+    const emailVideo = document.getElementById('email-video');
+
+    // Integrations Elements
+    const adsPanel = document.getElementById('ads-panel');
+    const adsPanelStatus = document.getElementById('ads-panel-status');
+    const adsKeywordsBody = document.getElementById('ads-keywords-body');
+    const sfBody = document.getElementById('sf-body');
+    const emptySfRow = document.getElementById('empty-sf-row');
+    const sfTargetCount = document.getElementById('sf-target-count');
+    const dispatchCount = document.getElementById('dispatch-count');
+    const dispatchProgressFill = document.getElementById('dispatch-progress-fill');
+
+    let timeouts = [];
+
+    // Comments data stream
+    const ytCommentsScenario = [
+      { author: 'saito_tech', text: '工場の見える化を今期検討していたので、非常に参考になる動画ですね。スマート工場の第1歩目が分かりやすい。' },
+      { author: 'IoT_mfg', text: 'うちの昭和期の古いプレス機でも、後付けセンサーでIoT化って可能でしょうか？導入コストが気になります。' },
+      { author: 'nakamura_factory', text: '製造業DXという言葉ばかりが先行して不安でしたが、これなら小規模から始められそうです。' },
+      { author: 'smart_engineer', text: '生産ラインのボトルネック分析を自動化した事例がもっと知りたいです。この動画は素晴らしいですね。' }
+    ];
+
+    // Salesforce Mock lead list (all manufacturing)
+    const sfMockLeads = [
+      { company: '朝日機械工業株式会社', contact: '製造管理部 / 佐藤 健二 様', segment: '製造業 (東日本)' },
+      { company: '山下テクノソリューションズ', contact: 'DX推進部 / 鈴木 美咲 様', segment: '製造業 (東海)' },
+      { company: 'シンワ精密工業', contact: '工場長 / 田中 勝一 様', segment: '製造業 (九州)' },
+      { company: 'オオタカ電子機器株式会社', contact: '代表取締役 / 高橋 敏雄 様', segment: '製造業 (関西)' }
+    ];
+
+    // Gemini Thinking inference lines
+    const thinkingScenario = [
+      { type: 'analysis', text: 'Analyzing YouTube Data API metrics for target channel...' },
+      { type: 'analysis', text: 'DETECTION: Rapid views spike (+240%) and comments surge detected on Video ID [dx-smart-05].' },
+      { type: 'analysis', text: 'SENTIMENT ANALYSIS: Comments Sentiment Score: 94.6% Positive. Key user inquiries identified: "IoT化コスト", "DX導入手順", "スマート工場化ボトルネック".' },
+      { type: 'reasoning', text: 'REASONING: High market focus verified for keyword "製造業DX" & "スマートファクトリー". Current YouTube momentum creates an optimal window for high-converting outreach.' },
+      { type: 'reasoning', text: 'MATCHING: Cross-referencing Salesforce client database. Identifying "製造業" (Manufacturing) segments with "Unreached" lead status. 52 targeted enterprise leads extracted.' },
+      { type: 'decision', text: 'DECISION: Auto-tune Google Ads campaign to maximize inbound search traffic. Generate video-embedded marketing email for 52 Salesforce leads in parallel.' },
+      { type: 'action', text: 'ACTION: Injecting smart keywords to Google Ads. Auto-optimizing bid strategies.' },
+      { type: 'action', text: 'ACTION: Creating tailored Gmail draft embedded with YouTube thumbnail DX video...' },
+      { type: 'action', text: 'ACTION: Commencing lead outreach一斉一括送信 dispatch via Gmail API...' }
+    ];
+
+    function appendThinkingLog(type, text) {
+      const line = document.createElement('div');
+      line.className = 'thinking-log-line';
+      let prefix = '';
+      
+      if (type === 'analysis') prefix = `<span class="log-prefix-analysis">[ANALYSIS]</span> `;
+      if (type === 'reasoning') prefix = `<span class="log-prefix-reasoning">[REASONING]</span> `;
+      if (type === 'decision') prefix = `<span class="log-prefix-decision">[DECISION]</span> `;
+      if (type === 'action') prefix = `<span class="log-prefix-action">[自律ACTION]</span> `;
+
+      line.innerHTML = `&gt; ${prefix}${text}`;
+      thinkingLogsBox.appendChild(line);
+      thinkingLogsBox.scrollTop = thinkingLogsBox.scrollHeight;
+    }
+
+    function addYtComment(author, text) {
+      if (commentsPlaceholder) {
+        commentsPlaceholder.style.display = 'none';
+      }
+
+      const bubble = document.createElement('div');
+      bubble.className = 'yt-comment-bubble';
+      
+      const avatarText = author.substring(0, 2).toUpperCase();
+
+      bubble.innerHTML = `
+        <div class="user-avatar">${avatarText}</div>
+        <div class="comment-content">
+          <span class="comment-author">@${author}</span>
+          <span class="comment-text">${text}</span>
+        </div>
+      `;
+
+      commentContainer.appendChild(bubble);
+      commentContainer.scrollTop = commentContainer.scrollHeight;
+    }
+
+    function triggerAdsTune() {
+      adsPanel.classList.add('tuning');
+      adsPanelStatus.textContent = 'OPTIMIZING BID & KEYWORDS...';
+      adsPanelStatus.className = 'panel-status active-tuned';
+
+      const tbody = document.getElementById('ads-keywords-body');
+
+      const keywordsToInsert = [
+        { name: 'スマートファクトリー 導入', match: 'フレーズ一致', bid: 150, newBid: 172, score: '96%' },
+        { name: '製造業DX 支援ツール', match: '完全一致', bid: 180, newBid: 207, score: '94%' }
+      ];
+
+      keywordsToInsert.forEach((kw, i) => {
+        setTimeout(() => {
+          const tr = document.createElement('tr');
+          tr.className = 'row-highlight-ads';
+          
+          tr.innerHTML = `
+            <td class="keyword-name-cell">
+              <i data-lucide="sparkles" style="width:10px; height:10px; color:#1a73e8; fill:#1a73e8;"></i>
+              ${kw.name}
+            </td>
+            <td>${kw.match}</td>
+            <td style="font-weight:700;">
+              ¥${kw.bid} <i data-lucide="arrow-right" style="width:10px; height:10px; display:inline-block; vertical-align:middle; margin:0 2px;"></i>
+              <span style="color:#10b981;">¥${kw.newBid}</span>
+              <i data-lucide="trending-up" class="bid-arrow" style="display:inline-block;"></i>
+            </td>
+            <td style="font-weight:700; color:#1a73e8;">${kw.score}</td>
+          `;
+
+          tbody.insertBefore(tr, tbody.firstChild);
+          lucide.createIcons();
+        }, i * 1500);
+      });
+
+      // Update the original rows bids to represent budget tuning
+      setTimeout(() => {
+        adsPanelStatus.textContent = 'ACTIVE (AUTO-TUNED)';
+        adsPanel.classList.remove('tuning');
+      }, 4000);
+    }
+
+    function extractSalesforceLeads() {
+      if (emptySfRow) {
+        emptySfRow.style.display = 'none';
+      }
+
+      sfTargetCount.textContent = '製造業リード: 52件抽出完了';
+      sfTargetCount.style.color = '#00a1e0';
+
+      sfMockLeads.forEach((lead, i) => {
+        setTimeout(() => {
+          const tr = document.createElement('tr');
+          tr.style.animation = 'fade-in-up 0.4s ease forwards';
+          tr.id = `sf-row-${i}`;
+          
+          tr.innerHTML = `
+            <td style="font-weight:600;">${lead.company}</td>
+            <td>${lead.contact}</td>
+            <td>${lead.segment}</td>
+            <td>
+              <span class="lead-status-tag status-unreached" id="sf-status-${i}">未アプローチ</span>
+            </td>
+          `;
+
+          sfBody.appendChild(tr);
+        }, i * 3000);
+      });
+    }
+
+    function triggerGmailDispatch() {
+      // Setup progress animation for 52 leads
+      let count = 0;
+      const total = 52;
+      dispatchCount.textContent = `${count} / ${total}通`;
+
+      const dispatchInterval = setInterval(() => {
+        count += 4;
+        if (count > total) count = total;
+        
+        const pct = (count / total) * 100;
+        dispatchProgressFill.style.width = `${pct}%`;
+        dispatchCount.textContent = `${count} / ${total}通`;
+
+        // Update Salesforce mock rows status as sent
+        if (count >= 12 && document.getElementById('sf-status-0')) {
+          document.getElementById('sf-status-0').className = 'lead-status-tag status-dispatched';
+          document.getElementById('sf-status-0').textContent = 'メール送信済';
+        }
+        if (count >= 24 && document.getElementById('sf-status-1')) {
+          document.getElementById('sf-status-1').className = 'lead-status-tag status-dispatched';
+          document.getElementById('sf-status-1').textContent = 'メール送信済';
+        }
+        if (count >= 36 && document.getElementById('sf-status-2')) {
+          document.getElementById('sf-status-2').className = 'lead-status-tag status-dispatched';
+          document.getElementById('sf-status-2').textContent = 'メール送信済';
+        }
+        if (count >= 52 && document.getElementById('sf-status-3')) {
+          document.getElementById('sf-status-3').className = 'lead-status-tag status-dispatched';
+          document.getElementById('sf-status-3').textContent = 'メール送信済';
+        }
+
+        if (count >= total) {
+          clearInterval(dispatchInterval);
+        }
+      }, 250);
+    }
+
+    function generateEmailPreview() {
+      emailCard.style.opacity = '1';
+      emailSubject.textContent = '【製造業DX】スマート工場化を推進する最新アプローチのご紹介';
+      emailTarget.textContent = 'Salesforce製造業リード (52社)';
+      
+      emailBody.innerHTML = `
+        いつも大変お世話になっております。Ad-Gazerマーケティング事務局です。<br><br>
+        現在、製造現場でIoT導入やスマート工場化のご要望が急速に高まっております。弊社が開発した<b>「わずか5分でわかるスマート工場化の基礎動画」</b>を、御社のDX推進にぜひご活用ください。<br><br>
+        古い機械へのIoTセンサー後付け事例も紹介しております。
+      `;
+      
+      emailVideo.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function startDemo() {
+      // Clear previous states
+      resetDemo();
+
+      btnStart.disabled = true;
+      btnStart.innerHTML = `<i data-lucide="loader" class="animate-spin" style="width:16px; height:16px;"></i> マーケティング最適化中...`;
+      
+      agentStatusDot.className = 'status-dot listening';
+      agentStatusText.textContent = 'AI Agent: YouTubeトレンド監視中';
+      agentStatusText.style.color = '#ff0000';
+      lucide.createIcons();
+
+      // --- STEP 1 (0s): YouTube Spike animation ---
+      let startViews = 12450;
+      let startComments = 48;
+      
+      // Animate YouTube spike values
+      const ytMetricInterval = setInterval(() => {
+        startViews += Math.floor(Math.random() * 800) + 500;
+        startComments += Math.floor(Math.random() * 2);
+        
+        if (startViews >= 25890) {
+          clearInterval(ytMetricInterval);
+          metricViews.textContent = (25890).toLocaleString();
+          metricComments.textContent = '62';
+          metricViews.className = 'metric-value-dynamic spiking';
+          metricComments.className = 'metric-value-dynamic spiking';
+        } else {
+          metricViews.textContent = startViews.toLocaleString();
+          metricComments.textContent = startComments.toString();
+        }
+      }, 150);
+
+      // Trigger spike chart
+      setTimeout(() => {
+        chartNormalPath.classList.add('hidden');
+        chartSpikePath.classList.remove('hidden');
+        chartSpikeArea.classList.remove('hidden');
+        chartPointer.setAttribute('cx', '350');
+        chartPointer.setAttribute('cy', '5');
+        
+        trendIndicatorLabel.style.color = 'var(--accent-youtube)';
+        trendValText.textContent = 'SPIKE DETECTED (+240%)';
+        
+        // Highlight keyword tags with neon glow
+        tagDx.classList.add('glow');
+        tagSmart.classList.add('spike', 'glow');
+        tagIot.classList.add('spike', 'glow');
+        pctDx.textContent = '+320%';
+        pctSmart.textContent = '+240%';
+        pctIot.textContent = '+180%';
+      }, 800);
+
+      // Stream YouTube comments sequentially
+      ytCommentsScenario.forEach((cmt, index) => {
+        const t = setTimeout(() => {
+          addYtComment(cmt.author, cmt.text);
+        }, index * 2000);
+        timeouts.push(t);
+      });
+
+      // --- STEP 2 (3s): Gemini Processor active ---
+      const geminiStartTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot reasoning';
+        agentStatusText.textContent = 'AI Agent: トレンド相関推論中';
+        agentStatusText.style.color = '#8b5cf6';
+        geminiProcessingCard.classList.add('reasoning');
+
+        // Typewriter simulation of Gemini Thinking process
+        thinkingScenario.slice(0, 3).forEach((line, index) => {
+          const typeTime = setTimeout(() => {
+            appendThinkingLog(line.type, line.text);
+          }, index * 1000);
+          timeouts.push(typeTime);
+        });
+      }, 3000);
+      timeouts.push(geminiStartTimeout);
+
+      // --- STEP 3 (6s): Salesforce lead extraction ---
+      const sfTimeout = setTimeout(() => {
+        thinkingScenario.slice(3, 5).forEach((line, index) => {
+          const typeTime = setTimeout(() => {
+            appendThinkingLog(line.type, line.text);
+          }, index * 1000);
+          timeouts.push(typeTime);
+        });
+
+        extractSalesforceLeads();
+      }, 7000);
+      timeouts.push(sfTimeout);
+
+      // --- STEP 4 (9s): Google Ads keyword tune ---
+      const adsTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot optimizing';
+        agentStatusText.textContent = 'AI Agent: 広告キーワード＆入札最適化中';
+        agentStatusText.style.color = '#1a73e8';
+
+        appendThinkingLog(thinkingScenario[5].type, thinkingScenario[5].text);
+        appendThinkingLog(thinkingScenario[6].type, thinkingScenario[6].text);
+        
+        triggerAdsTune();
+      }, 10000);
+      timeouts.push(adsTimeout);
+
+      // --- STEP 5 (13s): Gmail draft creation ---
+      const gmailTimeout = setTimeout(() => {
+        appendThinkingLog(thinkingScenario[7].type, thinkingScenario[7].text);
+        generateEmailPreview();
+      }, 14000);
+      timeouts.push(gmailTimeout);
+
+      // --- STEP 6 (16s): One-click Gmail dispatch一斉送信 ---
+      const dispatchTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot listening';
+        agentStatusDot.style.backgroundColor = '#10b981';
+        agentStatusDot.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
+        agentStatusText.textContent = 'AI Agent: メール一斉配信 & リード同期実行中';
+        agentStatusText.style.color = '#10b981';
+
+        appendThinkingLog(thinkingScenario[8].type, thinkingScenario[8].text);
+        triggerGmailDispatch();
+      }, 17000);
+      timeouts.push(dispatchTimeout);
+
+      // Final complete state
+      const finalTimeout = setTimeout(() => {
+        btnStart.disabled = false;
+        btnStart.innerHTML = `<i data-lucide="check" style="width: 16px; height: 16px;"></i> 最適化サイクル完了`;
+        
+        agentStatusText.textContent = 'AI Agent: サイクル完了 / 自律監視復帰';
+        agentStatusText.style.color = '#10b981';
+        
+        appendThinkingLog('action', 'OPTIMIZATION CYCLE COMPLETED. 52 Leads secured. Sync complete.');
+        
+        geminiProcessingCard.classList.remove('reasoning');
+        lucide.createIcons();
+      }, 21000);
+      timeouts.push(finalTimeout);
+    }
+
+    function resetDemo() {
+      // Clear timeouts
+      timeouts.forEach(id => clearTimeout(id));
+      timeouts.length = 0;
+
+      // Reset YouTube elements
+      metricViews.textContent = '12,450';
+      metricComments.textContent = '48';
+      metricViews.className = 'metric-value-dynamic';
+      metricComments.className = 'metric-value-dynamic';
+      
+      chartNormalPath.classList.remove('hidden');
+      chartSpikePath.classList.add('hidden');
+      chartSpikeArea.classList.add('hidden');
+      chartPointer.setAttribute('cx', '350');
+      chartPointer.setAttribute('cy', '70');
+
+      trendIndicatorLabel.style.color = '#64748b';
+      trendValText.textContent = 'NORMAL';
+
+      tagDx.classList.remove('glow');
+      tagSmart.classList.remove('spike', 'glow');
+      tagIot.classList.remove('spike', 'glow');
+      pctDx.textContent = '+12%';
+      pctSmart.textContent = '+5%';
+      pctIot.textContent = '+2%';
+
+      commentContainer.innerHTML = '';
+      commentContainer.appendChild(commentsPlaceholder);
+      commentsPlaceholder.style.display = 'flex';
+
+      // Reset Gemini
+      thinkingLogsBox.innerHTML = `
+        <div class="thinking-log-line" style="color:#64748b;">
+          &gt; Ad-Gazer marketing inference standby. Ready to optimize...
+        </div>
+      `;
+      geminiProcessingCard.classList.remove('reasoning');
+
+      emailCard.style.opacity = '0.3';
+      emailSubject.textContent = '---';
+      emailTarget.textContent = '---';
+      emailBody.innerHTML = `自動最適化フローの実行後、Geminiが抽出リードセグメントに最適な動画埋め込みパーソナライズドメール文面を自動作成します。`;
+      emailVideo.classList.add('hidden');
+
+      // Reset Ads keywords
+      adsPanel.classList.remove('tuning');
+      adsPanelStatus.textContent = 'MONITORING';
+      adsPanelStatus.className = 'panel-status';
+      adsKeywordsBody.innerHTML = `
+        <tr>
+          <td class="keyword-name-cell"><i data-lucide="key" style="width:10px; height:10px; color:#64748b;"></i>製造業 生産管理</td>
+          <td>フレーズ一致</td>
+          <td>¥120</td>
+          <td style="color:#64748b;">82%</td>
+        </tr>
+        <tr>
+          <td class="keyword-name-cell"><i data-lucide="key" style="width:10px; height:10px; color:#64748b;"></i>工場 IoT化 基礎</td>
+          <td>フレーズ一致</td>
+          <td>¥150</td>
+          <td style="color:#64748b;">78%</td>
+        </tr>
+      `;
+
+      // Reset Salesforce
+      sfBody.innerHTML = '';
+      sfBody.appendChild(emptySfRow);
+      emptySfRow.style.display = 'table-row';
+      sfTargetCount.textContent = '製造業リード: 未抽出';
+      sfTargetCount.style.color = '#64748b';
+
+      // Reset dispatch progress
+      dispatchCount.textContent = '0 / 0通';
+      dispatchProgressFill.style.width = '0%';
+
+      // Reset controls
+      btnStart.disabled = false;
+      btnStart.innerHTML = `<i data-lucide="play" style="width: 16px; height: 16px;"></i> 自動最適化を開始する`;
+
+      agentStatusDot.className = 'status-dot';
+      agentStatusDot.style.backgroundColor = '#94a3b8';
+      agentStatusDot.style.boxShadow = '0 0 8px rgba(148, 163, 184, 0.4)';
+      agentStatusText.textContent = 'AI Agent: アイドル監視中';
+      agentStatusText.style.color = '#94a3b8';
+
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

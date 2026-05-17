@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim-Converter - クレーム逆転YouTube動画マーケター デモ</title>
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* --- CSS DESIGN SYSTEM --- */
+    :root {
+      --bg-dark: #06070a;
+      --bg-card: rgba(20, 12, 19, 0.65);
+      --border-card: rgba(255, 255, 255, 0.04);
+      --font-primary: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Outfit', sans-serif;
+      
+      /* Colors */
+      --accent-anger: #ef4444;
+      --accent-anger-glow: rgba(239, 68, 68, 0.25);
+      --accent-satisfaction: #10b981;
+      --accent-satisfaction-glow: rgba(16, 185, 129, 0.25);
+      
+      --accent-gemini-purple: #8b5cf6;
+      --accent-gemini-pink: #ec4899;
+      --accent-youtube: #ff0000;
+      --accent-salesforce: #00a1e0;
+      
+      --shadow-gemini: 0 0 25px rgba(139, 92, 246, 0.25);
+      --shadow-anger: 0 0 25px rgba(239, 68, 68, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: radial-gradient(circle at 50% 120%, #200a19 0%, var(--bg-dark) 80%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* --- TYPOGRAPHY & SCROLLBAR --- */
+    h1, h2, h3, .font-display {
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* --- GLASSMORPHISM CARDS --- */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+    }
+
+    /* --- LAYOUT HEADER --- */
+    header {
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-card);
+      background: rgba(6, 7, 10, 0.5);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--accent-anger), var(--accent-gemini-purple));
+      padding: 0.5rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-anger);
+      transition: all 1s ease;
+    }
+
+    .logo-title {
+      font-size: 1.5rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-subtitle {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-left: 0.5rem;
+      padding: 0.2rem 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .demo-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      font-family: var(--font-primary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-anger), var(--accent-gemini-purple));
+      color: white;
+      box-shadow: var(--shadow-anger);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.15);
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
+
+    .agent-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(20, 12, 19, 0.8);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #94a3b8;
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.4);
+    }
+    
+    .status-dot.listening {
+      background-color: #94a3b8;
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.4);
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-dot.alert-anger {
+      background-color: var(--accent-anger);
+      box-shadow: 0 0 12px var(--accent-anger);
+      animation: pulse 0.6s infinite;
+    }
+
+    .status-dot.generating {
+      background-color: var(--accent-gemini-purple);
+      box-shadow: 0 0 10px var(--accent-gemini-purple);
+      animation: pulse 0.8s infinite;
+    }
+
+    .status-dot.completed {
+      background-color: var(--accent-satisfaction);
+      box-shadow: 0 0 12px var(--accent-satisfaction);
+      animation: pulse 1.2s infinite;
+    }
+
+    /* --- DASHBOARD GRID --- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr 1.2fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      height: calc(100vh - 86px);
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+      }
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .column-title {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .column-subtitle {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    /* --- COLUMN 1: GMAIL & SENTIMENT --- */
+    .complaint-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .complaint-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Urgent Complaint email widget */
+    .gmail-inbox-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: #64748b;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      padding-bottom: 0.4rem;
+    }
+
+    .gmail-complaint-mail {
+      background: rgba(255, 0, 0, 0.02);
+      border: 1px solid rgba(255, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .gmail-complaint-mail.urgent-anger {
+      background: rgba(239, 68, 68, 0.05);
+      border-color: rgba(239, 68, 68, 0.3);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+    }
+
+    .gmail-complaint-mail.urgent-anger::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3.5px;
+      height: 100%;
+      background-color: var(--accent-anger);
+      border-radius: 12px 0 0 12px;
+    }
+
+    .mail-header-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    .mail-subject {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      line-height: 1.35;
+    }
+
+    .mail-body {
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      background: rgba(0,0,0,0.15);
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+
+    /* Sentiment Meter Gauge */
+    .sentiment-meter-box {
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+    }
+
+    .gauge-svg-container {
+      width: 65px;
+      height: 65px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .gauge-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.05);
+      stroke-width: 6;
+      stroke-dasharray: 170;
+      stroke-linecap: round;
+    }
+
+    .gauge-fill {
+      fill: none;
+      stroke: var(--accent-anger);
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 170;
+      stroke-dashoffset: 170; /* 170 is empty, 0 is full */
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.5s ease;
+    }
+
+    .gauge-text {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #94a3b8;
+    }
+
+    .gauge-text.anger-high {
+      color: var(--accent-anger);
+      animation: flash-text 1s infinite alternate;
+    }
+
+    .sentiment-info-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .sentiment-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .sentiment-desc {
+      font-size: 0.68rem;
+      color: #94a3b8;
+      line-height: 1.35;
+    }
+
+    /* Salesforce VIP Card lookup */
+    .sf-lookup-panel {
+      background: rgba(0, 161, 224, 0.02);
+      border: 1px solid rgba(0, 161, 224, 0.12);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      position: relative;
+    }
+
+    .vip-alert-banner {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #fca5a5;
+      animation: pulse 1s infinite;
+    }
+
+    .sf-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+      font-size: 0.7rem;
+    }
+
+    .sf-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .sf-label {
+      color: #64748b;
+    }
+
+    .sf-value {
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    /* --- COLUMN 2: VIDEO GEN & MOCK PLAYER --- */
+    .video-card {
+      flex: 1.1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .video-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* AI Thinking Terminal */
+    .ai-inference-terminal {
+      flex: 0.8;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 0.85rem;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.7rem;
+      color: #a7f3d0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      min-height: 140px;
+    }
+
+    .ai-log-row {
+      line-height: 1.45;
+      word-break: break-all;
+      animation: fade-in 0.3s ease-out forwards;
+    }
+
+    .log-prefix-analysis { color: #f87171; font-weight: 700; }
+    .log-prefix-gemini { color: #c084fc; font-weight: 700; }
+    .log-prefix-youtube { color: #ff8b8b; font-weight: 700; }
+
+    /* Mock YouTube Slide Player */
+    .mock-video-widget {
+      flex: 1.2;
+      background: rgba(255, 0, 0, 0.01);
+      border: 1px solid rgba(255, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-height: 230px;
+      position: relative;
+    }
+
+    .video-widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+    }
+
+    .video-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(255, 0, 0, 0.1);
+      color: #fecaca;
+      border: 1px solid rgba(255, 0, 0, 0.15);
+    }
+
+    /* The Screen Player */
+    .video-player-screen {
+      flex: 1;
+      background: #110e14;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+      min-height: 130px;
+    }
+
+    .video-player-screen.rendering::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--accent-gemini-purple), transparent);
+      animation: scan 2s linear infinite;
+      z-index: 10;
+    }
+
+    /* Video Slides contents */
+    .video-slide {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      text-align: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transform: scale(0.96);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .video-slide.active {
+      opacity: 1;
+      transform: scale(1);
+      z-index: 5;
+    }
+
+    .slide-watermark {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .slide-title-large {
+      font-size: 0.95rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #fca5a5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+
+    .slide-subtitle {
+      font-size: 0.65rem;
+      color: #94a3b8;
+    }
+
+    .slide-body-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.65rem;
+      color: #a7f3d0;
+      margin-top: 0.25rem;
+      text-align: left;
+      max-width: 90%;
+    }
+
+    /* Video generation voice wave */
+    .video-voice-wave {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 16px;
+      margin-top: 0.4rem;
+    }
+
+    .wave-bar {
+      width: 2.5px;
+      height: 4px;
+      background-color: var(--accent-gemini-purple);
+      border-radius: 1px;
+    }
+
+    .video-player-screen.rendering .wave-bar {
+      animation: bounce-wave 0.8s infinite alternate;
+    }
+
+    /* Custom index for wave animation speed */
+    .video-player-screen.rendering .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .video-player-screen.rendering .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+    .video-player-screen.rendering .wave-bar:nth-child(4) { animation-delay: 0.1s; }
+    .video-player-screen.rendering .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+    /* Video Player Control bar */
+    .video-player-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.6rem;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+
+    .video-seekbar-bg {
+      flex: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      margin: 0 0.5rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .video-seekbar-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--accent-youtube);
+      transition: width 0.1s linear;
+    }
+
+    /* --- COLUMN 3: GMAIL & SALESFORCE --- */
+    .outreach-card {
+      flex: 1.1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .outreach-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Gmail automated reply preview */
+    .gmail-reply-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .gmail-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      animation: scale-up 0.4s ease forwards;
+    }
+
+    .gmail-meta-row {
+      display: flex;
+      font-size: 0.72rem;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 0.4rem;
+    }
+
+    .gmail-meta-label {
+      width: 55px;
+      font-weight: 600;
+    }
+
+    .gmail-meta-value {
+      color: #e2e8f0;
+    }
+
+    .gmail-body-preview {
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.5rem;
+      border-radius: 6px;
+      max-height: 110px;
+      overflow-y: auto;
+      line-height: 1.45;
+    }
+
+    /* Dynamic video attachment in email */
+    .gmail-video-attachment {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(255, 0, 0, 0.04);
+      border: 1px solid rgba(255, 0, 0, 0.15);
+      border-radius: 8px;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+    }
+
+    .attachment-thumbnail {
+      width: 60px;
+      height: 36px;
+      background: #110e14;
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+    }
+
+    .attachment-thumbnail i {
+      color: var(--accent-youtube);
+      width: 14px;
+      height: 14px;
+    }
+
+    .gmail-send-status {
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: #64748b;
+    }
+    
+    .gmail-send-status.sent {
+      color: var(--accent-success);
+    }
+
+    /* Salesforce sync status */
+    .sf-sync-panel {
+      background: rgba(0, 161, 224, 0.02);
+      border: 1px solid rgba(0, 161, 224, 0.12);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    /* Loyalty Slider Meter */
+    .loyalty-meter-box {
+      background: rgba(0,0,0,0.15);
+      padding: 0.75rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .loyalty-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+
+    .loyalty-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      position: relative;
+    }
+
+    .loyalty-bar-fill {
+      width: 20%; /* 0-100% */
+      height: 100%;
+      background: var(--accent-anger);
+      border-radius: 3px;
+      transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.8s ease;
+    }
+
+    /* Salesforce Timeline */
+    .sf-timeline-wrapper {
+      background: rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.02);
+      border-radius: 8px;
+      padding: 0.6rem;
+    }
+
+    .sf-timeline-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sf-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .timeline-node {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.68rem;
+      position: relative;
+    }
+
+    .timeline-icon-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.45rem;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .timeline-node.success-node .timeline-icon-dot {
+      background: var(--accent-success);
+    }
+
+    .timeline-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .timeline-head {
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .timeline-time {
+      color: #64748b;
+      font-size: 0.6rem;
+    }
+
+    /* --- ANIMATIONS KEYFRAMES --- */
+    @keyframes bounce-wave {
+      0% { height: 4px; }
+      100% { height: 16px; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.96); }
+    }
+
+    @keyframes flash-text {
+      0% { color: #fca5a5; }
+      100% { color: #ef4444; }
+    }
+
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes scale-up {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes scan {
+      0% { top: 0%; }
+      50% { top: 100%; }
+      100% { top: 0%; }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge" id="logo-badge">
+        <i data-lucide="video" style="color: white; width: 22px; height: 22px;"></i>
+      </div>
+      <div>
+        <h1 class="logo-title font-display">Claim-Converter</h1>
+      </div>
+      <span class="logo-subtitle">クレーム逆転動画マーケター</span>
+    </div>
+
+    <!-- Agent Status and Controls -->
+    <div class="demo-controls">
+      <div class="agent-status-badge">
+        <span class="status-dot" id="agent-status-dot"></span>
+        <span id="agent-status-text" style="font-weight: 600; color: #94a3b8;">AI Agent: Gmail 常時監視中</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-reset" onclick="resetDemo()">
+        <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i> リセット
+      </button>
+      <button class="btn btn-primary" id="btn-start" onclick="startDemo()">
+        <i data-lucide="zap" style="width: 16px; height: 16px;"></i> 逆転コンバートを開始する
+      </button>
+    </div>
+  </header>
+
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid">
+    
+    <!-- COLUMN 1: GMAIL & SENTIMENT -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="mail-warning" style="color: var(--accent-anger);" id="col1-icon"></i>
+          <span>新着メール ＆ 感情分析</span>
+        </div>
+        <span class="column-subtitle">Gmail・NLP連携</span>
+      </div>
+
+      <div class="complaint-card glass-card">
+        <div class="complaint-view-container">
+          
+          <!-- Gmail complaint mail card -->
+          <div class="gmail-complaint-mail" id="gmail-complaint">
+            <div class="gmail-inbox-header">
+              <span style="font-weight:700;"><i data-lucide="inbox" style="width:11px; height:11px; display:inline-block; vertical-align:middle; margin-right:0.25rem;"></i>受信トレイ (10分前)</span>
+              <span>山本 誠 様 (ソリューションテック)</span>
+            </div>
+            
+            <span class="mail-subject" id="complaint-subject">【緊急・至急】AIパッケージV2のデータ連携エラーにつきまして</span>
+            
+            <div class="mail-body" id="complaint-body">
+              昨夜、新リリースのAIパッケージV2を社内環境に反映させましたが、初回起動のSalesforceデータ連携処理で原因不明のエラーが発生し、全く動きません！<br>
+              本日午後の役員会議にてデモを行う予定になっていたため、極めて困惑しており、非常に深刻な状況です。大問題です。至急、解決手順および対応をお願いします。
+            </div>
+          </div>
+
+          <!-- Sentiment Meter Gauge -->
+          <div class="sentiment-meter-box">
+            <div class="gauge-svg-container">
+              <svg width="65" height="65" viewBox="0 0 65 65">
+                <!-- semi-circle gauge background -->
+                <circle cx="32.5" cy="32.5" r="27" class="gauge-bg" stroke-dashoffset="0"></circle>
+                <circle cx="32.5" cy="32.5" r="27" class="gauge-fill" id="sentiment-gauge-fill"></circle>
+              </svg>
+              <div class="gauge-text" id="sentiment-gauge-text">---</div>
+            </div>
+            
+            <div class="sentiment-info-block">
+              <span class="sentiment-label" id="sentiment-label">感情分析: 待機中</span>
+              <span class="sentiment-desc" id="sentiment-desc">メール着信後、Natural Language AIが文章の緊急度・不満感情スコアを自動測定します。</span>
+            </div>
+          </div>
+
+          <!-- Salesforce VIP checking -->
+          <div class="sf-lookup-panel">
+            <div class="vip-alert-banner hidden" id="vip-banner">
+              <i data-lucide="shield-alert" style="width:14px; height:14px;"></i>
+              <span>【警告】最重要VIP顧客からの最優先クレーム検知</span>
+            </div>
+            
+            <div class="sf-grid">
+              <div class="sf-item">
+                <span class="sf-label">顧客アカウント</span>
+                <span class="sf-value">ソリューションテック株式会社</span>
+              </div>
+              <div class="sf-item">
+                <span class="sf-label">契約プラン</span>
+                <span class="sf-value" style="color:var(--accent-salesforce); font-weight:700;">VIP Enterprise</span>
+              </div>
+              <div class="sf-item">
+                <span class="sf-label">年間取引額</span>
+                <span class="sf-value">¥1,200,000</span>
+              </div>
+              <div class="sf-item">
+                <span class="sf-label">担当営業</span>
+                <span class="sf-value">山田 太郎</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: VIDEO GEN & MOCK PLAYER -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="sparkles" style="color: var(--accent-gemini-purple);"></i>
+          <span>Gemini 動画自動生成エンジン</span>
+        </div>
+        <span class="column-subtitle">お悩み解決YouTube生成</span>
+      </div>
+
+      <div class="video-card glass-card">
+        <div class="video-view-container">
+          
+          <!-- AI Log terminal -->
+          <div class="ai-inference-terminal" id="ai-terminal">
+            <div class="ai-log-row" style="color:#64748b;">
+              &gt; Claim-Converter processor standby. Listening for Gmail events...
+            </div>
+          </div>
+
+          <!-- Mock YouTube Slide Player -->
+          <div class="mock-video-widget" id="video-widget">
+            <div class="video-widget-header">
+              <span class="video-badge">
+                <i data-lucide="youtube" style="width:11px; height:11px;"></i>
+                YouTube専用解決動画生成
+              </span>
+              <span style="font-size:0.65rem; color:#64748b; font-weight:700;" id="video-upload-status">IDLE</span>
+            </div>
+
+            <!-- The Screen Player -->
+            <div class="video-player-screen" id="video-screen">
+              
+              <!-- Slide 0: Placeholder -->
+              <div class="video-slide active" id="slide-0" style="background:#18121a;">
+                <i data-lucide="video-off" style="width:36px; height:36px; color:#4b3f52; margin-bottom:0.5rem;"></i>
+                <span style="font-size:0.75rem; color:#64748b;">逆転コンバートの開始後、解決動画が自律生成されます</span>
+              </div>
+
+              <!-- Slide 1: Welcome -->
+              <div class="video-slide" id="slide-1" style="background:linear-gradient(135deg, #110e14, #270617);">
+                <div class="slide-watermark"><i data-lucide="sparkles" style="width:8px; height:8px;"></i> Gemini Autogenerated</div>
+                <span class="slide-title-large">山本様へ：AIパッケージV2<br>データ連携エラー解決手順</span>
+                <span class="slide-subtitle">Claim-Converter - Personalized Helper</span>
+                <div class="video-voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+              </div>
+
+              <!-- Slide 2: Cause -->
+              <div class="video-slide" id="slide-2" style="background:#110e14;">
+                <div class="slide-watermark"><i data-lucide="shield-alert" style="width:8px; height:8px;"></i> Cause identified</div>
+                <span class="slide-title-large" style="font-size:0.85rem;">原因：config.jsonの連携設定漏れ</span>
+                <span class="slide-subtitle">V2初回起動時、Salesforceトークンが空欄になっています</span>
+                <div class="slide-body-box">
+                  { "Salesforce_Token": "", "V2_Sync": true }
+                </div>
+                <div class="video-voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+              </div>
+
+              <!-- Slide 3: Step 1 -->
+              <div class="video-slide" id="slide-3" style="background:linear-gradient(135deg, #110e14, #051c14);">
+                <div class="slide-watermark"><i data-lucide="settings" style="width:8px; height:8px;"></i> Step 1</div>
+                <span class="slide-title-large" style="font-size:0.85rem;">手順①：config.jsonを開く</span>
+                <span class="slide-subtitle">インストールディレクトリの /config/config.json をテキストエディタで開いてください。</span>
+                <div class="video-voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+              </div>
+
+              <!-- Slide 4: Step 2 -->
+              <div class="video-slide" id="slide-4" style="background:linear-gradient(135deg, #110e14, #051c14);">
+                <div class="slide-watermark"><i data-lucide="key" style="width:8px; height:8px;"></i> Step 2</div>
+                <span class="slide-title-large" style="font-size:0.85rem;">手順②：Salesforceトークンを更新</span>
+                <span class="slide-subtitle">Salesforce管理パネルから取得したトークンを "Salesforce_Token" に上書き保存します。</span>
+                <div class="slide-body-box" style="color:#60a5fa;">
+                  { "Salesforce_Token": "SF_TOK_V2_ACTIVE", ... }
+                </div>
+                <div class="video-voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+              </div>
+
+              <!-- Slide 5: Success -->
+              <div class="video-slide" id="slide-5" style="background:linear-gradient(135deg, #091f14, #110e14);">
+                <div class="slide-watermark" style="color:#a7f3d0;"><i data-lucide="check-circle" style="width:8px; height:8px;"></i> Complete</div>
+                <span class="slide-title-large" style="color:#34d399;">解決！データ連携が正常に動作します</span>
+                <span class="slide-subtitle">これで本日午後の役員デモも完全に稼働します。</span>
+                <i data-lucide="smile" style="color:#34d399; width:22px; height:22px; margin-top:0.4rem;"></i>
+              </div>
+
+            </div>
+
+            <!-- SeekBar controls -->
+            <div class="video-player-controls">
+              <span id="player-time-cur">0:00</span>
+              <div class="video-seekbar-bg">
+                <div class="video-seekbar-fill" id="seekbar-fill"></div>
+              </div>
+              <span id="player-time-dur">0:00</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: GMAIL & SALESFORCE -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="mail-check" style="color: #94a3b8;" id="col3-icon"></i>
+          <span>Gmail 自動返信 ＆ Salesforce同期</span>
+        </div>
+        <span class="column-subtitle">クレーム逆転アプローチ</span>
+      </div>
+
+      <div class="outreach-card glass-card">
+        <div class="outreach-view-container">
+          
+          <!-- Gmail Auto Response -->
+          <div class="gmail-reply-panel">
+            <div class="table-title">
+              <i data-lucide="mail" style="width: 14px; height: 14px; color: var(--accent-gemini-purple);"></i>
+              <span>Gmail 逆転解説メール自動送信 (Gmail API)</span>
+            </div>
+
+            <div class="gmail-card" id="gmail-reply-card" style="opacity:0.3;">
+              <div class="gmail-meta-row">
+                <span class="gmail-meta-label">件名:</span>
+                <span class="gmail-meta-value" id="gmail-reply-subject">---</span>
+              </div>
+              <div class="gmail-meta-row">
+                <span class="gmail-meta-label">宛先:</span>
+                <span class="gmail-meta-value" id="gmail-reply-to">---</span>
+              </div>
+              <div class="gmail-body-preview" id="gmail-reply-body">
+                解決動画の生成後、専用解説ビデオを埋め込んだ超誠実な返信メールが自律的にGmailから自動送信されます。
+              </div>
+              
+              <!-- Video link attachment -->
+              <div class="gmail-video-attachment hidden" id="gmail-attachment">
+                <div class="attachment-thumbnail">
+                  <i data-lucide="youtube"></i>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:0.1rem;">
+                  <span style="font-size:0.65rem; font-weight:700;">【山本様専用】AIパッケージV2 エラー解決解説ビデオ</span>
+                  <span style="font-size:0.55rem; color:#fca5a5;">YouTube限定公開動画リンク (v2_fix_custom)</span>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.25rem;">
+                <span class="gmail-send-status" id="gmail-reply-status">
+                  <i data-lucide="clock" style="width:12px; height:12px;"></i>
+                  <span>送信待機中</span>
+                </span>
+                <span style="font-size:0.6rem; color:#64748b;" id="gmail-reply-time">---</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Salesforce Sync Panel -->
+          <div class="sf-sync-panel">
+            <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem;">
+              <span class="sf-badge">
+                <i data-lucide="database" style="width:11px; height:11px;"></i>
+                Salesforce Sync
+              </span>
+              <span class="column-subtitle" style="font-weight:700;">ロイヤルティスコア</span>
+            </div>
+
+            <!-- Customer Loyalty Slider Meter -->
+            <div class="loyalty-meter-box">
+              <div class="loyalty-header">
+                <span>CS（顧客満足度）:</span>
+                <span id="loyalty-val" style="color:var(--accent-anger); font-weight:800;">低下リスク (20%)</span>
+              </div>
+              <div class="loyalty-bar-bg">
+                <div class="loyalty-bar-fill" id="loyalty-bar-fill"></div>
+              </div>
+            </div>
+
+            <!-- Activity history timeline -->
+            <div class="sf-timeline-wrapper">
+              <div class="sf-timeline-title">顧客活動履歴への書き戻し</div>
+              <div class="sf-timeline" id="sf-timeline-container">
+                <!-- Timeline nodes -->
+                <div class="timeline-node">
+                  <div class="timeline-icon-dot"><i data-lucide="mail-warning" style="width:8px; height:8px;"></i></div>
+                  <div class="timeline-info">
+                    <span class="timeline-head" style="color:var(--accent-anger);">顧客クレーム受信（V2起動不可）</span>
+                    <span class="timeline-time">本日 13:10 • 送信元: 山本 誠 様</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- --- JAVASCRIPT LOGIC & SCENARIO --- -->
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // DOM elements
+    const btnStart = document.getElementById('btn-start');
+    const agentStatusDot = document.getElementById('agent-status-dot');
+    const agentStatusText = document.getElementById('agent-status-text');
+    const logoBadge = document.getElementById('logo-badge');
+
+    // Column 1 Elements
+    const col1Icon = document.getElementById('col1-icon');
+    const gmailComplaint = document.getElementById('gmail-complaint');
+    const sentimentGaugeFill = document.getElementById('sentiment-gauge-fill');
+    const sentimentGaugeText = document.getElementById('sentiment-gauge-text');
+    const sentimentLabel = document.getElementById('sentiment-label');
+    const sentimentDesc = document.getElementById('sentiment-desc');
+    const vipBanner = document.getElementById('vip-banner');
+
+    // Column 2 Elements
+    const aiTerminal = document.getElementById('ai-terminal');
+    const videoWidget = document.getElementById('video-widget');
+    const videoUploadStatus = document.getElementById('video-upload-status');
+    const videoScreen = document.getElementById('video-screen');
+    const seekbarFill = document.getElementById('seekbar-fill');
+    const playerTimeCur = document.getElementById('player-time-cur');
+    const playerTimeDur = document.getElementById('player-time-dur');
+
+    // Column 3 Elements
+    const col3Icon = document.getElementById('col3-icon');
+    const gmailReplyCard = document.getElementById('gmail-reply-card');
+    const gmailReplySubject = document.getElementById('gmail-reply-subject');
+    const gmailReplyTo = document.getElementById('gmail-reply-to');
+    const gmailReplyBody = document.getElementById('gmail-reply-body');
+    const gmailAttachment = document.getElementById('gmail-attachment');
+    const gmailReplyStatus = document.getElementById('gmail-reply-status');
+    const gmailReplyTime = document.getElementById('gmail-reply-time');
+    const loyaltyValText = document.getElementById('loyalty-val');
+    const loyaltyBarFill = document.getElementById('loyalty-bar-fill');
+    const sfTimelineContainer = document.getElementById('sf-timeline-container');
+
+    let timeouts = [];
+    let videoPlaybackInterval = null;
+
+    // AI Thinking Logs for Claim-Converter
+    const aiThinkingScenario = [
+      { type: 'analysis', text: 'Telemetry: Gmail Pub/Sub webhook event received. ID: [mail_in_4021]' },
+      { type: 'analysis', text: 'SENTIMENT: Running Natural Language AI API... Analyzing emotional markers...' },
+      { type: 'analysis', text: 'CRITICAL ANGER DETECTED: Anger index 94%. Trigger: "データ連携エラー", "全く動きません", "大問題です".' },
+      { type: 'analysis', text: 'SALESFORCE API: Querying customer account for email "m.yamamoto@solution-tech.co.jp"...' },
+      { type: 'analysis', text: 'VIP DETECTED: Customer: ソリューションテック. Plan: VIP Enterprise. Opportunity Volume: ¥1.2M.' },
+      { type: 'gemini', text: 'INFERENCE: Urgent VIP issue verified. Target event: "Data connection crash on V2 bootup". Solution identified:config.json configuration missing.' },
+      { type: 'gemini', text: 'DECISION: VIP customer faces demo in hours. Standard text response is insufficient. Initiating Claim-to-Video conversion pipeline. Generating localized screen step-by-step resolution video.' },
+      { type: 'gemini', text: 'VIDEO ENGINE: Scripting custom 1-minute slide-show helper video. Voice-Synthesis (Text-to-Speech) enabled...' },
+      { type: 'youtube', text: 'YOUTUBE API: Initializing secure video upload. Generating private, unlisted YouTube URL...' },
+      { type: 'youtube', text: 'YOUTUBE API: Upload complete. Video ID [v2_fix_custom] is now live (Unlisted).' },
+      { type: 'gemini', text: 'GMAIL DRAFT: Composing sincere apology & active resolution response with embedded video. Sending via Gmail API...' }
+    ];
+
+    function appendTerminalLog(type, text) {
+      const row = document.createElement('div');
+      row.className = 'ai-log-row';
+      let prefix = '';
+
+      if (type === 'analysis') prefix = `<span class="log-prefix-analysis">[NLP-AI]</span> `;
+      if (type === 'gemini') prefix = `<span class="log-prefix-gemini">[Gemini Inference]</span> `;
+      if (type === 'youtube') prefix = `<span class="log-prefix-youtube">[YouTube Generator]</span> `;
+
+      row.innerHTML = `&gt; ${prefix}${text}`;
+      aiTerminal.appendChild(row);
+      aiTerminal.scrollTop = aiTerminal.scrollHeight;
+    }
+
+    function runMockVideoPlayer() {
+      videoScreen.className = 'video-player-screen rendering';
+      videoUploadStatus.textContent = 'RENDERING CUSTOM VIDEO (TTS ACTIVE)';
+      videoUploadStatus.style.color = 'var(--accent-gemini-pink)';
+      playerTimeDur.textContent = '0:50';
+
+      const slides = [
+        document.getElementById('slide-0'),
+        document.getElementById('slide-1'),
+        document.getElementById('slide-2'),
+        document.getElementById('slide-3'),
+        document.getElementById('slide-4'),
+        document.getElementById('slide-5')
+      ];
+
+      // Step 1: transition out placeholder
+      slides[0].classList.remove('active');
+      slides[1].classList.add('active');
+
+      let currentSlide = 1;
+      let progress = 0;
+
+      videoPlaybackInterval = setInterval(() => {
+        progress += 2;
+        if (progress > 100) progress = 100;
+
+        // Update seekbar
+        seekbarFill.style.width = `${progress}%`;
+        
+        // Calculate dynamic time
+        const curSeconds = Math.floor(50 * (progress / 100));
+        const secondsStr = curSeconds < 10 ? `0${curSeconds}` : curSeconds;
+        playerTimeCur.textContent = `0:${secondsStr}`;
+
+        // Slide transition thresholds
+        if (progress >= 20 && currentSlide === 1) {
+          slides[1].classList.remove('active');
+          slides[2].classList.add('active');
+          currentSlide = 2;
+        } else if (progress >= 40 && currentSlide === 2) {
+          slides[2].classList.remove('active');
+          slides[3].classList.add('active');
+          currentSlide = 3;
+        } else if (progress >= 60 && currentSlide === 3) {
+          slides[3].classList.remove('active');
+          slides[4].classList.add('active');
+          currentSlide = 4;
+        } else if (progress >= 80 && currentSlide === 4) {
+          slides[4].classList.remove('active');
+          slides[5].classList.add('active');
+          currentSlide = 5;
+          videoUploadStatus.textContent = 'UPLOADING TO YOUTUBE...';
+          videoUploadStatus.style.color = 'var(--accent-youtube)';
+        }
+
+        if (progress >= 100) {
+          clearInterval(videoPlaybackInterval);
+          videoUploadStatus.textContent = 'YOUTUBE UPLOAD COMPLETE (UNLISTED)';
+          videoUploadStatus.style.color = 'var(--accent-satisfaction)';
+          videoScreen.className = 'video-player-screen';
+        }
+      }, 300); // 100 / 2 = 50 steps * 300ms = 15 seconds total player duration
+    }
+
+    function generateResponseEmail() {
+      gmailReplyCard.style.opacity = '1';
+      gmailReplySubject.textContent = 'Re: 【至急】AIパッケージV2のデータ連携エラーにつきまして（解決手順動画のご案内）';
+      gmailReplyTo.textContent = '山本 誠 様 (m.yamamoto@solution-tech.co.jp)';
+
+      gmailReplyBody.innerHTML = `
+        ソリューションテック株式会社<br>
+        開発本部 部長 山本 誠 様<br><br>
+        お世話になっております。Claim-Converterサクセスチームの山田です。<br><br>
+        この度は昨夜導入いただきましたAIパッケージV2のデータ連携エラーにつきまして、本日の大切なお役員会議デモ直前のタイミングという極めて緊急性の高い中、多大なるご不安とご迷惑をおかけし深くお詫び申し上げます。<br><br>
+        山本様が<b>本日午後のデモを無事に成功させられるよう、わずか1分で本エラーを完全に自己解決できる手順解説動画</b>を自律生成いたしました。<br><br>
+        config.jsonファイルにSalesforceの認証トークンを設定するだけで、エラーが即座に解消されます。詳しい手順は、山本様専用に作成した以下の限定公開YouTube動画よりご覧いただけます。<br><br>
+        動画内の手順に従って数秒で完了いただけますので、ぜひご参照くださいませ。何かご不明点がございましたら、即時対応させていただきます。山本様の役員会議デモが成功することを心より応援しております。
+      `;
+
+      gmailAttachment.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function triggerGmailResponseSend() {
+      gmailReplyStatus.innerHTML = `<i data-lucide="loader" class="animate-spin" style="width:12px; height:12px;"></i> <span>送信中 (Gmail API)...</span>`;
+      lucide.createIcons();
+
+      setTimeout(() => {
+        gmailReplyStatus.className = 'gmail-send-status sent';
+        gmailReplyStatus.innerHTML = `<i data-lucide="check-circle-2" style="width:12px; height:12px; color:var(--accent-satisfaction);"></i> <span>送信完了 (専用動画埋め込み済)</span>`;
+        const timeStr = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+        gmailReplyTime.textContent = `本日 ${timeStr}`;
+
+        // Sync Salesforce Timeline
+        const timeline = document.getElementById('sf-timeline-container');
+        const node = document.createElement('div');
+        node.className = 'timeline-node success-node';
+        node.style.animation = 'fade-in-up 0.5s ease forwards';
+
+        node.innerHTML = `
+          <div class="timeline-icon-dot"><i data-lucide="mail-check" style="width:8px; height:8px;"></i></div>
+          <div class="timeline-info">
+            <span class="timeline-head" style="color:var(--accent-satisfaction);">専用解決動画(v2_fix_custom)YouTube自動生成＆Gmail返信完了</span>
+            <span class="timeline-time">本日 ${timeStr} • 送信元: Claim-Converter Agent</span>
+          </div>
+        `;
+
+        timeline.insertBefore(node, timeline.firstChild);
+        lucide.createIcons();
+
+        // Conversion Aesthetics: Change header theme to Green
+        logoBadge.style.background = 'linear-gradient(135deg, var(--accent-satisfaction), var(--accent-gemini-purple))';
+        logoBadge.style.boxShadow = '0 0 25px rgba(16, 185, 129, 0.4)';
+        
+        col1Icon.style.color = 'var(--accent-satisfaction)';
+        col3Icon.style.color = 'var(--accent-satisfaction)';
+
+      }, 2000);
+    }
+
+    function startDemo() {
+      resetDemo();
+
+      btnStart.disabled = true;
+      btnStart.innerHTML = `<i data-lucide="loader" class="animate-spin" style="width:16px; height:16px;"></i> 逆転コンバート実行中...`;
+      
+      agentStatusDot.className = 'status-dot alert-anger';
+      agentStatusText.textContent = 'AI Agent: Gmailクレーム検知・感情分析中';
+      agentStatusText.style.color = 'var(--accent-anger)';
+      
+      // Gmail container warning red highlight
+      gmailComplaint.classList.add('urgent-anger');
+      lucide.createIcons();
+
+      // --- STEP 1 (0s): Sentiment analysis gauges spike red ---
+      setTimeout(() => {
+        sentimentGaugeFill.style.strokeDashoffset = '10'; // almost full ANGER
+        sentimentGaugeText.textContent = '-94%';
+        sentimentGaugeText.className = 'gauge-text anger-high';
+        
+        sentimentLabel.textContent = '感情分析: 極度の怒り・緊急';
+        sentimentLabel.style.color = 'var(--accent-anger)';
+        sentimentDesc.textContent = 'Natural Language AIが怒り指数 -94% を検出。役員デモ直前の環境トラブルに伴う重大な顧客体験低下リスクが発生。';
+
+        // Display AI Logs
+        appendTerminalLog(aiThinkingScenario[0].type, aiThinkingScenario[0].text);
+        appendTerminalLog(aiThinkingScenario[1].type, aiThinkingScenario[1].text);
+        appendTerminalLog(aiThinkingScenario[2].type, aiThinkingScenario[2].text);
+      }, 800);
+
+      // --- STEP 2 (3s): Salesforce VIP Lookup & Banner ---
+      const vipTimeout = setTimeout(() => {
+        vipBanner.classList.remove('hidden');
+        appendTerminalLog(aiThinkingScenario[3].type, aiThinkingScenario[3].text);
+        appendTerminalLog(aiThinkingScenario[4].type, aiThinkingScenario[4].text);
+        lucide.createIcons();
+      }, 3500);
+      timeouts.push(vipTimeout);
+
+      // --- STEP 3 (6s): Gemini inference and Video script gen ---
+      const geminiTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot generating';
+        agentStatusText.textContent = 'AI Agent: 解決解説動画を自律生成中';
+        agentStatusText.style.color = 'var(--accent-gemini-purple)';
+
+        appendTerminalLog(aiThinkingScenario[5].type, aiThinkingScenario[5].text);
+        appendTerminalLog(aiThinkingScenario[6].type, aiThinkingScenario[6].text);
+        appendTerminalLog(aiThinkingScenario[7].type, aiThinkingScenario[7].text);
+
+        // Run Mock Slide-Show Player (takes 15 seconds)
+        runMockVideoPlayer();
+      }, 6500);
+      timeouts.push(geminiTimeout);
+
+      // --- STEP 4 (21s): YouTube upload completed --
+      const ytTimeout = setTimeout(() => {
+        appendTerminalLog(aiThinkingScenario[8].type, aiThinkingScenario[8].text);
+        appendTerminalLog(aiThinkingScenario[9].type, aiThinkingScenario[9].text);
+      }, 21500); // Trigger right after player finishes
+      timeouts.push(ytTimeout);
+
+      // --- STEP 5 (23s): Gmail automated response draft ---
+      const gmailTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot completed';
+        agentStatusText.textContent = 'AI Agent: 解説ビデオ付きGmail自動送信中';
+        agentStatusText.style.color = 'var(--accent-satisfaction)';
+
+        appendTerminalLog(aiThinkingScenario[10].type, aiThinkingScenario[10].text);
+        generateResponseEmail();
+        triggerGmailResponseSend();
+      }, 23500);
+      timeouts.push(gmailTimeout);
+
+      // --- STEP 6 (27s): Customer Loyalty turnaround CS Score ---
+      const loyaltyTimeout = setTimeout(() => {
+        // Change CS Score from 20% anger to 98% loyal fan
+        loyaltyBarFill.style.width = '98%';
+        loyaltyBarFill.style.background = 'var(--accent-satisfaction)';
+        
+        loyaltyValText.textContent = '大満足 / ファン化 (98%)';
+        loyaltyValText.style.color = 'var(--accent-satisfaction)';
+
+        appendTerminalLog('gemini', 'CUSTOMER SUCCESS Turnaround. Client loyalty score rose to 98% (Exceeded Standard).');
+        appendTerminalLog('analysis', 'SENTIMENT UPDATE: Client emotional state: Relief & Deep Satisfaction.');
+      }, 27000);
+      timeouts.push(loyaltyTimeout);
+
+      // Final complete state
+      const finishTimeout = setTimeout(() => {
+        btnStart.disabled = false;
+        btnStart.innerHTML = `<i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> 逆転コンバート完了`;
+        
+        agentStatusText.textContent = 'AI Agent: クレーム逆転サイクル完了 / 監視中';
+        agentStatusText.style.color = 'var(--accent-satisfaction)';
+        
+        appendTerminalLog('youtube', 'CLAIM CONVERT PIPELINE SUCCESS. Loyalty secure. Waiting for next threat.');
+        
+        lucide.createIcons();
+      }, 30000);
+      timeouts.push(finishTimeout);
+    }
+
+    function resetDemo() {
+      // Clear timeouts & intervals
+      timeouts.forEach(id => clearTimeout(id));
+      timeouts.length = 0;
+      if (videoPlaybackInterval) {
+        clearInterval(videoPlaybackInterval);
+      }
+
+      // Reset Header Theme
+      logoBadge.style.background = 'linear-gradient(135deg, var(--accent-anger), var(--accent-gemini-purple))';
+      logoBadge.style.boxShadow = 'var(--shadow-anger)';
+      
+      col1Icon.style.color = 'var(--accent-anger)';
+      col3Icon.style.color = '#94a3b8';
+
+      // Reset Column 1
+      gmailComplaint.classList.remove('urgent-anger');
+      sentimentGaugeFill.style.strokeDashoffset = '170';
+      sentimentGaugeText.textContent = '---';
+      sentimentGaugeText.className = 'gauge-text';
+      
+      sentimentLabel.textContent = '感情分析: 待機中';
+      sentimentLabel.style.color = '#e2e8f0';
+      sentimentDesc.textContent = 'メール着信後、Natural Language AIが文章の緊急度・不満感情スコアを自動測定します。';
+      
+      vipBanner.classList.add('hidden');
+
+      // Reset Column 2 (AI Terminal & Player)
+      aiTerminal.innerHTML = `
+        <div class="ai-log-row" style="color:#64748b;">
+          &gt; Claim-Converter processor standby. Listening for Gmail events...
+        </div>
+      `;
+
+      videoUploadStatus.textContent = 'IDLE';
+      videoUploadStatus.style.color = '#64748b';
+      videoScreen.className = 'video-player-screen';
+
+      // Reset Slides
+      const slides = [
+        document.getElementById('slide-0'),
+        document.getElementById('slide-1'),
+        document.getElementById('slide-2'),
+        document.getElementById('slide-3'),
+        document.getElementById('slide-4'),
+        document.getElementById('slide-5')
+      ];
+      slides.forEach(s => s.classList.remove('active'));
+      slides[0].classList.add('active');
+
+      seekbarFill.style.width = '0%';
+      playerTimeCur.textContent = '0:00';
+      playerTimeDur.textContent = '0:00';
+
+      // Reset Column 3
+      gmailReplyCard.style.opacity = '0.3';
+      gmailReplySubject.textContent = '---';
+      gmailReplyTo.textContent = '---';
+      gmailReplyBody.innerHTML = `解決動画の生成後、専用解説ビデオを埋め込んだ超誠実な返信メールが自律的にGmailから自動送信されます。`;
+      gmailAttachment.classList.add('hidden');
+      gmailReplyStatus.className = 'gmail-send-status';
+      gmailReplyStatus.innerHTML = `<i data-lucide="clock" style="width:12px; height:12px;"></i> <span>送信待機中</span>`;
+      gmailReplyTime.textContent = '---';
+
+      loyaltyBarFill.style.width = '20%';
+      loyaltyBarFill.style.background = 'var(--accent-anger)';
+      loyaltyValText.textContent = '低下リスク (20%)';
+      loyaltyValText.style.color = 'var(--accent-anger)';
+
+      sfTimelineContainer.innerHTML = `
+        <div class="timeline-node">
+          <div class="timeline-icon-dot"><i data-lucide="mail-warning" style="width:8px; height:8px;"></i></div>
+          <div class="timeline-info">
+            <span class="timeline-head" style="color:var(--accent-anger);">顧客クレーム受信（V2起動不可）</span>
+            <span class="timeline-time">本日 13:10 • 送信元: 山本 誠 様</span>
+          </div>
+        </div>
+      `;
+
+      // Reset controls
+      btnStart.disabled = false;
+      btnStart.innerHTML = `<i data-lucide="zap" style="width: 16px; height: 16px;"></i> 逆転コンバートを開始する`;
+
+      agentStatusDot.className = 'status-dot';
+      agentStatusDot.style.backgroundColor = '#94a3b8';
+      agentStatusDot.style.boxShadow = '0 0 8px rgba(148, 163, 184, 0.4)';
+      agentStatusText.textContent = 'AI Agent: Gmail 常時監視中';
+      agentStatusText.style.color = '#94a3b8';
+
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

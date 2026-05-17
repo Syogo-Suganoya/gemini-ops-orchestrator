@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Sparring Partner - Standalone Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030303;
+            --surface: #0d0d0d;
+            --surface-accent: #151515;
+            --accent: #00f2ff;
+            --accent-glow: rgba(0, 242, 255, 0.4);
+            --text-main: #f5f5f5;
+            --text-dim: #888888;
+            --danger: #ff2d55;
+            --danger-glow: rgba(255, 45, 85, 0.4);
+            --success: #00ffa3;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 242, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 45, 85, 0.05) 0%, transparent 40%);
+        }
+
+        /* プレミアムなヘッダー */
+        header {
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 0 15px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-mark::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine { 0% { transform: translate(-100%, -100%) rotate(45deg); } 100% { transform: translate(100%, 100%) rotate(45deg); } }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mode-indicator {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 2rem;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        /* サイドバー: メンタルステータス */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .status-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-circle svg {
+            position: absolute;
+            top: 0; left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .score-circle .bg { fill: none; stroke: var(--surface-accent); stroke-width: 8; }
+        .score-circle .progress {
+            fill: none; stroke: var(--accent); stroke-width: 8;
+            stroke-dasharray: 314;
+            stroke-dashoffset: 62; /* 100 - 80% */
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s;
+        }
+
+        .score-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .status-label {
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .status-value {
+            text-align: center;
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 1rem;
+        }
+
+        .analysis-box {
+            background: var(--glass);
+            border-radius: 16px;
+            padding: 1rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        /* メインチャットエリア */
+        .chat-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            scrollbar-width: none;
+        }
+
+        .chat-messages::-webkit-scrollbar { display: none; }
+
+        .message {
+            max-width: 75%;
+            padding: 1.25rem 1.75rem;
+            font-size: 1rem;
+            line-height: 1.6;
+            position: relative;
+            animation: messageIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes messageIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .message.agent {
+            align-self: flex-start;
+            background: var(--surface-accent);
+            color: var(--text-main);
+            border-radius: 24px 24px 24px 4px;
+            border: 1px solid var(--border);
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #121212 0%, #1a1a1a 100%);
+            color: var(--accent);
+            border-radius: 24px 24px 4px 24px;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .message-time {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.2);
+            margin-top: 8px;
+            display: block;
+        }
+
+        /* 入力セクション */
+        .input-wrapper {
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            background: rgba(255,255,255,0.01);
+        }
+
+        .input-inner {
+            background: var(--surface-accent);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            padding: 6px 6px 6px 20px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-inner:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            padding: 12px 0;
+        }
+
+        .send-btn {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover { transform: scale(1.05); }
+
+        /* 全画面介入演出 */
+        #intervention {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        #intervention h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--danger);
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 20px var(--danger-glow);
+        }
+
+        #intervention p {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+
+        .rest-btn {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .rest-btn:hover { background: var(--danger); color: white; box-shadow: 0 0 30px var(--danger-glow); }
+
+        /* タイピングアニメーション */
+        .typing { display: flex; gap: 4px; padding: 12px; }
+        .dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; animation: dotAnim 1.4s infinite; }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotAnim { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 1; transform: scale(1.3); } }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <div class="logo-mark"></div>
+            <div class="logo-text">MENTAL SPARRING</div>
+        </div>
+        <div class="mode-indicator">AUTONOMOUS MODE</div>
+    </header>
+
+    <main>
+        <div class="sidebar">
+            <div class="status-card">
+                <div class="status-label">Resolution Score</div>
+                <div class="score-circle">
+                    <svg width="120" height="120">
+                        <circle class="bg" cx="60" cy="60" r="50"></circle>
+                        <circle class="progress" id="score-ring" cx="60" cy="60" r="50" style="stroke-dashoffset: 78;"></circle>
+                    </svg>
+                    <div class="score-text" id="score-val">75</div>
+                </div>
+                <div class="status-label">Mental State</div>
+                <div class="status-value" id="state-label">Stable / Analytical</div>
+                <div style="margin-top: 1.5rem;">
+                    <div class="status-label">Insight logs</div>
+                    <div class="analysis-box" id="insight-log">
+                        対話を開始しました。ユーザーの思考パターンの解析を待機中...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-flow">
+                <div class="message agent">
+                    こんにちは。今日はどのような「思考」を整理したいですか？
+                    <span class="message-time">16:32</span>
+                </div>
+            </div>
+
+            <div class="input-wrapper">
+                <div class="input-inner">
+                    <input type="text" id="user-input" placeholder="あなたの考えを言語化してください..." autocomplete="off">
+                    <button class="send-btn" onclick="processMessage()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="intervention">
+        <h2>CRITICAL LIMIT</h2>
+        <p>あなたの精神状態の解析値が危険域に達しました。これ以上のスパーリングは「整理」ではなく「消耗」に繋がると判断し、システムをロックします。<br><br>明日のあなたのために、今は目を閉じてください。</p>
+        <button class="rest-btn" onclick="location.reload()">RESTORE SYSTEM</button>
+    </div>
+
+    <script>
+        const chatFlow = document.getElementById('chat-flow');
+        const userInput = document.getElementById('user-input');
+        const scoreVal = document.getElementById('score-val');
+        const scoreRing = document.getElementById('score-ring');
+        const stateLabel = document.getElementById('state-label');
+        const insightLog = document.getElementById('insight-log');
+        const intervention = document.getElementById('intervention');
+
+        let currentScore = 75;
+
+        const sparPatterns = [
+            { keywords: ['疲れた', 'しんどい', '無理', '辞めたい'], reply: '「疲れ」を言葉にすることで、何が一番重荷になっているか見えてきますか？', impact: -25, log: '負の感情の蓄積を検知。核心への問いを優先します。' },
+            { keywords: ['悩んでる', 'どうすれば', 'わからない'], reply: '答えを出す前に、まず「選択肢」を3つだけ挙げるとしたら何になりますか？', impact: -10, log: '混濁した思考を分類するため、構造化を促します。' },
+            { keywords: ['楽しい', 'うれしい', '成功'], reply: 'その成功を構成した要素の中で、自分の「意志」で変えられた部分はどこでしょうか？', impact: 5, log: '正のバイアスをメタ認知させ、再現性を確認中。' }
+        ];
+
+        function addMessage(text, role) {
+            const now = new Date();
+            const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const msg = document.createElement('div');
+            msg.className = `message ${role}`;
+            msg.innerHTML = `${text}<span class="message-time">${time}</span>`;
+            chatFlow.appendChild(msg);
+            chatFlow.scrollTo({ top: chatFlow.scrollHeight, behavior: 'smooth' });
+        }
+
+        function updateUI(impact, log) {
+            currentScore = Math.max(0, Math.min(100, currentScore + impact));
+            scoreVal.innerText = Math.round(currentScore);
+            
+            // リングの更新 (2 * PI * R = 314)
+            const offset = 314 - (314 * (currentScore / 100));
+            scoreRing.style.strokeDashoffset = offset;
+
+            if (currentScore < 35) {
+                scoreRing.style.stroke = 'var(--danger)';
+                stateLabel.innerText = 'Critical / Emergency';
+                stateLabel.style.color = 'var(--danger)';
+            } else if (currentScore < 60) {
+                scoreRing.style.stroke = '#ffaa00';
+                stateLabel.innerText = 'Turbulent / Seeking';
+                stateLabel.style.color = '#ffaa00';
+            } else {
+                scoreRing.style.stroke = 'var(--accent)';
+                stateLabel.innerText = 'Stable / Analytical';
+                stateLabel.style.color = 'var(--accent)';
+            }
+
+            if (log) insightLog.innerText = log;
+
+            if (currentScore < 20) {
+                setTimeout(() => { intervention.style.display = 'flex'; }, 1000);
+            }
+        }
+
+        function processMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            userInput.value = '';
+
+            const typing = document.createElement('div');
+            typing.className = 'typing';
+            typing.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+            chatFlow.appendChild(typing);
+            chatFlow.scrollTop = chatFlow.scrollHeight;
+
+            setTimeout(() => {
+                chatFlow.removeChild(typing);
+                
+                let found = sparPatterns.find(p => p.keywords.some(k => text.includes(k)));
+                
+                if (found) {
+                    addMessage(found.reply, 'agent');
+                    updateUI(found.impact, found.log);
+                } else {
+                    const generics = [
+                        'その考えをもう少し具体的にすると、どんな場面が思い浮かびますか？',
+                        '今の言葉の裏側にある「本当の願い」は何でしょうか？',
+                        '一見無関係に見える「別の何か」と結びつけるなら、何が近いですか？'
+                    ];
+                    addMessage(generics[Math.floor(Math.random() * generics.length)], 'agent');
+                    updateUI(-5, '標準的な思考解析。解像度を高めるための揺さぶりを継続。');
+                }
+            }, 1200);
+        }
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') processMessage();
+        });
+    </script>
+</body>
+</html>

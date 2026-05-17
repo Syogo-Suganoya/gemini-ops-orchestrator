@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trend-Launcher - 自動商品ローンチエージェント デモ</title>
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* --- CSS DESIGN SYSTEM --- */
+    :root {
+      --bg-dark: #050608;
+      --bg-card: rgba(18, 11, 7, 0.7);
+      --border-card: rgba(255, 255, 255, 0.03);
+      --font-primary: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Outfit', sans-serif;
+      
+      /* Colors */
+      --accent-orange: #f2994a;
+      --accent-orange-glow: rgba(242, 153, 74, 0.25);
+      --accent-yellow: #ffca28;
+      --accent-yellow-glow: rgba(255, 202, 40, 0.25);
+      
+      --accent-salesforce: #00a1e0;
+      --accent-green: #10b981;
+      --accent-red: #ff4757;
+      
+      --shadow-orange: 0 0 25px var(--accent-orange-glow);
+      --shadow-yellow: 0 0 25px var(--accent-yellow-glow);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: radial-gradient(circle at 50% 120%, #201108 0%, var(--bg-dark) 80%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* --- TYPOGRAPHY & SCROLLBAR --- */
+    h1, h2, h3, .font-display {
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* --- GLASSMORPHISM CARDS --- */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(242, 153, 74, 0.15);
+      box-shadow: 0 10px 40px -15px rgba(242, 153, 74, 0.2);
+    }
+
+    /* --- LAYOUT HEADER --- */
+    header {
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-card);
+      background: rgba(5, 6, 8, 0.5);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+      padding: 0.55rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-orange);
+      transition: all 1.2s ease;
+    }
+
+    .logo-title {
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-subtitle {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-left: 0.5rem;
+      padding: 0.2rem 0.5rem;
+      background: rgba(242, 153, 74, 0.05);
+      border-radius: 6px;
+      border: 1px solid rgba(242, 153, 74, 0.1);
+    }
+
+    .demo-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      font-family: var(--font-primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.25s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+      color: #050608;
+      box-shadow: var(--shadow-orange);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.15);
+      box-shadow: 0 0 30px rgba(242, 153, 74, 0.4);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.02);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
+
+    .agent-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(18, 11, 7, 0.85);
+      padding: 0.5rem 1.1rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      border: 1px solid rgba(242, 153, 74, 0.1);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #64748b;
+      box-shadow: 0 0 8px rgba(100, 116, 139, 0.4);
+    }
+    
+    .status-dot.active {
+      background-color: var(--accent-orange);
+      box-shadow: 0 0 10px var(--accent-orange);
+      animation: pulse 1.2s infinite;
+    }
+
+    .status-dot.generating {
+      background-color: var(--accent-yellow);
+      box-shadow: 0 0 10px var(--accent-yellow);
+      animation: pulse 0.7s infinite;
+    }
+
+    .status-dot.completed {
+      background-color: var(--accent-green);
+      box-shadow: 0 0 12px var(--accent-green);
+      animation: pulse 1.5s infinite;
+    }
+
+    /* --- DASHBOARD GRID --- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1.35fr 1.1fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      height: calc(100vh - 86px);
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+      }
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .column-title {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .column-subtitle {
+      font-size: 0.72rem;
+      color: #64748b;
+    }
+
+    /* --- COLUMN 1: GA4 ANOMALY DETECTOR --- */
+    .ga4-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .ga4-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Anomaly Search Query Widget */
+    .unmet-query-box {
+      background: rgba(255, 71, 87, 0.02);
+      border: 1px solid rgba(255, 71, 87, 0.1);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .unmet-query-box.active-anomaly {
+      background: rgba(255, 71, 87, 0.05);
+      border-color: rgba(255, 71, 87, 0.35);
+      box-shadow: 0 0 15px rgba(255, 71, 87, 0.15);
+    }
+
+    .unmet-query-box.active-anomaly::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3.5px;
+      height: 100%;
+      background-color: var(--accent-red);
+      border-radius: 12px 0 0 12px;
+    }
+
+    .anomaly-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      background: rgba(255, 71, 87, 0.12);
+      color: #fecaca;
+      border: 1px solid rgba(255, 71, 87, 0.2);
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .unmet-query-name {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #f87171;
+    }
+
+    .unmet-query-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+
+    /* Anomaly Line graph (SVG) */
+    .traffic-graph-box {
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .graph-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .svg-graph-container {
+      width: 100%;
+      height: 120px;
+      position: relative;
+    }
+
+    /* Path stroke dash animation */
+    .graph-line-path {
+      fill: none;
+      stroke: url(#graph-gradient);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .graph-area-path {
+      fill: url(#area-gradient);
+      opacity: 0;
+      transition: opacity 1.5s ease 0.5s;
+    }
+
+    /* GA4 Search queries table list */
+    .query-list-table {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+    }
+
+    .query-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0.6rem;
+      background: rgba(0,0,0,0.15);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.01);
+    }
+
+    .query-word {
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .query-pct {
+      font-weight: 700;
+      color: var(--accent-orange);
+    }
+    
+    .query-row.anomaly-row {
+      background: rgba(255, 71, 87, 0.04);
+      border-color: rgba(255, 71, 87, 0.15);
+    }
+    .query-row.anomaly-row .query-word {
+      color: #fca5a5;
+    }
+    .query-row.anomaly-row .query-pct {
+      color: var(--accent-red);
+      animation: pulse 1s infinite;
+    }
+
+    /* --- COLUMN 2: INVENTOR & SALESFORCE --- */
+    .inventor-card {
+      flex: 1.25;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .inventor-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Gemini Product Lab terminal */
+    .product-lab-terminal {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      padding: 0.85rem;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.7rem;
+      color: var(--accent-yellow); /* Firebase golden style */
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      min-height: 150px;
+      max-height: 200px;
+    }
+
+    .lab-log-row {
+      line-height: 1.45;
+      word-break: break-all;
+      animation: fade-in 0.3s ease-out forwards;
+    }
+
+    .log-prefix-analytics { color: var(--accent-orange); font-weight: 700; }
+    .log-prefix-gemini { color: #fecaca; font-weight: 700; }
+    .log-prefix-salesforce { color: var(--accent-salesforce); font-weight: 700; }
+
+    /* Salesforce Product catalog table preview */
+    .sf-product-catalog {
+      flex: 1.1;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      min-height: 220px;
+    }
+
+    .sf-catalog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      padding-bottom: 0.4rem;
+    }
+
+    .sf-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(0, 161, 224, 0.1);
+      color: #93c5fd;
+      border: 1px solid rgba(0, 161, 224, 0.15);
+    }
+
+    .catalog-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.68rem;
+      text-align: left;
+    }
+
+    .catalog-table th {
+      color: #64748b;
+      font-weight: 600;
+      padding: 0.4rem 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .catalog-table td {
+      padding: 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+      color: #cbd5e1;
+    }
+
+    .catalog-row-new {
+      background: rgba(16, 185, 129, 0.04);
+      animation: scale-up 0.5s ease forwards;
+    }
+
+    .catalog-row-new td {
+      color: #a7f3d0;
+      font-weight: 600;
+    }
+
+    /* Accounting Google Sheets Rule box */
+    .ledger-sheet-box {
+      background: rgba(16, 185, 129, 0.02);
+      border: 1px solid rgba(16, 185, 129, 0.1);
+      border-radius: 8px;
+      padding: 0.55rem;
+      font-size: 0.68rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .ledger-header {
+      font-weight: 700;
+      color: var(--accent-green);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* --- COLUMN 3: FCM & LEADS ASSIGNMENT --- */
+    .leads-card {
+      flex: 1.1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .leads-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Smartphone mockup for Flutter Push notification */
+    .phone-mockup-container {
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .phone-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 110px;
+      background: #0b0d14;
+      border: 2px solid #334155;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+    }
+
+    .fcm-notif-card {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(242, 153, 74, 0.15), rgba(255, 202, 40, 0.15));
+      border: 1px solid rgba(242, 153, 74, 0.4);
+      border-radius: 8px;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      box-shadow: 0 0 15px rgba(242, 153, 74, 0.2);
+      animation: slide-in-top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      position: relative;
+      z-index: 10;
+    }
+
+    .fcm-notif-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--accent-yellow);
+    }
+
+    .fcm-notif-title {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .fcm-notif-body {
+      font-size: 0.55rem;
+      color: #cbd5e1;
+      line-height: 1.3;
+    }
+
+    /* FCM Wave rings */
+    .fcm-wave-ring {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border: 2px solid var(--accent-yellow);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .phone-screen.notified .fcm-wave-ring {
+      animation: fcm-ring 1.8s ease-out infinite;
+    }
+
+    /* Salesforce Hot Leads target catalog assignment table */
+    .hot-leads-box {
+      background: rgba(0, 161, 224, 0.02);
+      border: 1px solid rgba(0, 161, 224, 0.12);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .leads-table-container {
+      overflow-x: auto;
+    }
+
+    .leads-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.65rem;
+    }
+
+    .leads-table th {
+      color: #64748b;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.3rem 0.4rem;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .leads-table td {
+      padding: 0.4rem;
+      border-bottom: 1px solid rgba(255,255,255,0.01);
+      color: #cbd5e1;
+    }
+
+    .leads-row-new {
+      animation: fade-in-up 0.5s ease forwards;
+    }
+
+    .btn-action-glow {
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      font-size: 0.55rem;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.1);
+    }
+    .btn-action-glow:hover {
+      background: var(--accent-green);
+      color: #050608;
+      box-shadow: 0 0 12px var(--accent-green);
+    }
+
+    /* --- ANIMATIONS KEYFRAMES --- */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.96); }
+    }
+
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes scale-up {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes slide-in-top {
+      0% { opacity: 0; transform: translateY(-40px) scale(0.9); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes fcm-ring {
+      0% { transform: scale(0.2); opacity: 0.8; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge" id="logo-badge">
+        <i data-lucide="rocket" style="color: #050608; width: 22px; height: 22px;"></i>
+      </div>
+      <div>
+        <h1 class="logo-title font-display">Trend-Launcher</h1>
+      </div>
+      <span class="logo-subtitle">未充足ニーズ自動ローンチ</span>
+    </div>
+
+    <!-- Agent Status and Controls -->
+    <div class="demo-controls">
+      <div class="agent-status-badge">
+        <span class="status-dot" id="agent-status-dot"></span>
+        <span id="agent-status-text" style="font-weight: 700; color: #64748b;">AI Agent: GA4常時監視中</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-reset" onclick="resetDemo()">
+        <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i> リセット
+      </button>
+      <button class="btn btn-primary" id="btn-start" onclick="startDemo()">
+        <i data-lucide="rocket" style="width: 16px; height: 16px;"></i> 新商品を自動ローンチする
+      </button>
+    </div>
+  </header>
+
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid">
+    
+    <!-- COLUMN 1: GA4 ANOMALY DETECTOR -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="bar-chart-3" style="color: var(--accent-orange);" id="col1-icon"></i>
+          <span>GA4 未充足検索ニーズ</span>
+        </div>
+        <span class="column-subtitle">Google Analytics API</span>
+      </div>
+
+      <div class="ga4-card glass-card">
+        <div class="ga4-view-container">
+          
+          <!-- GA4 Anomaly query card -->
+          <div class="unmet-query-box" id="unmet-query-card">
+            <span class="anomaly-badge" id="anomaly-badge">NORMAL</span>
+            <div class="unmet-query-name" id="anomaly-name">AIパッケージV2 セキュリティ</div>
+            <div class="unmet-query-meta">
+              <span>検索急上昇ボリューム</span>
+              <span id="anomaly-pct-text">+12%</span>
+            </div>
+          </div>
+
+          <!-- GA4 Traffic line graph -->
+          <div class="traffic-graph-box">
+            <div class="graph-header">
+              <span>リアルタイム検索トレンド推移 (直近7日間)</span>
+              <span style="color:var(--accent-orange);" id="graph-pct-label">+12%</span>
+            </div>
+
+            <!-- SVG Graph path chart -->
+            <div class="svg-graph-container">
+              <svg width="100%" height="120" viewBox="0 0 350 120" preserveAspectRatio="none">
+                <!-- Gradients -->
+                <defs>
+                  <linearGradient id="graph-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="var(--accent-orange)"></stop>
+                    <stop offset="100%" stop-color="var(--accent-red)"></stop>
+                  </linearGradient>
+                  <linearGradient id="area-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="var(--accent-orange)" stop-opacity="0.3"></stop>
+                    <stop offset="100%" stop-color="var(--accent-orange)" stop-opacity="0"></stop>
+                  </linearGradient>
+                </defs>
+
+                <!-- Grid lines background -->
+                <line x1="0" y1="30" x2="350" y2="30" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
+                <line x1="0" y1="70" x2="350" y2="70" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
+                <line x1="0" y1="100" x2="350" y2="100" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
+
+                <!-- Area fill path -->
+                <path d="M 0 100 Q 80 95 160 85 T 320 15 L 350 15 L 350 120 L 0 120 Z" class="graph-area-path" id="graph-area"></path>
+
+                <!-- Line stroke path -->
+                <path d="M 0 100 Q 80 95 160 85 T 320 15 L 350 15" class="graph-line-path" id="graph-line"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Other GA4 searches table -->
+          <div class="query-list-table">
+            <span style="font-size:0.65rem; color:#64748b; font-weight:700; text-transform:uppercase;">サイト内検索ワード急上昇ランキング</span>
+            
+            <div class="query-row anomaly-row" id="rank-row-1">
+              <span class="query-word">1. AIパッケージV2 セキュリティ</span>
+              <span class="query-pct" id="rank-1-pct">+12%</span>
+            </div>
+            <div class="query-row">
+              <span class="query-word">2. AIパッケージV2 連携設定</span>
+              <span class="query-pct" style="color:#cbd5e1;">+120% (対応済)</span>
+            </div>
+            <div class="query-row">
+              <span class="query-word">3. Meet 録音議事録</span>
+              <span class="query-pct" style="color:#cbd5e1;">+80% (対応済)</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: INVENTOR & SALESFORCE -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="cpu" style="color: var(--accent-yellow);"></i>
+          <span>Gemini 自律商品企画 ➔ Salesforce登録</span>
+        </div>
+        <span class="column-subtitle">Product2 ＆ Sheets 自動連携</span>
+      </div>
+
+      <div class="inventor-card glass-card">
+        <div class="inventor-view-container">
+          
+          <!-- Gemini Product Lab inference -->
+          <div class="product-lab-terminal" id="lab-terminal">
+            <div class="lab-log-row" style="color:#64748b;">
+              &gt; Trend-Launcher Lab standby. Monitoring GA4 search anomalies...
+            </div>
+          </div>
+
+          <!-- Salesforce Catalog registration -->
+          <div class="sf-product-catalog">
+            <div class="sf-catalog-header">
+              <span class="sf-badge">
+                <i data-lucide="database" style="width:11px; height:11px;"></i>
+                Salesforce Product2 Catalog
+              </span>
+              <span style="font-size:0.62rem; color:#64748b; font-weight:700;" id="catalog-sync-status">STABLE</span>
+            </div>
+
+            <!-- Product Table -->
+            <table class="catalog-table">
+              <thead>
+                <tr>
+                  <th>商品コード</th>
+                  <th>製品名</th>
+                  <th>想定標準価格</th>
+                  <th>ステータス</th>
+                </tr>
+              </thead>
+              <tbody id="catalog-table-body">
+                <tr>
+                  <td>V2-CORE</td>
+                  <td>AIパッケージV2 コアエンジン</td>
+                  <td>¥1,200,000</td>
+                  <td style="color:var(--accent-green); font-weight:700;">販売中</td>
+                </tr>
+                <tr>
+                  <td>V2-FLOW</td>
+                  <td>データ連携ワークフローモジュール</td>
+                  <td>¥450,000</td>
+                  <td style="color:var(--accent-green); font-weight:700;">販売中</td>
+                </tr>
+                <!-- Dynamic New Product goes here -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Ledger Accounting Sheet module -->
+          <div class="ledger-sheet-box" id="ledger-box" style="opacity:0.3;">
+            <div class="ledger-header">
+              <i data-lucide="file-spreadsheet" style="width:13px; height:13px;"></i>
+              <span>Google Sheets 会計仕訳仕組ルールDB</span>
+            </div>
+            <div id="ledger-text" style="color:#cbd5e1; font-family:'Courier New', Courier, monospace; font-size:0.62rem;">
+              [待機中] 新商品のローンチに伴い、会計自動連携用の仕訳テーブルに商品コードと勘定科目ルールが自動登録されます。
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: FCM & LEADS ASSIGNMENT -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="bell-ring" style="color: #64748b;" id="col3-icon"></i>
+          <span>Firebase 通知 ＆ 営業ホットリード</span>
+        </div>
+        <span class="column-subtitle">FCM ➔ Salesforce Leads</span>
+      </div>
+
+      <div class="leads-card glass-card">
+        <div class="leads-view-container">
+          
+          <!-- Flutter Smartphone FCM mockup -->
+          <div class="phone-mockup-container">
+            <div class="phone-title">
+              <i data-lucide="smartphone" style="width:13px; height:13px; color:var(--accent-yellow);"></i>
+              <span>営業モバイルアプリ (Flutter FCM連携)</span>
+            </div>
+
+            <!-- Phone Screen -->
+            <div class="phone-screen" id="phone-screen">
+              <!-- Default state inside phone -->
+              <div style="color:#475569; text-align:center; font-size:0.62rem;" id="phone-placeholder">
+                <i data-lucide="bell-off" style="width:20px; height:20px; color:#334155; margin-bottom:0.25rem;"></i><br>
+                <span>自動ローンチ時、Firebaseよりプッシュ通知が入ります</span>
+              </div>
+              <div class="fcm-wave-ring hidden" id="fcm-wave"></div>
+              <!-- Notification Card will be injected -->
+            </div>
+          </div>
+
+          <!-- Salesforce Target leads assignment table -->
+          <div class="hot-leads-box" id="leads-box" style="opacity:0.3;">
+            <span style="font-size:0.68rem; font-weight:700; color:var(--accent-salesforce); display:flex; align-items:center; gap:0.25rem;">
+              <i data-lucide="users" style="width:13px; height:13px;"></i>
+              Salesforce 確度別アプローチ顧客リード自動抽出
+            </span>
+
+            <div class="leads-table-container">
+              <table class="leads-table">
+                <thead>
+                  <tr>
+                    <th>顧客名</th>
+                    <th>キーマン</th>
+                    <th>過去の離脱・失注要因</th>
+                    <th>自律営業</th>
+                  </tr>
+                </thead>
+                <tbody id="leads-table-body">
+                  <!-- Dynamic hot leads will load here -->
+                  <tr id="leads-placeholder-row">
+                    <td colspan="4" style="color:#64748b; text-align:center; padding:1.5rem 0;">新商品ローンチ後、アプローチすべき見込み客をSalesforceから自動クエリ抽出します</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- --- JAVASCRIPT LOGIC & SCENARIO --- -->
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // DOM Elements
+    const btnStart = document.getElementById('btn-start');
+    const logoBadge = document.getElementById('logo-badge');
+    const agentStatusDot = document.getElementById('agent-status-dot');
+    const agentStatusText = document.getElementById('agent-status-text');
+
+    // Column 1
+    const col1Icon = document.getElementById('col1-icon');
+    const unmetQueryCard = document.getElementById('unmet-query-card');
+    const anomalyBadge = document.getElementById('anomaly-badge');
+    const anomalyPctText = document.getElementById('anomaly-pct-text');
+    const graphPctLabel = document.getElementById('graph-pct-label');
+    const graphLinePath = document.getElementById('graph-line');
+    const graphAreaPath = document.getElementById('graph-area');
+    const rank1PctText = document.getElementById('rank-1-pct');
+
+    // Column 2
+    const labTerminal = document.getElementById('lab-terminal');
+    const catalogSyncStatus = document.getElementById('catalog-sync-status');
+    const catalogTableBody = document.getElementById('catalog-table-body');
+    const ledgerBox = document.getElementById('ledger-box');
+    const ledgerText = document.getElementById('ledger-text');
+
+    // Column 3
+    const col3Icon = document.getElementById('col3-icon');
+    const phoneScreen = document.getElementById('phone-screen');
+    const phonePlaceholder = document.getElementById('phone-placeholder');
+    const fcmWave = document.getElementById('fcm-wave');
+    const leadsBox = document.getElementById('leads-box');
+    const leadsTableBody = document.getElementById('leads-table-body');
+    const leadsPlaceholderRow = document.getElementById('leads-placeholder-row');
+
+    let timeouts = [];
+
+    // AI Thinking Logs for Trend-Launcher
+    const aiThinkingScenario = [
+      { type: 'analytics', text: 'Telemetry: Running Analytics Data API cron job. Scanning site queries...' },
+      { type: 'analytics', text: 'SEARCH ANOMALY DETECTED: "AIパッケージV2 セキュリティ" has surged +480%. Total queries: 1,250.' },
+      { type: 'analytics', text: 'CATALOG CHECK: Querying Salesforce Product DB... Product "V2-SA" not found. Status: Unmet Need.' },
+      { type: 'gemini', text: 'INFERENCE: Unfulfilled organic demand identified. Launching autonomous product creation module...' },
+      { type: 'gemini', text: 'GEMINI PRODUCT LAB: Inventing custom add-on module: "AI-Agent Security Auditor (V2-SA)".' },
+      { type: 'gemini', text: 'GEMINI SPECIFICATION: Pricing: ¥350,000. Double-Entry ledger code: 借) 売掛金 / 貸) 製品売上.' },
+      { type: 'gemini', text: 'GEMINI SPECIFICATION: Feature: "Real-time Salesforce/Gmail config leak prevention & secure audit logging module".' },
+      { type: 'salesforce', text: 'SALESFORCE API: Inserting product "V2-SA" into Product2 Catalog & active Pricebook Entry...' },
+      { type: 'salesforce', text: 'SALESFORCE API: Insert successful. Product catalog updated.' },
+      { type: 'analytics', text: 'ACCOUNTING SHEETS API: Appending ledger journal entry rule: [V2-SA -> System product revenue].' },
+      { type: 'gemini', text: 'FIREBASE CLOUD MESSAGING: Triggering localized push outreach to sales team mobile devices (Flutter).' },
+      { type: 'salesforce', text: 'SALESFORCE QUERY: Extracting historic lost/stalled leads citing "security" concerns. Found 3 key accounts.' }
+    ];
+
+    function appendTerminalLog(type, text) {
+      const row = document.createElement('div');
+      row.className = 'lab-log-row';
+      let prefix = '';
+
+      if (type === 'analytics') prefix = `<span class="log-prefix-analytics">[GA4-AI]</span> `;
+      if (type === 'gemini') prefix = `<span class="log-prefix-gemini">[Gemini Lab]</span> `;
+      if (type === 'salesforce') prefix = `<span class="log-prefix-salesforce">[Salesforce API]</span> `;
+
+      row.innerHTML = `&gt; ${prefix}${text}`;
+      labTerminal.appendChild(row);
+      labTerminal.scrollTop = labTerminal.scrollHeight;
+    }
+
+    function startDemo() {
+      resetDemo();
+
+      btnStart.disabled = true;
+      btnStart.innerHTML = `<i data-lucide="loader" class="animate-spin" style="width:16px; height:16px;"></i> ローンチプロセス稼働中...`;
+      
+      agentStatusDot.className = 'status-dot active';
+      agentStatusText.textContent = 'AI Agent: GA4急上昇キーワード検出中';
+      agentStatusText.style.color = 'var(--accent-orange)';
+
+      // Trigger GA4 search spike
+      setTimeout(() => {
+        unmetQueryCard.classList.add('active-anomaly');
+        anomalyBadge.className = 'anomaly-badge';
+        anomalyBadge.style.background = 'var(--accent-red)';
+        anomalyBadge.style.color = 'white';
+        anomalyBadge.textContent = 'UNMET NEED (CRITICAL)';
+        
+        anomalyPctText.textContent = '+480%';
+        anomalyPctText.style.color = 'var(--accent-red)';
+        anomalyPctText.style.fontWeight = '800';
+        
+        graphPctLabel.textContent = '+480% (急上昇)';
+        graphPctLabel.style.color = 'var(--accent-red)';
+
+        // Animate SVG Line Waveform spike
+        graphLinePath.style.strokeDashoffset = '0';
+        graphAreaPath.style.opacity = '1';
+
+        rank1PctText.textContent = '+480%';
+        rank1PctText.style.color = 'var(--accent-red)';
+
+        appendTerminalLog(aiThinkingScenario[0].type, aiThinkingScenario[0].text);
+        appendTerminalLog(aiThinkingScenario[1].type, aiThinkingScenario[1].text);
+        appendTerminalLog(aiThinkingScenario[2].type, aiThinkingScenario[2].text);
+        lucide.createIcons();
+      }, 800);
+
+      // --- STEP 2 (3.5s): Gemini Product Creation ---
+      const geminiTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot generating';
+        agentStatusText.textContent = 'AI Agent: 新商品を自動企画・仕様生成中';
+        agentStatusText.style.color = 'var(--accent-yellow)';
+
+        appendTerminalLog(aiThinkingScenario[3].type, aiThinkingScenario[3].text);
+        appendTerminalLog(aiThinkingScenario[4].type, aiThinkingScenario[4].text);
+        appendTerminalLog(aiThinkingScenario[5].type, aiThinkingScenario[5].text);
+        appendTerminalLog(aiThinkingScenario[6].type, aiThinkingScenario[6].text);
+      }, 3500);
+      timeouts.push(geminiTimeout);
+
+      // --- STEP 3 (8.5s): Salesforce Catalog Registration ---
+      const sfTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot active';
+        agentStatusText.textContent = 'AI Agent: Salesforceカタログに自動登録中';
+        agentStatusText.style.color = 'var(--accent-salesforce)';
+
+        catalogSyncStatus.textContent = 'WRITING API...';
+        catalogSyncStatus.style.color = 'var(--accent-salesforce)';
+
+        appendTerminalLog(aiThinkingScenario[7].type, aiThinkingScenario[7].text);
+        appendTerminalLog(aiThinkingScenario[8].type, aiThinkingScenario[8].text);
+        appendTerminalLog(aiThinkingScenario[9].type, aiThinkingScenario[9].text);
+
+        // Inject New Product Row into Salesforce Catalog Table
+        const row = document.createElement('tr');
+        row.className = 'catalog-row-new';
+        row.innerHTML = `
+          <td>V2-SA</td>
+          <td>AI-Agent Security Auditor</td>
+          <td>¥350,000</td>
+          <td style="color:var(--accent-green); font-weight:800;">販売中 (自動)</td>
+        `;
+        catalogTableBody.appendChild(row);
+
+        catalogSyncStatus.textContent = 'PRODUCT2 UPDATED';
+        catalogSyncStatus.style.color = 'var(--accent-green)';
+
+        // Ledger Sheets DB registered
+        ledgerBox.style.opacity = '1';
+        ledgerText.innerHTML = `
+          <span style="color:var(--accent-green); font-weight:700;">[自動仕訳書き込み完了]</span><br>
+          商品コード: <b>V2-SA</b> | 単価: <b>¥350,000</b> | 売上勘定科目: <b>システム製品売上</b> | 借方: <b>売掛金</b>
+        `;
+
+      }, 8500);
+      timeouts.push(sfTimeout);
+
+      // --- STEP 4 (15.5s): Firebase push notification FCM ---
+      const fcmTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot active';
+        agentStatusText.textContent = 'AI Agent: 営業チームへ自動ローンチ通知中';
+        agentStatusText.style.color = 'var(--accent-yellow)';
+
+        appendTerminalLog(aiThinkingScenario[10].type, aiThinkingScenario[10].text);
+
+        // Push Mobile Notification Pop-up inside phone screen
+        phonePlaceholder.classList.add('hidden');
+        phoneScreen.className = 'phone-screen notified';
+        fcmWave.classList.remove('hidden');
+
+        const notif = document.createElement('div');
+        notif.className = 'fcm-notif-card';
+        notif.innerHTML = `
+          <div class="fcm-notif-header">
+            <span><i data-lucide="flame" style="width:10px; height:10px; display:inline-block; vertical-align:middle; margin-right:0.1rem;"></i>Firebase FCM</span>
+            <span>たった今</span>
+          </div>
+          <span class="fcm-notif-title">【自動ローンチ】新商品『V2-SA』登録完了</span>
+          <span class="fcm-notif-body">未充足検索『セキュリティ』対応追加モジュール(¥350k)を自動登録！営業用ホット顧客リードを即時抽出しました。</span>
+        `;
+        phoneScreen.appendChild(notif);
+        lucide.createIcons();
+
+      }, 15500);
+      timeouts.push(fcmTimeout);
+
+      // --- STEP 5 (19.5s): Extracting historic sales leads ---
+      const leadsTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot completed';
+        agentStatusText.textContent = 'AI Agent: 営業アプローチ顧客リード自動抽出中';
+        agentStatusText.style.color = 'var(--accent-green)';
+
+        appendTerminalLog(aiThinkingScenario[11].type, aiThinkingScenario[11].text);
+
+        // Load Lead Rows
+        leadsPlaceholderRow.classList.add('hidden');
+        leadsBox.style.opacity = '1';
+
+        const lead1 = document.createElement('tr');
+        lead1.className = 'leads-row-new';
+        lead1.innerHTML = `
+          <td style="font-weight:700;">ソリューションテック様</td>
+          <td>山本 誠 様</td>
+          <td style="color:var(--accent-red);">セキュリティ懸念で商談停滞</td>
+          <td><button class="btn-action-glow" onclick="alert('自律架電・提案メールドラフトを起動します')"><i data-lucide="zap" style="width:9px; height:9px; display:inline-block; vertical-align:middle;"></i> アプローチ</button></td>
+        `;
+
+        const lead2 = document.createElement('tr');
+        lead2.className = 'leads-row-new';
+        lead2.innerHTML = `
+          <td style="font-weight:700;">フューチャーシステムズ様</td>
+          <td>佐々木 様</td>
+          <td style="color:var(--accent-red);">セキュリティ監査ログ不足で失注</td>
+          <td><button class="btn-action-glow" onclick="alert('自律架電・提案メールドラフトを起動します')"><i data-lucide="zap" style="width:9px; height:9px; display:inline-block; vertical-align:middle;"></i> アプローチ</button></td>
+        `;
+
+        const lead3 = document.createElement('tr');
+        lead3.className = 'leads-row-new';
+        lead3.innerHTML = `
+          <td style="font-weight:700;">ネクストテクノロジー様</td>
+          <td>田中 様</td>
+          <td style="color:var(--accent-red);">データ漏洩防御の監査要望</td>
+          <td><button class="btn-action-glow" onclick="alert('自律架電・提案メールドラフトを起動します')"><i data-lucide="zap" style="width:9px; height:9px; display:inline-block; vertical-align:middle;"></i> アプローチ</button></td>
+        `;
+
+        leadsTableBody.appendChild(lead1);
+        leadsTableBody.appendChild(lead2);
+        leadsTableBody.appendChild(lead3);
+        lucide.createIcons();
+
+      }, 19500);
+      timeouts.push(leadsTimeout);
+
+      // --- STEP 6 (23s): Complete ---
+      const finishTimeout = setTimeout(() => {
+        // Change Theme Aesthetics: Glow gold complete state
+        logoBadge.style.background = 'linear-gradient(135deg, var(--accent-green), var(--accent-orange))';
+        logoBadge.style.boxShadow = '0 0 25px rgba(16, 185, 129, 0.4)';
+        
+        col1Icon.style.color = 'var(--accent-green)';
+        col3Icon.style.color = 'var(--accent-green)';
+
+        btnStart.disabled = false;
+        btnStart.innerHTML = `<i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> 自動ローンチ完了`;
+        
+        agentStatusText.textContent = 'AI Agent: 新商品自動ローンチ完了';
+        agentStatusText.style.color = 'var(--accent-green)';
+        
+        appendTerminalLog('gemini', 'TREND LAUNCH COMPLETED. Product Catalog V2-SA is live. Leads generated and assigned.');
+      }, 23000);
+      timeouts.push(finishTimeout);
+    }
+
+    function resetDemo() {
+      // Clear timers
+      timeouts.forEach(id => clearTimeout(id));
+      timeouts.length = 0;
+
+      // Reset Header Theme
+      logoBadge.style.background = 'linear-gradient(135deg, var(--accent-orange), var(--accent-yellow))';
+      logoBadge.style.boxShadow = 'var(--shadow-orange)';
+      
+      col1Icon.style.color = 'var(--accent-orange)';
+      col3Icon.style.color = '#64748b';
+
+      // Reset Column 1
+      unmetQueryCard.classList.remove('active-anomaly');
+      anomalyBadge.className = 'anomaly-badge hidden';
+      anomalyBadge.style.background = 'rgba(255, 71, 87, 0.12)';
+      anomalyBadge.style.color = '#fecaca';
+      anomalyBadge.textContent = 'NORMAL';
+      
+      anomalyPctText.textContent = '+12%';
+      anomalyPctText.style.color = '#cbd5e1';
+      anomalyPctText.style.fontWeight = '600';
+      
+      graphPctLabel.textContent = '+12%';
+      graphPctLabel.style.color = 'var(--accent-orange)';
+
+      // Reset SVG graph
+      graphLinePath.style.strokeDashoffset = '600';
+      graphAreaPath.style.opacity = '0';
+
+      rank1PctText.textContent = '+12%';
+      rank1PctText.style.color = 'var(--accent-orange)';
+
+      // Reset Column 2
+      labTerminal.innerHTML = `
+        <div class="lab-log-row" style="color:#64748b;">
+          &gt; Trend-Launcher Lab standby. Monitoring GA4 search anomalies...
+        </div>
+      `;
+
+      catalogSyncStatus.textContent = 'STABLE';
+      catalogSyncStatus.style.color = '#64748b';
+      
+      // Remove added catalog rows (keep only default 2)
+      const rows = catalogTableBody.querySelectorAll('tr');
+      for(let i=2; i<rows.length; i++) {
+        rows[i].remove();
+      }
+
+      ledgerBox.style.opacity = '0.3';
+      ledgerText.innerHTML = `[待機中] 新商品のローンチに伴い、会計自動連携用の仕訳テーブルに商品コードと勘定科目ルールが自動登録されます。`;
+
+      // Reset Column 3
+      phonePlaceholder.classList.remove('hidden');
+      phoneScreen.className = 'phone-screen';
+      fcmWave.classList.add('hidden');
+      const cards = phoneScreen.querySelectorAll('.fcm-notif-card');
+      cards.forEach(c => c.remove());
+
+      leadsBox.style.opacity = '0.3';
+      leadsPlaceholderRow.classList.remove('hidden');
+      const leadRows = leadsTableBody.querySelectorAll('tr');
+      for(let i=1; i<leadRows.length; i++) {
+        leadRows[i].remove();
+      }
+
+      // Controls
+      btnStart.disabled = false;
+      btnStart.innerHTML = `<i data-lucide="rocket" style="width: 16px; height: 16px;"></i> 新商品を自動ローンチする`;
+
+      agentStatusDot.className = 'status-dot';
+      agentStatusText.textContent = 'AI Agent: GA4常時監視中';
+      agentStatusText.style.color = '#64748b';
+
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

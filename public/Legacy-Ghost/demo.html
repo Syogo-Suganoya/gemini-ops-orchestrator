@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legacy-Ghost - デジタルソウル継承エージェント デモ</title>
+  <!-- Google Fonts: Orbitron & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* --- CSS DESIGN SYSTEM --- */
+    :root {
+      --bg-dark: #030508;
+      --bg-card: rgba(8, 12, 24, 0.7);
+      --border-card: rgba(255, 255, 255, 0.03);
+      --font-primary: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Orbitron', sans-serif;
+      
+      /* Colors */
+      --accent-cyan: #00f2fe;
+      --accent-cyan-glow: rgba(0, 242, 254, 0.25);
+      --accent-purple: #c084fc;
+      --accent-purple-glow: rgba(192, 132, 252, 0.25);
+      
+      --accent-pink: #f43f5e;
+      --accent-green: #10b981;
+      --accent-salesforce: #00a1e0;
+      --accent-docs: #2563eb;
+      
+      --shadow-cyber: 0 0 25px var(--accent-cyan-glow);
+      --shadow-ghost: 0 0 25px var(--accent-purple-glow);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: radial-gradient(circle at 50% 120%, #0d122b 0%, var(--bg-dark) 80%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* --- TYPOGRAPHY & SCROLLBAR --- */
+    h1, h2, h3, .font-display {
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* --- GLASSMORPHISM CARDS --- */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 242, 254, 0.15);
+      box-shadow: 0 10px 40px -15px rgba(0, 242, 254, 0.2);
+    }
+
+    /* --- LAYOUT HEADER --- */
+    header {
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-card);
+      background: rgba(3, 5, 8, 0.5);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      padding: 0.55rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-cyber);
+      transition: all 1.2s ease;
+    }
+
+    .logo-title {
+      font-size: 1.5rem;
+      background: linear-gradient(to right, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-subtitle {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-left: 0.5rem;
+      padding: 0.2rem 0.5rem;
+      background: rgba(0, 242, 254, 0.05);
+      border-radius: 6px;
+      border: 1px solid rgba(0, 242, 254, 0.1);
+    }
+
+    .demo-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      font-family: var(--font-primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.25s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      color: #030508;
+      box-shadow: var(--shadow-cyber);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.15);
+      box-shadow: 0 0 30px rgba(0, 242, 254, 0.4);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.02);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
+
+    .agent-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(8, 12, 24, 0.85);
+      padding: 0.5rem 1.1rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      border: 1px solid rgba(0, 242, 254, 0.1);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #64748b;
+      box-shadow: 0 0 8px rgba(100, 116, 139, 0.4);
+    }
+    
+    .status-dot.active {
+      background-color: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+      animation: pulse 1.2s infinite;
+    }
+
+    .status-dot.scanning {
+      background-color: var(--accent-purple);
+      box-shadow: 0 0 10px var(--accent-purple);
+      animation: pulse 0.7s infinite;
+    }
+
+    .status-dot.completed {
+      background-color: var(--accent-green);
+      box-shadow: 0 0 12px var(--accent-green);
+      animation: pulse 1.5s infinite;
+    }
+
+    /* --- DASHBOARD GRID --- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1.3fr 1.15fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      height: calc(100vh - 86px);
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+      }
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .column-title {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .column-subtitle {
+      font-size: 0.72rem;
+      color: #64748b;
+    }
+
+    /* --- COLUMN 1: TRIGGER & SCANNER --- */
+    .trigger-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .trigger-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Salesforce user status card */
+    .sf-user-card {
+      background: rgba(0, 161, 224, 0.02);
+      border: 1px solid rgba(0, 161, 224, 0.12);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      position: relative;
+    }
+
+    .user-profile-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-avatar-placeholder {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+    }
+
+    .user-info-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-status-pill {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #a7f3d0;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      display: inline-block;
+      width: fit-content;
+      margin-top: 0.15rem;
+      transition: all 0.5s ease;
+    }
+
+    .user-status-pill.resigned {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fecaca;
+      border-color: rgba(244, 63, 94, 0.3);
+      animation: pulse 1s infinite alternate;
+    }
+
+    .trigger-webhook-banner {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      border-radius: 8px;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #fecaca;
+      animation: pulse-border 1.2s infinite;
+    }
+
+    /* Google Footprint Scanner widget */
+    .footprint-scanner-box {
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .scanner-progress-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .scanner-progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .scanner-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .scanner-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+      border-radius: 3px;
+      transition: width 0.1s linear;
+    }
+
+    /* 2M Tokens Loader counter */
+    .tokens-loader-widget {
+      background: rgba(0, 242, 254, 0.01);
+      border: 1px solid rgba(0, 242, 254, 0.08);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tokens-loader-widget::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0, 242, 254, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .token-counter-text {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 900;
+      background: linear-gradient(to right, var(--accent-cyan), #ffffff, var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .token-label-text {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* --- COLUMN 2: ITAMO INFERENCE & DOCS GEN --- */
+    .ghost-card {
+      flex: 1.15;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .ghost-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Gemini Itako terminal */
+    .itako-inference-terminal {
+      flex: 0.9;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      padding: 0.85rem;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.7rem;
+      color: #c084fc; /* purple cyber */
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      min-height: 140px;
+    }
+
+    .itako-log-row {
+      line-height: 1.45;
+      word-break: break-all;
+      animation: fade-in 0.3s ease-out forwards;
+    }
+
+    .log-prefix-ghost { color: var(--accent-cyan); font-weight: 700; }
+    .log-prefix-docs { color: #93c5fd; font-weight: 700; }
+
+    /* Mock Google Docs Compiler */
+    .mock-docs-widget {
+      flex: 1.1;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-height: 220px;
+      position: relative;
+    }
+
+    .docs-widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      padding-bottom: 0.4rem;
+    }
+
+    .docs-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(37, 99, 235, 0.1);
+      color: #93c5fd;
+      border: 1px solid rgba(37, 99, 235, 0.15);
+    }
+
+    .docs-editor-screen {
+      flex: 1;
+      background: #ffffff;
+      color: #1e293b;
+      border-radius: 6px;
+      padding: 0.85rem;
+      font-size: 0.7rem;
+      overflow-y: auto;
+      line-height: 1.5;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+      min-height: 130px;
+      max-height: 220px;
+      opacity: 0.25;
+      transition: opacity 0.5s ease;
+    }
+
+    .docs-editor-screen.active {
+      opacity: 1;
+    }
+
+    .docs-p {
+      margin-bottom: 0.5rem;
+      animation: fade-in-up 0.5s ease forwards;
+    }
+
+    .docs-h1 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 0.2rem;
+      margin-bottom: 0.5rem;
+      margin-top: 0.3rem;
+    }
+
+    .docs-h2 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #2563eb;
+      margin-top: 0.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .docs-ul {
+      margin-left: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* --- COLUMN 3: SUCCESSOR & CALENDAR --- */
+    .successor-card {
+      flex: 1.1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .successor-view-container {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    /* Successor info card */
+    .successor-profile-box {
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .successor-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+
+    /* Calendar Grid Widget */
+    .mock-calendar-box {
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .calendar-grid-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: 50px repeat(3, 1fr);
+      gap: 2px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      padding: 2px;
+      font-size: 0.62rem;
+    }
+
+    .cal-header {
+      font-weight: 700;
+      text-align: center;
+      color: #64748b;
+      padding: 0.25rem 0;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .cal-time-col {
+      color: #64748b;
+      text-align: right;
+      padding-right: 0.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .cal-cell {
+      background: rgba(0, 0, 0, 0.15);
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cal-event-busy {
+      background: rgba(255,255,255,0.04);
+      border-left: 2px solid #475569;
+      color: #64748b;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding-left: 0.2rem;
+      font-size: 0.55rem;
+    }
+
+    .cal-event-inserted {
+      background: rgba(0, 242, 254, 0.15);
+      border-left: 2.5px solid var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.15);
+      color: #e2e8f0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: 0.2rem;
+      font-size: 0.55rem;
+      line-height: 1.2;
+      animation: scale-up 0.5s ease forwards, pulse-border 1.5s infinite;
+      cursor: pointer;
+    }
+
+    /* Salesforce activities history timeline */
+    .sf-history-timeline {
+      background: rgba(0, 161, 224, 0.02);
+      border: 1px solid rgba(0, 161, 224, 0.12);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .timeline-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .timeline-node {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.68rem;
+    }
+
+    .timeline-icon-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.45rem;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .timeline-node.success-node .timeline-icon-dot {
+      background: var(--accent-green);
+    }
+
+    .timeline-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .timeline-head {
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .timeline-time {
+      color: #64748b;
+      font-size: 0.6rem;
+    }
+
+    /* --- ANIMATIONS KEYFRAMES --- */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.96); }
+    }
+
+    @keyframes pulse-border {
+      0%, 100% { border-color: rgba(0, 242, 254, 0.25); box-shadow: 0 0 8px rgba(0, 242, 254, 0.15); }
+      50% { border-color: rgba(0, 242, 254, 0.8); box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); }
+    }
+
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes scale-up {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge" id="logo-badge">
+        <i data-lucide="ghost" style="color: #030508; width: 22px; height: 22px;"></i>
+      </div>
+      <div>
+        <h1 class="logo-title font-display">Legacy-Ghost</h1>
+      </div>
+      <span class="logo-subtitle">デジタルソウル継承エージェント</span>
+    </div>
+
+    <!-- Agent Status and Controls -->
+    <div class="demo-controls">
+      <div class="agent-status-badge">
+        <span class="status-dot" id="agent-status-dot"></span>
+        <span id="agent-status-text" style="font-weight: 700; color: #64748b;">AI Agent: SalesforceWebhook待機中</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-reset" onclick="resetDemo()">
+        <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i> リセット
+      </button>
+      <button class="btn btn-primary" id="btn-start" onclick="startDemo()">
+        <i data-lucide="fingerprint" style="width: 16px; height: 16px;"></i> デジタルソウル継承を開始する
+      </button>
+    </div>
+  </header>
+
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid">
+    
+    <!-- COLUMN 1: TRIGGER & SCANNER -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="radio" style="color: var(--accent-cyan);" id="col1-icon"></i>
+          <span>トリガー ＆ デジタル足跡スキャン</span>
+        </div>
+        <span class="column-subtitle">Salesforce ＆ Workspace API</span>
+      </div>
+
+      <div class="trigger-card glass-card">
+        <div class="trigger-view-container">
+          
+          <!-- Salesforce employee status card -->
+          <div class="sf-user-card" id="sf-user-card">
+            <div class="user-profile-row">
+              <div class="user-avatar-placeholder">
+                <i data-lucide="user" style="width:20px; height:20px;"></i>
+              </div>
+              <div class="user-info-text">
+                <span style="font-size:0.85rem; font-weight:700;" id="user-name">佐藤 健太 (Kenta Sato)</span>
+                <span style="font-size:0.65rem; color:#64748b;">シニアアカウントマネージャー</span>
+                <span class="user-status-pill" id="user-status">在籍中 (Active)</span>
+              </div>
+            </div>
+            
+            <div class="trigger-webhook-banner hidden" id="webhook-banner">
+              <i data-lucide="shield-alert" style="width:14px; height:14px;"></i>
+              <span>【警告】退職手続きWebhookを受信しました</span>
+            </div>
+          </div>
+
+          <!-- Google Workspace Footprint Scanner -->
+          <div class="footprint-scanner-box">
+            <span style="font-size:0.75rem; font-weight:700; color:#cbd5e1; border-bottom:1px solid rgba(255,255,255,0.03); padding-bottom:0.3rem; margin-bottom:0.25rem;">
+              <i data-lucide="folder-search" style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:0.25rem;"></i>デジタル足跡スキャナー
+            </span>
+            
+            <!-- Gmail scanner -->
+            <div class="scanner-progress-item">
+              <div class="scanner-progress-meta">
+                <span>Gmail履歴 (過去3ヶ月の全送受信)</span>
+                <span id="gmail-scan-val">0%</span>
+              </div>
+              <div class="scanner-bar-bg">
+                <div class="scanner-bar-fill" id="gmail-scan-fill"></div>
+              </div>
+            </div>
+
+            <!-- Meet Video scanner -->
+            <div class="scanner-progress-item">
+              <div class="scanner-progress-meta">
+                <span>Google Drive内のMeet商談録画・議事録</span>
+                <span id="meet-scan-val">0%</span>
+              </div>
+              <div class="scanner-bar-bg">
+                <div class="scanner-bar-fill" id="meet-scan-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2M Tokens Loader counter -->
+          <div class="tokens-loader-widget">
+            <div class="token-counter-text" id="token-counter">0</div>
+            <div class="token-label-text">Gemini loaded tokens (Max 2M)</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: ITAMO INFERENCE & DOCS GEN -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="sparkles" style="color: var(--accent-purple);"></i>
+          <span>Gemini イタコ憑依プロセッサー</span>
+        </div>
+        <span class="column-subtitle">デジタルソウルプロファイリング</span>
+      </div>
+
+      <div class="ghost-card glass-card">
+        <div class="ghost-view-container">
+          
+          <!-- Gemini Thinking Logs -->
+          <div class="itako-inference-terminal" id="itako-terminal">
+            <div class="itako-log-row" style="color:#64748b;">
+              &gt; Legacy-Ghost standby. Listening for Salesforce employee webhooks...
+            </div>
+          </div>
+
+          <!-- Mock Google Docs Compiler -->
+          <div class="mock-docs-widget">
+            <div class="docs-widget-header">
+              <span class="docs-badge">
+                <i data-lucide="file-text" style="width:11px; height:11px;"></i>
+                引き継ぎドキュメント自動生成 (Docs API)
+              </span>
+              <span style="font-size:0.62rem; color:#64748b; font-weight:700;" id="docs-status">STANDBY</span>
+            </div>
+
+            <!-- Google Docs Editor screen -->
+            <div class="docs-editor-screen" id="docs-screen">
+              <!-- Placeholder inside white docs -->
+              <div style="color:#64748b; text-align:center; padding-top:2rem;" id="docs-placeholder">
+                <i data-lucide="file-edit" style="width:32px; height:32px; color:#cbd5e1; margin-bottom:0.5rem;"></i><br>
+                <span>スキャン完了後、佐藤氏のやり取りの癖、顧客傾向、約束事をイタコ憑依させて引き継ぎ書を自動コンパイルします</span>
+              </div>
+              <div id="docs-content" class="hidden">
+                <!-- Will be dynamically filled -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: SUCCESSOR & CALENDAR -->
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">
+          <i data-lucide="users-round" style="color: #64748b;" id="col3-icon"></i>
+          <span>後任アサイン ＆ カレンダーセット</span>
+        </div>
+        <span class="column-subtitle">Google Calendar API</span>
+      </div>
+
+      <div class="successor-card glass-card">
+        <div class="successor-view-container">
+          
+          <!-- Salesforce successor profile box -->
+          <div class="successor-profile-box" id="successor-box" style="opacity:0.3;">
+            <div class="successor-status-bar">
+              <span class="sf-badge" style="background:rgba(0, 161, 224, 0.1); border:1px solid rgba(0, 161, 224, 0.2); color:#00a1e0; font-weight:700; padding:0.1rem 0.4rem; border-radius:4px;">
+                後任自動アサイン
+              </span>
+              <span id="assign-status">アサイン保留中</span>
+            </div>
+
+            <div class="user-profile-row" style="margin-top:0.25rem;">
+              <div class="user-avatar-placeholder" style="border-color:#00a1e0;">
+                <i data-lucide="user-check" style="width:20px; height:20px; color:#00a1e0;"></i>
+              </div>
+              <div class="user-info-text">
+                <span style="font-size:0.85rem; font-weight:700;" id="successor-name">高橋 翔 (Sho Takahashi)</span>
+                <span style="font-size:0.65rem; color:#64748b;">エンタープライズ営業・新規担当</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Google Calendar Widget -->
+          <div class="mock-calendar-box" id="calendar-box" style="opacity:0.3;">
+            <div class="calendar-grid-title">
+              <i data-lucide="calendar" style="width:13px; height:13px; color:var(--accent-cyan);"></i>
+              <span>高橋 翔 のGoogleカレンダー同期</span>
+            </div>
+
+            <!-- 3-Day Calendar Matrix -->
+            <div class="calendar-grid">
+              <div class="cal-header">時間</div>
+              <div class="cal-header">5/18 (月)</div>
+              <div class="cal-header">5/19 (火)</div>
+              <div class="cal-header">5/20 (水)</div>
+
+              <!-- row 1: 10:00 -->
+              <div class="cal-time-col">10:00</div>
+              <div class="cal-cell"><div class="cal-event-busy">朝会</div></div>
+              <div class="cal-cell"></div>
+              <div class="cal-cell"><div class="cal-event-busy">定例</div></div>
+
+              <!-- row 2: 12:00 -->
+              <div class="cal-time-col">12:00</div>
+              <div class="cal-cell"></div>
+              <div class="cal-cell"></div>
+              <div class="cal-cell"></div>
+
+              <!-- row 3: 14:00 -->
+              <div class="cal-time-col">14:00</div>
+              <div class="cal-cell"></div>
+              <div class="cal-cell"><div class="cal-event-busy">商談</div></div>
+              <div class="cal-cell" id="target-cal-cell">
+                <!-- Autopositioned meeting goes here -->
+              </div>
+
+              <!-- row 4: 16:00 -->
+              <div class="cal-time-col">16:00</div>
+              <div class="cal-cell"><div class="cal-event-busy">Docs作成</div></div>
+              <div class="cal-cell"></div>
+              <div class="cal-cell"></div>
+            </div>
+          </div>
+
+          <!-- Salesforce history updates -->
+          <div class="sf-history-timeline">
+            <span style="font-size:0.7rem; font-weight:700; color:#64748b; letter-spacing:0.05em; text-transform:uppercase;">
+              Salesforce 顧客活動履歴 (ソリューションテック)
+            </span>
+            <div class="timeline-wrapper" id="sf-timeline">
+              <!-- Default state node -->
+              <div class="timeline-node" id="timeline-default">
+                <div class="timeline-icon-dot"><i data-lucide="clock" style="width:8px; height:8px;"></i></div>
+                <div class="timeline-info">
+                  <span class="timeline-head">業務引き継ぎトリガー待機中</span>
+                  <span class="timeline-time">佐藤健太氏 最終更新: 昨日</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- --- JAVASCRIPT LOGIC & SCENARIO --- -->
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // DOM Elements
+    const btnStart = document.getElementById('btn-start');
+    const logoBadge = document.getElementById('logo-badge');
+    const agentStatusDot = document.getElementById('agent-status-dot');
+    const agentStatusText = document.getElementById('agent-status-text');
+
+    // Column 1
+    const col1Icon = document.getElementById('col1-icon');
+    const userStatus = document.getElementById('user-status');
+    const webhookBanner = document.getElementById('webhook-banner');
+    const sfUserCard = document.getElementById('sf-user-card');
+    const gmailScanVal = document.getElementById('gmail-scan-val');
+    const gmailScanFill = document.getElementById('gmail-scan-fill');
+    const meetScanVal = document.getElementById('meet-scan-val');
+    const meetScanFill = document.getElementById('meet-scan-fill');
+    const tokenCounterText = document.getElementById('token-counter');
+
+    // Column 2
+    const itakoTerminal = document.getElementById('itako-terminal');
+    const docsStatusText = document.getElementById('docs-status');
+    const docsScreen = document.getElementById('docs-screen');
+    const docsPlaceholder = document.getElementById('docs-placeholder');
+    const docsContent = document.getElementById('docs-content');
+
+    // Column 3
+    const col3Icon = document.getElementById('col3-icon');
+    const successorBox = document.getElementById('successor-box');
+    const assignStatusText = document.getElementById('assign-status');
+    const calendarBox = document.getElementById('calendar-box');
+    const targetCalCell = document.getElementById('target-cal-cell');
+    const sfTimeline = document.getElementById('sf-timeline');
+    const timelineDefault = document.getElementById('timeline-default');
+
+    let timeouts = [];
+    let countInterval = null;
+
+    // AI Thinking Logs for Legacy-Ghost
+    const aiThinkingScenario = [
+      { type: 'ghost', text: 'Telemetry: Salesforce User status changed -> "Resigned". Webhook received. ID: [sf_user_res_902]' },
+      { type: 'ghost', text: 'GHOST EXTRATOR: Booting Digital Soul scan sequence... GKE Context Loader initialized.' },
+      { type: 'ghost', text: 'SCANNING FOOTPRINTS: Accessing Gmail API & Google Drive storage...' },
+      { type: 'ghost', text: 'TOKENS LOADED: 2,000,000 / 2,000,000 Tokens mapped to Gemini 1.5 Pro long-context buffer.' },
+      { type: 'ghost', text: 'AI INFERENCE (Itako-憑依): Profiling Sato-san\'s digital signature & client interactions...' },
+      { type: 'ghost', text: 'PROFILE IDENTIFIED:佐藤様の営業口調: 非常に誠実。「ここだけの話ですが、特別枠で...」というクロージング癖あり。' },
+      { type: 'ghost', text: 'PROFILE IDENTIFIED:ソリューションテック山本部長の傾向: 詳細な技術仕様よりも、短時間の役員デモ映えを重視。金曜のメールを好む。' },
+      { type: 'ghost', text: 'PROFILE IDENTIFIED:未完了の約束: Meet議事録から、AIパッケージV2のSalesforce連携エラー設定手順のフォロー約束を検出。' },
+      { type: 'docs', text: 'GOOGLE DOCS API: Creating structured transition blueprint: "【完全版】ソリューションテック様 業務引き継ぎ書".' },
+      { type: 'docs', text: 'GOOGLE DOCS API: Rendering sections & importing character-traits profile...' },
+      { type: 'ghost', text: 'SUCCESSOR ASSIGNED: Sho Takahashi selected. Google Calendar API: Scanning free times for Takahashi-san...' },
+      { type: 'ghost', text: 'CALENDAR API: Found slot: Wednesday 5/20 at 14:00. Scheduling alignment meeting with transition documents linked.' },
+      { type: 'docs', text: 'SALESFORCE HISTORY: Writing back activity transitioned logs...' }
+    ];
+
+    function appendTerminalLog(type, text) {
+      const row = document.createElement('div');
+      row.className = 'itako-log-row';
+      let prefix = '';
+
+      if (type === 'ghost') prefix = `<span class="log-prefix-ghost">[Soul-Extractor]</span> `;
+      if (type === 'docs') prefix = `<span class="log-prefix-docs">[Docs-Engine]</span> `;
+
+      row.innerHTML = `&gt; ${prefix}${text}`;
+      itakoTerminal.appendChild(row);
+      itakoTerminal.scrollTop = itakoTerminal.scrollHeight;
+    }
+
+    function animateTokenCounter() {
+      let current = 0;
+      const target = 2000000;
+      const step = 50000;
+      const duration = 4000; // 4 seconds
+      const intervalTime = (duration / (target / step));
+
+      countInterval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(countInterval);
+        }
+        tokenCounterText.textContent = current.toLocaleString();
+      }, 80);
+    }
+
+    const docsHTMLTemplate = `
+      <h1 class="docs-h1">【完全版】ソリューションテック様 業務引き継ぎ書</h1>
+      <div class="docs-p" style="font-size:0.6rem; color:#64748b;">作成者: Legacy-Ghost Agent (佐藤健太の魂を憑依) • 日付: 本日</div>
+      
+      <h2 class="docs-h2">1. 顧客情報概要</h2>
+      <div class="docs-p">顧客名: ソリューションテック株式会社<br>契約状況: VIP Enterprise Plan (年間 ¥1.2M)</div>
+      
+      <h2 class="docs-h2">2. キーマンの特性とアプローチ傾向（佐藤の魂憑依）</h2>
+      <ul class="docs-ul">
+        <li><b>キーマン: 開発本部 部長 山本 誠 様</b></li>
+        <li><b>山本様の性格と好み:</b> 細かい技術コードよりも「役員会議でそのままデモできる簡潔なスライド」を極めて好みます。進捗を週次で送付することが効果的です。</li>
+        <li><b>連絡の癖:</b> 金曜日の16時以降に情報提供メールを送ると、週明けの意思決定が最も早くなる傾向があります。</li>
+        <li><b>佐藤の勝ちパターン口調:</b> 商談後半のクロージングで<b>「ここだけの話ですが、山本様のために特別枠としてご用意しました」</b>というフレーズを用いると、極めて強力に意思決定を後押しできます。</li>
+      </ul>
+      
+      <h2 class="docs-h2">3. 未完了の口約束・タスク (Google Meet 録画より検出)</h2>
+      <ul class="docs-ul">
+        <li><b>重要フォロー:</b> AIパッケージV2初回起動時におけるSalesforce config.json連携設定手順のフォローをお送りする口約束があります。週明けの連絡が必要です。</li>
+      </ul>
+      
+      <h2 class="docs-h2">4. 後任担当者への推奨アクションプラン</h2>
+      <div class="docs-p">5月20日にカレンダーセットされた引き継ぎ打合せまでに、上記の佐藤の口調の癖（勝ちパターン）と山本様の直近エラー課題をインプットし、スムーズに営業を引き継いでください。</div>
+    `;
+
+    function writeGoogleDocs() {
+      docsPlaceholder.classList.add('hidden');
+      docsContent.classList.remove('hidden');
+      docsScreen.classList.add('active');
+      docsStatusText.textContent = 'COMPILING DOCS...';
+      docsStatusText.style.color = '#3b82f6';
+
+      docsContent.innerHTML = docsHTMLTemplate;
+      
+      // Auto-scroll Google Docs to simulate typing and rendering progress
+      setTimeout(() => {
+        let scrollAmount = 0;
+        const scrollInterval = setInterval(() => {
+          docsScreen.scrollTop += 5;
+          scrollAmount += 5;
+          if (scrollAmount > 300) {
+            clearInterval(scrollInterval);
+            docsStatusText.textContent = 'DOCUMENT READY (DOCS API)';
+            docsStatusText.style.color = 'var(--accent-green)';
+          }
+        }, 50);
+      }, 500);
+    }
+
+    function startDemo() {
+      resetDemo();
+
+      btnStart.disabled = true;
+      btnStart.innerHTML = `<i data-lucide="loader" class="animate-spin" style="width:16px; height:16px;"></i> 継承パイプライン実行中...`;
+      
+      agentStatusDot.className = 'status-dot active';
+      agentStatusText.textContent = 'AI Agent: Webhookトリガー受信完了';
+      agentStatusText.style.color = 'var(--accent-cyan)';
+
+      // Trigger Webhook
+      setTimeout(() => {
+        userStatus.textContent = '退職予定 (Resigned)';
+        userStatus.className = 'user-status-pill resigned';
+        webhookBanner.classList.remove('hidden');
+        sfUserCard.style.borderColor = 'rgba(244, 63, 94, 0.4)';
+        sfUserCard.style.background = 'rgba(244, 63, 94, 0.04)';
+
+        appendTerminalLog(aiThinkingScenario[0].type, aiThinkingScenario[0].text);
+        appendTerminalLog(aiThinkingScenario[1].type, aiThinkingScenario[1].text);
+        appendTerminalLog(aiThinkingScenario[2].type, aiThinkingScenario[2].text);
+        lucide.createIcons();
+      }, 800);
+
+      // --- STEP 2 (3s): Digital footprint scanning progress bars ---
+      const scanTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot scanning';
+        agentStatusText.textContent = 'AI Agent: Gmail ＆ Meet録画スキャン中';
+        agentStatusText.style.color = 'var(--accent-purple)';
+
+        animateTokenCounter();
+
+        // Animate Gmail Progress Bar (0 to 100 over 3 seconds)
+        let gmailProg = 0;
+        const gInterval = setInterval(() => {
+          gmailProg += 5;
+          gmailScanVal.textContent = `${gmailProg}%`;
+          gmailScanFill.style.width = `${gmailProg}%`;
+          if (gmailProg >= 100) {
+            clearInterval(gInterval);
+            gmailScanVal.textContent = '247件完了';
+            gmailScanVal.style.color = 'var(--accent-cyan)';
+          }
+        }, 150);
+
+        // Animate Meet Progress Bar (0 to 100 over 4.5 seconds)
+        let meetProg = 0;
+        const mInterval = setInterval(() => {
+          meetProg += 4;
+          if (meetProg > 100) meetProg = 100;
+          meetScanVal.textContent = `${meetProg}%`;
+          meetScanFill.style.width = `${meetProg}%`;
+          if (meetProg >= 100) {
+            clearInterval(mInterval);
+            meetScanVal.textContent = '12本 (18h) 完了';
+            meetScanVal.style.color = 'var(--accent-purple)';
+            
+            appendTerminalLog(aiThinkingScenario[3].type, aiThinkingScenario[3].text);
+          }
+        }, 160);
+
+      }, 3500);
+      timeouts.push(scanTimeout);
+
+      // --- STEP 3 (8s): Gemini Itako profiling ---
+      const itakoTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot scanning';
+        agentStatusText.textContent = 'AI Agent: 佐藤健太の「仕事の魂」を憑依抽出中';
+        agentStatusText.style.color = 'var(--accent-purple)';
+
+        appendTerminalLog(aiThinkingScenario[4].type, aiThinkingScenario[4].text);
+        appendTerminalLog(aiThinkingScenario[5].type, aiThinkingScenario[5].text);
+        appendTerminalLog(aiThinkingScenario[6].type, aiThinkingScenario[6].text);
+        appendTerminalLog(aiThinkingScenario[7].type, aiThinkingScenario[7].text);
+      }, 8200);
+      timeouts.push(itakoTimeout);
+
+      // --- STEP 4 (15s): Google Docs Compilation --
+      const docsTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot active';
+        agentStatusText.textContent = 'AI Agent: 引き継ぎDocsを自動作成中';
+        agentStatusText.style.color = 'var(--accent-cyan)';
+
+        appendTerminalLog(aiThinkingScenario[8].type, aiThinkingScenario[8].text);
+        appendTerminalLog(aiThinkingScenario[9].type, aiThinkingScenario[9].text);
+
+        writeGoogleDocs();
+      }, 15200);
+      timeouts.push(docsTimeout);
+
+      // --- STEP 5 (21s): Successor check & Calendar auto placement ---
+      const calTimeout = setTimeout(() => {
+        agentStatusDot.className = 'status-dot active';
+        agentStatusText.textContent = 'AI Agent: 後任アサイン ＆ カレンダー調整中';
+        
+        successorBox.style.opacity = '1';
+        assignStatusText.textContent = '高橋 翔 に自律決定';
+        assignStatusText.style.color = 'var(--accent-salesforce)';
+
+        calendarBox.style.opacity = '1';
+
+        appendTerminalLog(aiThinkingScenario[10].type, aiThinkingScenario[10].text);
+        appendTerminalLog(aiThinkingScenario[11].type, aiThinkingScenario[11].text);
+
+        // Holographically Insert Meeting into Takahashi Calendar
+        targetCalCell.innerHTML = `
+          <div class="cal-event-inserted">
+            <span style="font-weight:700;">【ゴースト憑依】引き継ぎ会議</span>
+            <span style="font-size:0.5rem; opacity:0.85;">Docs資料連携済</span>
+          </div>
+        `;
+      }, 21500);
+      timeouts.push(calTimeout);
+
+      // --- STEP 6 (25s): Salesforce sync Timeline and Complete ---
+      const sfTimeout = setTimeout(() => {
+        appendTerminalLog(aiThinkingScenario[12].type, aiThinkingScenario[12].text);
+        
+        // Sync SF Timeline node
+        timelineDefault.classList.add('hidden');
+        const timeStr = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+
+        const node = document.createElement('div');
+        node.className = 'timeline-node success-node';
+        node.style.animation = 'fade-in-up 0.5s ease forwards';
+        node.innerHTML = `
+          <div class="timeline-icon-dot"><i data-lucide="check" style="width:8px; height:8px;"></i></div>
+          <div class="timeline-info">
+            <span class="timeline-head" style="color:var(--accent-green);">[Legacy-Ghost] 業務引継ぎ完了</span>
+            <span class="timeline-time">本日 ${timeStr} • 後任: 高橋 翔 / docsリンク貼付</span>
+          </div>
+        `;
+        sfTimeline.insertBefore(node, sfTimeline.firstChild);
+        lucide.createIcons();
+
+        // Change Theme Aesthetics: Cyan Cyber Complete state
+        logoBadge.style.background = 'linear-gradient(135deg, var(--accent-green), var(--accent-cyan))';
+        logoBadge.style.boxShadow = '0 0 25px rgba(16, 185, 129, 0.4)';
+        
+        col1Icon.style.color = 'var(--accent-green)';
+        col3Icon.style.color = 'var(--accent-green)';
+
+        btnStart.disabled = false;
+        btnStart.innerHTML = `<i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> 継承・引き継ぎ完了`;
+        
+        agentStatusDot.className = 'status-dot completed';
+        agentStatusText.textContent = 'AI Agent: 佐藤健太氏の「魂」継承完了';
+        agentStatusText.style.color = 'var(--accent-green)';
+        
+        appendTerminalLog('ghost', 'TRANSITION PIPELINE COMPLETE. Succession secured successfully. System stable.');
+      }, 25000);
+      timeouts.push(sfTimeout);
+    }
+
+    function resetDemo() {
+      // Clear timers
+      timeouts.forEach(id => clearTimeout(id));
+      timeouts.length = 0;
+      if (countInterval) clearInterval(countInterval);
+
+      // Reset Header Theme
+      logoBadge.style.background = 'linear-gradient(135deg, var(--accent-cyan), var(--accent-purple))';
+      logoBadge.style.boxShadow = 'var(--shadow-cyber)';
+      
+      col1Icon.style.color = 'var(--accent-cyan)';
+      col3Icon.style.color = '#64748b';
+
+      // Reset Column 1
+      userStatus.textContent = '在籍中 (Active)';
+      userStatus.className = 'user-status-pill';
+      webhookBanner.classList.add('hidden');
+      sfUserCard.style.borderColor = 'rgba(0, 161, 224, 0.12)';
+      sfUserCard.style.background = 'rgba(0, 161, 224, 0.02)';
+
+      gmailScanVal.textContent = '0%';
+      gmailScanVal.style.color = '#cbd5e1';
+      gmailScanFill.style.width = '0%';
+      
+      meetScanVal.textContent = '0%';
+      meetScanVal.style.color = '#cbd5e1';
+      meetScanFill.style.width = '0%';
+
+      tokenCounterText.textContent = '0';
+
+      // Reset Column 2
+      itakoTerminal.innerHTML = `
+        <div class="itako-log-row" style="color:#64748b;">
+          &gt; Legacy-Ghost standby. Listening for Salesforce employee webhooks...
+        </div>
+      `;
+
+      docsStatusText.textContent = 'STANDBY';
+      docsStatusText.style.color = '#64748b';
+      docsScreen.className = 'docs-editor-screen';
+      docsScreen.scrollTop = 0;
+      docsPlaceholder.classList.remove('hidden');
+      docsContent.classList.add('hidden');
+      docsContent.innerHTML = '';
+
+      // Reset Column 3
+      successorBox.style.opacity = '0.3';
+      assignStatusText.textContent = 'アサイン保留中';
+      assignStatusText.style.color = '#64748b';
+
+      calendarBox.style.opacity = '0.3';
+      targetCalCell.innerHTML = '';
+
+      sfTimeline.innerHTML = `
+        <div class="timeline-node" id="timeline-default">
+          <div class="timeline-icon-dot"><i data-lucide="clock" style="width:8px; height:8px;"></i></div>
+          <div class="timeline-info">
+            <span class="timeline-head">業務引き継ぎトリガー待機中</span>
+            <span class="timeline-time">佐藤健太氏 最終更新: 昨日</span>
+          </div>
+        </div>
+      `;
+
+      // Controls
+      btnStart.disabled = false;
+      btnStart.innerHTML = `<i data-lucide="fingerprint" style="width: 16px; height: 16px;"></i> デジタルソウル継承を開始する`;
+
+      agentStatusDot.className = 'status-dot';
+      agentStatusText.textContent = 'AI Agent: SalesforceWebhook待機中';
+      agentStatusText.style.color = '#64748b';
+
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
