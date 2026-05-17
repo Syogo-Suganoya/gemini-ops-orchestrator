@@ -1,81 +1,57 @@
-AIエージェントの「自律的」な振る舞い（審査基準の核）
-自律的なマッチング: ユーザーが事業計画や日々の売上、興味のある技術（Flutter, Firebase等）を雑談ベースでエージェントに話しておくだけで、Geminiが「その事業なら、この『IT導入補助金』のこの枠が通りますよ！」と自発的に提案します。
+# 🚀 プロジェクト名：Subsidy-Navigator（サブシディ・ナビゲーター）
 
-書類の自動生成とブラッシュアップ: 過去の採択事例を学習したエージェントが、ユーザーの事業データから申請書のドラフトを自動作成。さらに「この表現はもう少し『地域活性化』に寄せたほうが採択率が上がります」と、エージェント側から改善のアドバイスを行います。
+**〜 中小企業・開発者のための自律型「補助金獲得・伴走」エージェント 〜**
 
-執念のスケジュール管理: 締切が近づくと、「まだこの書類が足りません」「今日の17時までにこれをアップロードしないと間に合いません」と、プッシュ通知で徹底的に追いかけます。
+## 💡 設定した課題とその背景
 
-2. 技術構成（Google Cloud 活用案）
-実行: Cloud Run
+公的補助金や助成金は、中小企業や個人開発者にとって強力な資金調達手段である一方、現在は「知っている人だけが得をする」構造になっています。数千件に及ぶ公募の中から自社に合うものを探す時間も、100ページを超える複雑怪奇な公募要領を読み解く時間も、申請書を執筆する時間も、リソースの限られた現場にはありません。
 
-補助金情報のスクレイピングや、書類生成などの不定期かつ高負荷な処理を効率的に実行。
+専門の申請代行業者に依頼すると高い成功報酬（手数料）が発生するため、挑戦すること自体を諦めてしまうという、イノベーションにおける大きな機会損失が発生しています。
 
-AI (Vertex AI / Gemini API):
+## 🤖 AIエージェントの自律的な振る舞い（価値の中心）
 
-Gemini 1.5 Pro: 膨大な補助金公募要領（PDF100ページ超えなど）を読み込み、要点を抽出。
+本プロダクトは、ユーザーが能動的に検索するのを待つだけの従来の検索ツールではありません。ユーザーのビジネスをあらかじめ理解し、最適な補助金を自発的に見つけ出し、書類作成から締切管理までを執念深く完結させるプッシュ型の「自律型コンサルタント」です。
 
-Vertex AI Vector Search: 過去の膨大な「採択された申請書」と、ユーザーの事業計画を照らし合わせ、類似性の高い成功パターンを検索。
+1. **日常の雑談からチャンスを掴む「自律的マッチング」**
+ユーザーが事業計画や日々の売上、興味のある技術（Flutter, Firebase等）をアプリ内で雑談ベースで話しておくだけで、エージェントがその背景情報を記憶。Geminiが「その事業プランであれば、今ちょうど公募中の『IT導入補助金』のこの枠が通りますよ！」と、合致する補助金を自発的に提案します。
+2. **採択事例に基づいた「書類自動生成」と「ブラッシュアップ」**
+過去の膨大な採択事例を学習したエージェントが、ユーザーの事業データや対話内容から、申請書のドラフト（下書き）を自律的に自動作成します。さらに、「この表現はもう少し『地域活性化』の文脈に寄せたほうが採択率が上がります」といった、エージェント側からの能動的な改善アドバイス（推論）を行います。
+3. **伴走型エージェントによる「執念のスケジュール管理」**
+申請の締切が近づくと、エージェントは徹底的なリマインダーへと変化。「まだこの証明書類が足りていません」「今日の17時までにこれをアップロードしないと審査に間に合いません」と、プッシュ通知を用いて人間を徹底的に追いかけ、申請漏れを未然に防ぎます。
 
-通知・フロントエンド:
+## ⚙️ 技術スタックと選定理由（実装力）
 
-Firebase Cloud Messaging (FCM): 締切や新着補助金のプッシュ通知。
+全国の膨大なデータフィルタリングと、超長尺の公募要領PDFの解析を両立させる、スポンサーツールをフル活用した強力なアーキテクチャです。
 
-Flutter: 「気軽に相談」を実現するモバイルアプリ。
+* **実行環境：Cloud Run**
+* *選定理由:* 補助金情報の定期的なスクレイピング処理や、申請書の自動生成といった、不定期かつ計算負荷の高いヘビーなバックエンド処理を、サーバーレスで効率的かつスケーラブルに実行するため。
 
-検索・データ蓄積:
 
-Elasticsearch (スポンサー枠活用): 全国数千件の補助金データから、地域・業種・金額で高速にフィルタリング。
+* **AI・検索基盤：Gemini 1.5 Pro & Vertex AI Vector Search**
+* *選定理由:* 100ページを超える複雑な公募要領PDFを一括で読み込ませ、瞬時に要点を抽出（構造化）するためにGemini 1.5 Proを採用。また、過去の膨大な「採択済みの申請書」の成功パターンと、ユーザーの事業計画の類似性を高精度に照合・検索するためにVertex AI Vector Searchを連携。
 
-3. 解決する課題とストーリー
-背景: 補助金は「知っている人だけが得をする」状態。中小企業や個人開発者は、探す時間も書く時間もない。
 
-価値: 専門の代行業者（高い手数料）に頼む前の「超気軽に相談できるパートナー」としての立ち位置。
+* **プッシュ通知・フロントエンド：Firebase Cloud Messaging (FCM) & Flutter**
+* *選定理由:* 締切直前の緊急リマインドや新着補助金の通知を遅延なく確実に届けるインフラとしてFCMを採用。また、経営者や開発者が「いつでも気軽に雑談相談できる」心地よいネイティブ体験を1つのコードベースで実現するためFlutterを採用。
 
-新規性: 検索を待つのではなく、AIがユーザーのビジネスを理解して「これ、あなた用です」と持ってくるプッシュ型の体験。
 
-💡 審査員へのアピールポイント
-「AIエージェントである必然性」: 補助金の公募要領は複雑怪奇です。これを人間が読み解く代わりに、Geminiが「自律的に解釈して要約する」点は、まさにAIにしかできない役割です。
+* **高速フィルタリング：Elasticsearch (スポンサー枠活用)**
+* *選定理由:* スポンサー企業が提供するElasticsearchを活用。全国数千件にのぼる複雑な補助金マスターデータから、地域・業種・資金額・締切日といった複数条件での超高速なフィルタリング検索を実現するため。
 
-「実装力」: Vertex AIでのPDF解析、Firebaseでの通知、Elasticsearchでの検索と、提供されたツールをフルコンボで活用できます。
 
-「拡張性」: 将来的には、申請だけでなく「採択後の実績報告」まで自律的に管理する「伴走型エージェント」への進化を提示できます。
+
+## 🛠️ 将来的な拡張性（ロードマップ）
+
+本プロダクトは、単なる「申請書の作成代行」にとどまりません。将来的には、補助金が採択された後に発生する、最も人間を苦しめる「採択後の実績報告書の作成」や「証跡（領収書など）の自律管理」にいたるまで、資金が実際に着金するまでをトータルでサポートする「真の伴走型エージェント」への進化を提示します。
+
+---
+
+### 💡 審査員へのキラーフレーズ（プロダクトの必然性）
+
+> 「補助金の公募要領は人間が読むにはあまりに複雑怪奇です。この『解読のコスト』を人間の代わりにGeminiが自律的に肩代わりし、専門の代行業者に頼む前の『超気軽に相談できるファーストパートナー』をAIで民主化することに、このエージェントの絶対的な必然性があります」
+
+---
+
+### 🌐 デモサイトURL
 
 https://gemini-ops-orchestrator.web.app/subsidy-support-app/demo.html
-
-
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
