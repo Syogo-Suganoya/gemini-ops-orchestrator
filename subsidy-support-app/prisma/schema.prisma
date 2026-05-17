@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  businessType String?
+  techStack    String?   // カンマ区切りなどで興味のある技術を保存
+  createdAt    DateTime  @default(now())
+  messages     Message[]
+  drafts       Draft[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  role      String   // "user" or "assistant"
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Subsidy {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  maxAmount     Int      // 補助上限額
+  category      String   // IT導入補助金, 小規模事業者持続化補助金など
+  requirements  String   // 対象要件など
+  deadline      DateTime // 締切
+  createdAt     DateTime @default(now())
+  drafts        Draft[]
+}
+
+model Draft {
+  id        String   @id @default(cuid())
+  content   String   // 生成された申請書のテキスト
+  status    String   // "draft", "ready", etc.
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  subsidyId String
+  subsidy   Subsidy  @relation(fields: [subsidyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
